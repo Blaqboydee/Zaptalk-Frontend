@@ -25,8 +25,8 @@ export default function UsersList({ user }) {
     );
   }
 
-  const startChat = (otherUser) => {
-    navigate("/chat", {
+  const Add = (otherUser) => {
+    navigate("/allchats", {
       state: { otherUserId: otherUser._id, otherUserName: otherUser.name },
     });
   };
@@ -58,7 +58,7 @@ export default function UsersList({ user }) {
             {users.map((u) => (
               <div
                 key={u._id}
-                onClick={() => startChat(u)}
+                onClick={() => Add(u)}
                 className="group relative overflow-hidden rounded-lg shadow-md cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl bg-gray-800/80 border border-gray-700/50"
               >
                 {/* Card Content */}
@@ -81,8 +81,8 @@ export default function UsersList({ user }) {
                 {/* Hover Overlay */}
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center bg-orange-500/90">
                   <div className="text-white text-center">
-                    <div className="text-2xl mb-2">💬</div>
-                    <p className="font-semibold">Start Chat</p>
+                    <div className="text-2xl mb-2">+</div>
+                    <p className="font-semibold">Add</p>
                   </div>
                 </div>
 

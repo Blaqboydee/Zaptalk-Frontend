@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Outlet, NavLink } from 'react-router-dom';
+import { Outlet, NavLink} from 'react-router-dom';
 import { MessageSquare, Users, Search } from 'lucide-react';
 
 const ChatLayout = ({ user }) => {
+ 
+
   const [allMessages, setAllMessages] = useState([]);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const apiUrl = import.meta.env.VITE_API_URL;
+ 
+
+
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -34,7 +39,7 @@ const ChatLayout = ({ user }) => {
       </div>
 
       {/* Main Header */}
-      <header className="sticky top-0   backdrop-blur-md border-b flex justify-end border-gray-700/50">
+      <header className="sticky top-0 z-40 backdrop-blur-md border-b flex justify-end border-gray-700/50">
         <div className="max-w-7xl w-[70%] flex flex-wrap justify-between items-end px-4 sm:px-6 lg:px-8 py-4">
           {/* Left Section */}
           <div className="flex items-center gap-3">
@@ -64,6 +69,9 @@ const ChatLayout = ({ user }) => {
           </div>
         </div>
       </header>
+
+
+   
 
       {/* Navigation Tabs */}
       <div className="bg-gray-800/80 backdrop-blur-md border-b border-gray-700/50">
@@ -100,7 +108,11 @@ const ChatLayout = ({ user }) => {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl  mx-auto px-4 sm:px-6 lg:px-8 py-6 relative z-10">
+
+      <div>
+  
+      </div>
+      <div className="max-w-7xl h-[85vh] mx-auto px-4 sm:px-6 lg:px-8 py-6 relative">
         <Outlet context={{ user, allMessages }} />
       </div>
     </div>
