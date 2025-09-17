@@ -239,7 +239,7 @@ export default function ChatsPage() {
                         )}
                       </div>
 
-                      <div className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 ${otherUser.status.state == "online" ?  "bg-green-500" : "bg-gray-400"   }  border-2 border-gray-800 rounded-full`}></div>
+                      <div className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 ${otherUser?.status?.state == "online" ?  "bg-green-500" : "bg-gray-400"   }  border-2 border-gray-800 rounded-full`}></div>
                     </div>
 
                     <h2 className="font-bold text-white">
