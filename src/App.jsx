@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "./context/AuthContext";
 import { initSocket } from "./lib/socket";
+import { Toaster } from "sonner";
 
 import Navbar from "./components/Navbar";
 import SignUp from "./pages/SignUp";
@@ -33,7 +34,9 @@ function App() {
     const hideNavbar = location.pathname === "/login" || location.pathname === "/signup";
 
   return (
-    <Router>
+    <>
+    <Toaster position="top-right"/>
+     <Router>
      {!hideNavbar &&  <Navbar /> }
       <Routes>
         <Route path="/" element={<Navigate to="/login" />} />
@@ -67,6 +70,8 @@ function App() {
         />
       </Routes>
     </Router>
+    </>
+   
   );
 }
 

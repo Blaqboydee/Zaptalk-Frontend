@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useUsers } from "../context/UsersContext";
 
-export default function UsersList({ user }) {
+export default function UsersList() {
   const navigate = useNavigate();
   const { users, loading } = useUsers();
 
@@ -10,16 +10,34 @@ export default function UsersList({ user }) {
       <div className="min-h-screen bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 rounded-full flex items-center justify-center mb-6 animate-spin bg-gradient-to-r from-orange-500 to-orange-600">
-            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            <svg
+              className="w-8 h-8 text-white"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+              />
             </svg>
           </div>
           <div className="flex items-center justify-center space-x-2">
             <div className="w-3 h-3 rounded-full animate-pulse bg-orange-500"></div>
-            <div className="w-3 h-3 rounded-full animate-pulse bg-orange-600" style={{ animationDelay: '200ms' }}></div>
-            <div className="w-3 h-3 rounded-full animate-pulse bg-orange-700" style={{ animationDelay: '400ms' }}></div>
+            <div
+              className="w-3 h-3 rounded-full animate-pulse bg-orange-600"
+              style={{ animationDelay: "200ms" }}
+            ></div>
+            <div
+              className="w-3 h-3 rounded-full animate-pulse bg-orange-700"
+              style={{ animationDelay: "400ms" }}
+            ></div>
           </div>
-          <p className="mt-4 text-gray-400 font-medium text-lg">Loading Users...</p>
+          <p className="mt-4 text-gray-400 font-medium text-lg">
+            Loading Users...
+          </p>
         </div>
       </div>
     );
@@ -27,7 +45,11 @@ export default function UsersList({ user }) {
 
   const Add = (otherUser) => {
     navigate("/allchats", {
-      state: { otherUserId: otherUser._id, otherUserName: otherUser.name },
+      state: {
+        otherUserId: otherUser._id,
+        otherUserName: otherUser.name,
+        otherUserAvatar: otherUser.avatar,
+      },
     });
   };
 
@@ -35,12 +57,29 @@ export default function UsersList({ user }) {
     <div className="min-h-screen bg-gray-900">
       {/* Background Decorations */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-96 h-96 rounded-full opacity-20 animate-pulse"
-             style={{ background: 'radial-gradient(circle, rgba(255, 107, 53, 0.3), transparent)' }}></div>
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 rounded-full opacity-20 animate-pulse"
-             style={{ background: 'radial-gradient(circle, rgba(255, 107, 53, 0.3), transparent)', animationDelay: '0.5s' }}></div>
-        <div className="absolute top-20 left-20 w-48 h-48 rounded-full opacity-10 animate-pulse"
-             style={{ background: 'radial-gradient(circle, rgba(255, 255, 255, 0.2), transparent)', animationDelay: '1s' }}></div>
+        <div
+          className="absolute -top-40 -right-40 w-96 h-96 rounded-full opacity-20 animate-pulse"
+          style={{
+            background:
+              "radial-gradient(circle, rgba(255, 107, 53, 0.3), transparent)",
+          }}
+        ></div>
+        <div
+          className="absolute -bottom-40 -left-40 w-96 h-96 rounded-full opacity-20 animate-pulse"
+          style={{
+            background:
+              "radial-gradient(circle, rgba(255, 107, 53, 0.3), transparent)",
+            animationDelay: "0.5s",
+          }}
+        ></div>
+        <div
+          className="absolute top-20 left-20 w-48 h-48 rounded-full opacity-10 animate-pulse"
+          style={{
+            background:
+              "radial-gradient(circle, rgba(255, 255, 255, 0.2), transparent)",
+            animationDelay: "1s",
+          }}
+        ></div>
       </div>
 
       {/* Header */}
@@ -64,17 +103,38 @@ export default function UsersList({ user }) {
                 {/* Card Content */}
                 <div className="p-5">
                   {/* User Avatar */}
-                  <div className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg mb-3 mx-auto bg-gradient-to-r from-orange-500 to-orange-600">
-                    {u.name.charAt(0).toUpperCase()}
+                  <div className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg mb-3 mx-auto bg-gradient-to-r from-orange-500 to-orange-600 overflow-hidden relative">
+                    {u.avatar ? (
+                      <img
+                        src={u.avatar}
+                        alt={u.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      u.name.charAt(0).toUpperCase()
+                    )}
+
+                    {/* Online/Offline indicator */}
+                    {u.status?.state && (
+                      <span
+                        className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-gray-900 ${
+                          u.status.state === "online"
+                            ? "bg-green-500"
+                            : "bg-gray-400"
+                        }`}
+                      ></span>
+                    )}
                   </div>
 
                   {/* User Info */}
                   <div className="text-center">
-                    <p className="font-bold text-lg text-white mb-1">{u.name}</p>
-                    <p className="text-sm text-gray-400 mb-2">{u.email}</p>
-                    <p className="text-xs font-mono px-2 py-1 rounded bg-gray-700/50 text-orange-500">
-                      {u._id}
+                    <p className="font-bold text-lg text-white mb-1">
+                      {u.name}
                     </p>
+                    <p className="text-sm text-gray-400 mb-2">{u.email}</p>
+                    {/* <p className="text-xs font-mono px-2 py-1 rounded bg-gray-700/50 text-orange-500">
+                      {u._id}
+                    </p> */}
                   </div>
                 </div>
 
@@ -96,12 +156,26 @@ export default function UsersList({ user }) {
           {users.length === 0 && (
             <div className="text-center py-12">
               <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 bg-gray-700/50">
-                <svg className="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                <svg
+                  className="w-10 h-10 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                  />
                 </svg>
               </div>
-              <p className="text-xl font-medium text-white mb-2">No users found</p>
-              <p className="text-gray-400">Check back later for available users to chat with</p>
+              <p className="text-xl font-medium text-white mb-2">
+                No users found
+              </p>
+              <p className="text-gray-400">
+                Check back later for available users to chat with
+              </p>
             </div>
           )}
         </div>

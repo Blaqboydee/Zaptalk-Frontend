@@ -69,26 +69,23 @@ export default function SignUp() {
 
   return (
     <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4 overflow-hidden">
-      {/* Background Decorations */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-96 h-96 rounded-full opacity-20 animate-pulse"
-             style={{ background: 'radial-gradient(circle, rgba(255, 107, 53, 0.3), transparent)' }}></div>
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 rounded-full opacity-20 animate-pulse"
-             style={{ background: 'radial-gradient(circle, rgba(255, 107, 53, 0.3), transparent)', animationDelay: '0.5s' }}></div>
-        <div className="absolute top-20 left-20 w-48 h-48 rounded-full opacity-10 animate-pulse"
-             style={{ background: 'radial-gradient(circle, rgba(255, 255, 255, 0.2), transparent)', animationDelay: '1s' }}></div>
-      </div>
+    
 
       <div className="w-full max-w-md relative z-10">
-        {/* Logo Section */}
-        <div className="flex justify-center mb-6">
-          <img className="w-32 transform hover:scale-105 transition-transform duration-300" src={logo} alt="ZapTalk logo" />
-        </div>
 
         {/* Sign Up Card */}
+             {/* Logo Section */}
+       
+
         <div className="rounded-3xl shadow-2xl p-8 backdrop-blur-md bg-gray-800/80 border border-gray-700/50">
-          <div className="text-center mb-6">
-            <h2 className="text-3xl font-bold text-white">Create Your Account</h2>
+          
+
+           <div className="flex justify-center mb-4">
+           <img src={logo} alt="ZapTalk" className="mx-auto h-16 w-auto" />
+        </div>
+          
+          <div className="text-center mb-4">
+            <h1 className="text-2xl font-bold text-white mb-2">Create Your Account</h1>
             <p className="text-gray-400 mt-2">Join ZapTalk and start connecting today</p>
           </div>
 
@@ -108,7 +105,7 @@ export default function SignUp() {
             </div>
           )}
 
-          <form className="space-y-6" onSubmit={handleSignUp}>
+          <form className="space-y-4" onSubmit={handleSignUp}>
             {/* Name Field */}
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-300">Full Name</label>
@@ -307,13 +304,6 @@ export default function SignUp() {
               </Link>
             </p>
           </div>
-        </div>
-
-        {/* Footer */}
-        <div className="text-center mt-6">
-          <p className="text-sm text-gray-400">
-            Join thousands of users already chatting on ZapTalk
-          </p>
         </div>
       </div>
     </div>

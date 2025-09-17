@@ -7,9 +7,11 @@ import { io } from "socket.io-client";
  */
 export function initSocket(token) {
   const SOCKET_URL = import.meta.env.VITE_SOCKET_URL;
+
   return io(SOCKET_URL, {
-    auth: { token },        // sent to server's io.use() for JWT auth
-    autoConnect: false,     // we control when to connect
-    transports: ["websocket"]
+    auth: { token },         // sent to server's io.use() for JWT auth
+    autoConnect: false,      // we control when to connect
+    withCredentials: true,   // match backend CORS credentials: true
+    transports: ["websocket", "polling"]
   });
 }
