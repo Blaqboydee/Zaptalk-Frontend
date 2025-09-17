@@ -119,7 +119,7 @@ const ChatListItem = ({
       <div className="flex items-center space-x-4">
         <div className="relative">
           <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold bg-gradient-to-br from-orange-400 to-orange-600 overflow-hidden">
-            {secondUser.avatar ? (
+            {secondUser?.avatar? (
               <img
                 src={secondUser.avatar}
                 alt={secondUser?.name || "User"}
