@@ -6,6 +6,12 @@
   scroll-behavior: smooth;
 }
 
+/* iOS Safari safe area handling */
+body {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
 /* ✅ Hide scrollbar for all major browsers */
 @layer utilities {
   .scrollbar-hidden {
@@ -18,45 +24,15 @@
   }
 }
 
-/* ✅ ZapTalk Dark Theme */
+/* ✅ ZapTalk Theme Variables */
 :root {
-  --zap-dark-primary: #1F2937; /* gray-900 */
+  --zap-dark-primary: #1F2937;  /* gray-900 */
   --zap-dark-secondary: #374151; /* gray-800 */
-  --zap-dark-accent: #4B5563; /* gray-700 */
-  --zap-light: #F9FAFB; /* gray-50 */
+  --zap-dark-accent: #4B5563;   /* gray-700 */
+  --zap-light: #F9FAFB;         /* gray-50 */
   --zap-white: #FFFFFF;
-  --zap-gray-light: #D1D5DB; /* gray-300 */
-  --zap-gray: #9CA3AF; /* gray-400 */
-  --zap-accent: #6B7280; /* gray-500, for subtle highlights */
-  --zap-dark: #111827; /* gray-950, for deeper contrast */
-}
-
-/* ✅ Custom ZapTalk Classes */
-.zap-primary { background-color: var(--zap-dark-primary); }
-.zap-secondary { background-color: var(--zap-dark-secondary); }
-.zap-dark { background-color: var(--zap-dark); }
-.zap-light { background-color: var(--zap-light); }
-
-.zap-text-primary { color: var(--zap-accent); }
-.zap-text-white { color: var(--zap-white); }
-
-.zap-btn {
-  background-color: var(--zap-dark-secondary);
-  color: var(--zap-white);
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.zap-btn:hover {
-  background-color: var(--zap-dark-accent);
-}
-
-.zap-header {
-  background: var(--zap-dark-primary);
-  color: var(--zap-white);
-  padding: 1rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  --zap-gray-light: #D1D5DB;    /* gray-300 */
+  --zap-gray: #9CA3AF;          /* gray-400 */
+  --zap-accent: #6B7280;        /* gray-500 */
+  --zap-dark: #111827;          /* gray-950 */
 }
