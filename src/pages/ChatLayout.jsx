@@ -27,9 +27,9 @@ const ChatLayout = ({ user }) => {
   }, [apiUrl]);
 
   return (
-    <div className="bg-gray-900">
+    <div className="bg-red-600">
       {/* Main Header */}
-      <header className="sticky top-0 z-40 backdrop-blur-md border-b flex justify-end border-gray-700/50">
+      <header className="z-40 backdrop-blur-md border-b flex justify-end border-gray-700/50">
         <div className="max-w-7xl w-[70%] flex flex-wrap justify-between items-end px-4 sm:px-6 lg:px-8 py-4">
           {/* Left Section */}
           <div className="flex items-center gap-3">
