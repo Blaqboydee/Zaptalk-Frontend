@@ -114,7 +114,7 @@ const ChatListItem = ({
   return (
     <div
       onClick={handleChatClick}
-      className="cursor-pointer w-[320px] bg-gray-900  p-2 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 border border-gray-700 hover:-translate-y-1 group hover:border-orange-500/30 hover:shadow-orange-500/10"
+      className="cursor-pointer  bg-gray-900  p-2 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 border border-gray-700  group hover:border-orange-500/30 hover:shadow-orange-500/10"
     >
       <div className="flex items-center space-x-4">
         <div className="relative">

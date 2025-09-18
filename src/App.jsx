@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "./context/AuthContext";
 import { initSocket } from "./lib/socket";
@@ -13,9 +13,50 @@ import UsersList from "./pages/UsersList";
 import ChatLayout from "./pages/ChatLayout";
 import GroupChats from "./pages/GroupChats";
 
-function App() {
+// Loading component with mobile-optimized styling
+function LoadingScreen() {
+  return (
+    <div className="zap-page-container flex items-center justify-center">
+      <div className="text-center">
+        <div className="w-16 h-16 rounded-full flex items-center justify-center mb-6 animate-spin bg-gradient-to-r from-orange-500 to-orange-600 mx-auto">
+          <svg
+            className="w-8 h-8 text-white"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+            />
+          </svg>
+        </div>
+        <div className="flex items-center justify-center space-x-2 mb-4">
+          <div className="w-3 h-3 rounded-full animate-pulse bg-orange-500"></div>
+          <div
+            className="w-3 h-3 rounded-full animate-pulse bg-orange-600"
+            style={{ animationDelay: "200ms" }}
+          ></div>
+          <div
+            className="w-3 h-3 rounded-full animate-pulse bg-orange-700"
+            style={{ animationDelay: "400ms" }}
+          ></div>
+        </div>
+        <p className="text-gray-400 font-medium text-lg">
+          Loading ZapTalk...
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// App content component to handle location logic
+function AppContent() {
   const { user, loading } = useContext(AuthContext);
   const [socket, setSocket] = useState(null);
+  const location = useLocation();
 
   useEffect(() => {
     if (user && !socket) {
@@ -27,17 +68,29 @@ function App() {
     }
   }, [user, socket]);
 
+  useEffect(() => {
+    // Mobile optimization: Remove HTML loading screen when React loads
+    const loadingScreen = document.getElementById('loading-screen');
+    if (loadingScreen) {
+      setTimeout(() => {
+        loadingScreen.classList.add('fade-out');
+        setTimeout(() => {
+          loadingScreen.remove();
+        }, 300);
+      }, 500);
+    }
+  }, []);
+
   if (loading) {
-    return <p>Loading...</p>; // temporary loader
+    return <LoadingScreen />;
   }
 
-    const hideNavbar = location.pathname === "/login" || location.pathname === "/signup";
+  const hideNavbar = location.pathname === "/login" || location.pathname === "/signup";
 
   return (
-    <>
-    <Toaster position="top-right"/>
-     <Router>
-     {!hideNavbar &&  <Navbar /> }
+    <div className="zap-app-container">
+      <Toaster position="top-right" />
+      {!hideNavbar && <Navbar />}
       <Routes>
         <Route path="/" element={<Navigate to="/login" />} />
         <Route path="/signup" element={<SignUp />} />
@@ -47,31 +100,29 @@ function App() {
           element={user ? <Profile /> : <Navigate to="/login" />}
         />
 
-
-         <Route
+        <Route
           path="/allchats"
           element={user ? <ChatLayout user={user} /> : <Navigate to="/login" />}
         >
-
-        <Route index element={<Chats/>}/>
-
-        <Route path="/allchats/directmessages" element={<Chats/>}/>
-        <Route path="/allchats/groups" element={<GroupChats/>}/>
-
+          <Route index element={<Chats />} />
+          <Route path="/allchats/directmessages" element={<Chats />} />
+          <Route path="/allchats/groups" element={<GroupChats />} />
         </Route>
-      
 
-
-       
-       
-           <Route
+        <Route
           path="/users"
           element={user ? <UsersList socket={socket} user={user} /> : <Navigate to="/login" />}
         />
       </Routes>
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <AppContent />
     </Router>
-    </>
-   
   );
 }
 

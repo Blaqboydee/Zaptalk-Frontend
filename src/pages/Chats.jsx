@@ -135,7 +135,7 @@ export default function ChatsPage() {
             <FriendsList allNewFriends={allNewFriends} initChat={initChat} />
           )}
 
-          <main className="flex-column p-2  overflow-y-auto sm:px-6 lg:px-8">
+          <main className="flex-column p-2 overflow-y-auto sm:px-6 lg:px-8">
                <div className="relative  mb-6">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                 <input
@@ -143,7 +143,7 @@ export default function ChatsPage() {
                   placeholder="Search conversations..."
                   value={searchTerm}
                   onChange={handleSearch}
-                  className="w-full bg-gray-700 border border-gray-600 rounded-xl pl-10 pr-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200"
+                  className="w-full bg-gray-800 border border-gray-800 rounded-xl pl-10 pr-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200"
                 />
               </div>
             {chats.length > 0 ? (
@@ -162,7 +162,7 @@ export default function ChatsPage() {
                 ))}
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center h-full text-center py-16">
+              <div className="flex flex-col items-center justify-center text-center py-16">
                 <div className="mb-8 relative">
                   <div className="w-24 h-24 rounded-full flex items-center justify-center shadow-lg bg-gradient-to-br from-orange-400 to-orange-600">
                     <svg
@@ -185,18 +185,18 @@ export default function ChatsPage() {
                     style={{ animationDelay: "300ms" }}
                   ></div>
                 </div>
-                <h2 className="text-2xl font-bold mb-3 text-white">
+                <h2 className="text-md font-bold mb-3 text-white">
                   No chats yet
                 </h2>
-                <p className="text-lg mb-8 max-w-md text-gray-400">
+                <p className="text-md mb-8 max-w-md text-gray-400">
                   Start your first conversation by connecting with other users
                   on ZapTalk!
                 </p>
                 <button
                   onClick={() => navigate("/users")}
-                  className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-8 py-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 font-semibold text-lg hover:from-orange-600 hover:to-orange-700"
+                  className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-8 py-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 font-semibold text-md hover:from-orange-600 hover:to-orange-700"
                 >
-                  Find Users ⚡
+                  Find Users
                 </button>
               </div>
             )}

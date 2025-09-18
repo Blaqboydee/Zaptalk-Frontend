@@ -16,7 +16,7 @@ const GroupChatsList = ({
 
   return (
     <div className={`${isMobile ? "w-full" : "w-[40%]"}`}>
-      <div className="bg-gray-800 rounded-lg shadow-lg border border-gray-700 h-full flex flex-col">
+      <div className="rounded-lg shadow-lg h-full flex flex-col">
         <div className="p-4 border-b border-gray-700 flex justify-between items-center">
           <h2 className="font-semibold text-white">Your Groups</h2>
           <button 

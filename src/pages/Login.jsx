@@ -54,15 +54,15 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
-      <div className="bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md p-8 border border-slate-700">
+    <div className="min-h-screen bg-slate-900 flex items-center justify-center p-8 lg:p-4">
+      <div className="bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md p-8 border border-slate-700">
         <div className="text-center mb-8">
           <img src={logo} alt="ZapTalk" className="mx-auto h-16 w-auto mb-4" />
-          <h1 className="text-3xl font-bold text-white mb-2">Welcome Back</h1>
-          <p className="text-slate-400">Sign in to continue to ZapTalk</p>
+          <h1 className="text-2xl font-bold text-white mb-2">Welcome Back</h1>
+          <p className="text-slate-400 text-sm lg:text-base">Sign in to continue to ZapTalk</p>
         </div>
 
-        <form onSubmit={handleLogin} className="space-y-6">
+        <form onSubmit={handleLogin} className="space-y-3 lg:space-y-6">
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-slate-300 mb-2">
               Email Address
@@ -79,7 +79,7 @@ export default function Login() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full pl-10 pr-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:ring-2 focus:ring-amber-500 focus:border-transparent transition duration-200"
+                className="w-full pl-10 pr-4 py-3 bg-gray-800 border-b border-slate-600 rounded-lg text-white placeholder-slate-400 focus:ring-2 focus:ring-amber-500 focus:border-transparent transition duration-200"
                 placeholder="you@example.com"
               />
             </div>
@@ -101,7 +101,7 @@ export default function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full pl-10 pr-12 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:ring-2 focus:ring-amber-500 focus:border-transparent transition duration-200"
+                className="w-full pl-10 pr-12 py-3 bg-gray-800 border-b border-slate-600 rounded-lg text-white placeholder-slate-400 focus:ring-2 focus:ring-amber-500 focus:border-transparent transition duration-200"
                 placeholder="Enter your password"
               />
               <button

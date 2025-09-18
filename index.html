@@ -3,11 +3,216 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="shortcut icon" href="./src/assets/zaptalklogo.png" type="image/x-icon">
-   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    
+    <!-- Enhanced viewport meta tag for mobile optimization -->
+    <meta 
+      name="viewport" 
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    >
+    
+    <!-- Additional meta tags for better mobile experience -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#111827">
+    <meta name="msapplication-navbutton-color" content="#111827">
+    <meta name="apple-mobile-web-app-title" content="ZapTalk">
+    <meta name="application-name" content="ZapTalk">
+    
+    <!-- Prevent pull-to-refresh on some browsers -->
+    <meta name="overscroll-behavior" content="none">
+    
+    <!-- SEO and PWA meta tags -->
+    <meta name="description" content="ZapTalk - Connect and chat with people instantly">
+    <meta name="keywords" content="chat, messaging, communication, zaptalk">
+    <meta name="author" content="ZapTalk">
+    
     <title>ZapTalk</title>
+    
+    <style>
+      /* Mobile-optimized base styles */
+      html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        width: 100%;
+        overflow-x: hidden;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(180deg, #0d1117, #161b22);
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-attachment: fixed;
+        color: #fff;
+        /* Prevent mobile dragging and bouncing */
+        overscroll-behavior: none;
+        -webkit-overscroll-behavior: none;
+        touch-action: pan-y;
+        -webkit-touch-action: pan-y;
+        /* Remove tap highlights */
+        -webkit-tap-highlight-color: transparent;
+        /* Prevent text selection */
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+      
+      /* iOS Safari safe area handling */
+      body {
+        padding-top: env(safe-area-inset-top);
+        padding-bottom: env(safe-area-inset-bottom);
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+      }
+      
+      /* Root container optimization */
+      #root {
+        height: 100vh;
+        height: 100dvh; /* Dynamic viewport height for modern browsers */
+        width: 100vw;
+        overflow: auto;
+        position: relative;
+        overscroll-behavior: none;
+        -webkit-overscroll-behavior: none;
+      }
+      
+      /* Loading screen styles */
+      .loading-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(180deg, #0d1117, #161b22);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        opacity: 1;
+        transition: opacity 0.3s ease;
+      }
+      
+      .loading-screen.fade-out {
+        opacity: 0;
+        pointer-events: none;
+      }
+      
+      .loading-spinner {
+        width: 50px;
+        height: 50px;
+        border: 4px solid rgba(255, 107, 53, 0.3);
+        border-top: 4px solid #ff6b35;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      
+      /* Prevent zoom on inputs */
+      input, textarea, select {
+        font-size: 16px !important;
+        -webkit-user-select: text;
+        -moz-user-select: text;
+        -ms-user-select: text;
+        user-select: text;
+      }
+      
+      /* Button touch optimization */
+      button, .cursor-pointer {
+        touch-action: manipulation;
+      }
+      
+      /* Mobile-specific optimizations */
+      @media (max-width: 768px) {
+        html {
+          /* Prevent horizontal scroll */
+          overflow-x: hidden;
+          /* Better mobile viewport */
+          height: calc(100vh + env(safe-area-inset-top));
+          height: calc(100dvh + env(safe-area-inset-top));
+        }
+        
+        /* Prevent double-tap zoom */
+        * {
+          touch-action: manipulation;
+        }
+      }
+    </style>
   </head>
   <body>
+    <!-- Loading screen -->
+    <div id="loading-screen" class="loading-screen">
+      <div class="loading-spinner"></div>
+    </div>
+    
     <div id="root"></div>
+    
     <script type="module" src="/src/main.jsx"></script>
+    
+    <!-- Remove loading screen when React loads -->
+    <script>
+      // Remove loading screen once React has rendered
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          const loadingScreen = document.getElementById('loading-screen');
+          if (loadingScreen) {
+            loadingScreen.classList.add('fade-out');
+            setTimeout(() => {
+              loadingScreen.remove();
+            }, 300);
+          }
+        }, 500);
+      });
+      
+      // Prevent pull-to-refresh and other unwanted mobile behaviors
+      document.addEventListener('touchstart', function(e) {
+        if (e.touches.length > 1) return;
+        
+        const touch = e.touches[0];
+        const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+        
+        // Prevent pull-to-refresh when at the top
+        if (scrollY <= 0 && touch.clientY > touch.clientX) {
+          e.preventDefault();
+        }
+      }, { passive: false });
+      
+      document.addEventListener('touchmove', function(e) {
+        const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+        const scrollHeight = document.documentElement.scrollHeight;
+        const windowHeight = window.innerHeight;
+        
+        // Prevent bounce at top and bottom
+        if ((scrollY <= 0) || (scrollY >= scrollHeight - windowHeight)) {
+          e.preventDefault();
+        }
+      }, { passive: false });
+      
+      // Prevent context menu on long press (mobile only)
+      document.addEventListener('contextmenu', function(e) {
+        // Only prevent on mobile devices, allow on desktop
+        if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+          e.preventDefault();
+        }
+      });
+      
+      // Prevent text selection on drag (mobile only, not on clickable elements)
+      document.addEventListener('selectstart', function(e) {
+        // Only prevent on mobile and for non-interactive elements
+        const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        const isInteractive = e.target.matches('input, textarea, [contenteditable="true"], a, button, [role="button"]');
+        
+        if (isMobile && !isInteractive) {
+          e.preventDefault();
+        }
+      });
+    </script>
   </body>
 </html>

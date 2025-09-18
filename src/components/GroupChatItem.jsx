@@ -1,6 +1,8 @@
 import React from 'react';
 
 const GroupChatItem = ({ group, isSelected, onSelect, allMessages, formatTime }) => {
+  console.log(group);
+  
   const getLastMessage = () => {
     const groupMessages = allMessages?.filter((message) => message.chatId === group._id) || [];
     return groupMessages.length > 0 
@@ -18,37 +20,17 @@ const GroupChatItem = ({ group, isSelected, onSelect, allMessages, formatTime })
       }`}
     >
       <div className="flex items-center justify-between mb-2">
-        <h3 className={`font-semibold transition-colors ${
+        <h3 className={`font-semibold text-sm transition-colors ${
           isSelected ? 'text-orange-300' : 'text-white group-hover:text-orange-300'
         }`}>
           {group.name}
         </h3>
-        {group.unreadCount > 0 && (
-          <span className="bg-orange-600 text-white text-xs px-2 py-1 rounded-full font-medium">
-            {group.unreadCount}
-          </span>
-        )}
       </div>
-        <p className="text-sm text-gray-400 truncate mb-3">
+        <p className="text-[13px] text-gray-400 truncate mb-3">
         {getLastMessage()}
       </p>
       <div className="flex justify-between items-center">
-        <span className="text-xs text-gray-500">{formatTime(group.updatedAt)}</span>
-        <div className="flex -space-x-2">
-          {group.users?.slice(0, 3).map((participant) => (
-            <div 
-              key={participant._id}
-              className="w-7 h-7 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 border-2 border-gray-800 flex items-center justify-center text-xs font-bold text-white shadow-lg"
-            >
-              <span>{participant.name?.[0] || participant._id?.[0] || '?'}</span>
-            </div>
-          ))}
-          {(group.users?.length || 0) > 3 && (
-            <div className="w-7 h-7 rounded-full bg-gray-700 border-2 border-gray-800 flex items-center justify-center text-xs text-white">
-              +{group.users.length - 3}
-            </div>
-          )}
-        </div>
+        <span className="text-[11px] text-gray-500">{formatTime(group.updatedAt)}</span>
       </div>
     </div>
   );

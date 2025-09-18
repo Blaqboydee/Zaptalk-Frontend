@@ -28,16 +28,6 @@ const ChatLayout = ({ user }) => {
 
   return (
     <div className="min-h-screen bg-gray-900">
-      {/* Background Decorations */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-96 h-96 rounded-full opacity-20 animate-pulse"
-             style={{ background: 'radial-gradient(circle, rgba(255, 107, 53, 0.3), transparent)' }}></div>
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 rounded-full opacity-20 animate-pulse"
-             style={{ background: 'radial-gradient(circle, rgba(255, 107, 53, 0.3), transparent)', animationDelay: '0.5s' }}></div>
-        <div className="absolute top-20 left-20 w-48 h-48 rounded-full opacity-10 animate-pulse"
-             style={{ background: 'radial-gradient(circle, rgba(255, 255, 255, 0.2), transparent)', animationDelay: '1s' }}></div>
-      </div>
-
       {/* Main Header */}
       <header className="sticky top-0 z-40 backdrop-blur-md border-b flex justify-end border-gray-700/50">
         <div className="max-w-7xl w-[70%] flex flex-wrap justify-between items-end px-4 sm:px-6 lg:px-8 py-4">
@@ -53,7 +43,7 @@ const ChatLayout = ({ user }) => {
    
 
       {/* Navigation Tabs */}
-      <div className="bg-gray-800/80 backdrop-blur-md border-b border-gray-700/50">
+      <div className=" backdrop-blur-md border-b border-gray-700/50">
         <div className="max-w-7xl mx-auto px-4">
           <nav className="flex space-x-8">
             <NavLink
@@ -88,10 +78,7 @@ const ChatLayout = ({ user }) => {
 
       {/* Main Content */}
 
-      <div>
-  
-      </div>
-      <div className="max-w-7xl h-[85vh] mx-auto px-4 sm:px-6 lg:px-8 py-6 relative">
+      <div className="">
         <Outlet context={{ user, allMessages }} />
       </div>
     </div>

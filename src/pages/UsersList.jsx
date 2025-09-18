@@ -1,9 +1,18 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUsers } from "../context/UsersContext";
 
 export default function UsersList() {
   const navigate = useNavigate();
   const { users, loading } = useUsers();
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // Filter users based on search term
+  const filteredUsers = users.filter(
+    (user) =>
+      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   if (loading) {
     return (
@@ -55,55 +64,108 @@ export default function UsersList() {
 
   return (
     <div className="min-h-screen bg-gray-900">
-      {/* Background Decorations */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div
-          className="absolute -top-40 -right-40 w-96 h-96 rounded-full opacity-20 animate-pulse"
-          style={{
-            background:
-              "radial-gradient(circle, rgba(255, 107, 53, 0.3), transparent)",
-          }}
-        ></div>
-        <div
-          className="absolute -bottom-40 -left-40 w-96 h-96 rounded-full opacity-20 animate-pulse"
-          style={{
-            background:
-              "radial-gradient(circle, rgba(255, 107, 53, 0.3), transparent)",
-            animationDelay: "0.5s",
-          }}
-        ></div>
-        <div
-          className="absolute top-20 left-20 w-48 h-48 rounded-full opacity-10 animate-pulse"
-          style={{
-            background:
-              "radial-gradient(circle, rgba(255, 255, 255, 0.2), transparent)",
-            animationDelay: "1s",
-          }}
-        ></div>
-      </div>
-
       {/* Header */}
-      <header className="relative bg-gray-800/80 backdrop-blur-md border-b border-gray-700/50 p-4">
+      <header className="relative bg-gray-800/80 backdrop-blur-md border-b border-gray-700/50 p-2">
         <div className="max-w-7xl mx-auto text-center">
-          <h2 className="text-2xl font-bold text-white">💬 ZapTalk Users</h2>
+          <h2 className="lg:text-2xl font-bold text-white">👥 ZapTalk Users</h2>
           <p className="text-sm text-gray-400 mt-1">Connect with others</p>
         </div>
       </header>
 
-      {/* Users Grid */}
-      <div className="p-6 relative z-10">
+      {/* Search Bar */}
+      <div className="p-6 pb-2 relative z-10">
         <div className="max-w-4xl mx-auto">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {users.map((u) => (
+          <div className="relative mb-6">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg
+                className="w-5 h-5 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+            </div>
+            <input
+              type="text"
+              placeholder="Search users by name or email..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-600 bg-gray-800/80 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500/50 transition-all duration-200"
+            />
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm("")}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-white transition-colors duration-200"
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            )}
+          </div>
+
+          {/* Search Results Info */}
+          {searchTerm && (
+            <div className="mb-4 text-center">
+              <p className="text-gray-400 text-sm">
+                {filteredUsers.length > 0
+                  ? `Found ${filteredUsers.length} user${
+                      filteredUsers.length === 1 ? "" : "s"
+                    } matching "${searchTerm}"`
+                  : `No users found matching "${searchTerm}"`}
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Users Grid */}
+      <div className="px-6 pb-6 relative z-10">
+        <div className="max-w-4xl mx-auto">
+          <div className="grid grid-cols-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 relative">
+            {filteredUsers.map((u) => (
               <div
                 key={u._id}
-                onClick={() => Add(u)}
-                className="group relative overflow-hidden rounded-lg shadow-md cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl bg-gray-800/80 border border-gray-700/50"
+               
+                className="group relative rounded-lg shadow-md cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl bg-gray-800/80 border border-gray-700/50"
               >
+                <button 
+                 onClick={() => Add(u)}
+                className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 rounded-full h-6 w-6 flex justify-center items-center absolute -bottom-2 -right-2 z-50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110 border-2 border-gray-900 group">
+                  <svg
+                    className="w-3 h-3 text-white font-bold group-hover:rotate-90 transition-transform duration-300"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    strokeWidth={3}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M12 4v16m8-8H4"
+                    />
+                  </svg>
+                </button>
                 {/* Card Content */}
-                <div className="p-5">
+                <div className="p-3 sm:p-5 flex flex-col items-center justify-center">
                   {/* User Avatar */}
-                  <div className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg mb-3 mx-auto bg-gradient-to-r from-orange-500 to-orange-600 overflow-hidden relative">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-lg mb-2 sm:mb-3 mx-auto bg-gradient-to-r from-orange-500 to-orange-600 overflow-hidden relative">
                     {u.avatar ? (
                       <img
                         src={u.avatar}
@@ -113,36 +175,21 @@ export default function UsersList() {
                     ) : (
                       u.name.charAt(0).toUpperCase()
                     )}
-
-                    {/* Online/Offline indicator */}
-                    {u.status?.state && (
-                      <span
-                        className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-gray-900 ${
-                          u.status.state === "online"
-                            ? "bg-green-500"
-                            : "bg-gray-400"
-                        }`}
-                      ></span>
-                    )}
                   </div>
 
                   {/* User Info */}
                   <div className="text-center">
-                    <p className="font-bold text-lg text-white mb-1">
+                    <p className="font-bold text-[10px] sm:text-lg text-white">
                       {u.name}
                     </p>
-                    <p className="text-sm text-gray-400 mb-2">{u.email}</p>
-                    {/* <p className="text-xs font-mono px-2 py-1 rounded bg-gray-700/50 text-orange-500">
-                      {u._id}
-                    </p> */}
                   </div>
                 </div>
 
                 {/* Hover Overlay */}
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center bg-orange-500/90">
                   <div className="text-white text-center">
-                    <div className="text-2xl mb-2">+</div>
-                    <p className="font-semibold">Add</p>
+                    <div className="text-xl sm:text-2xl mb-1 sm:mb-2">+</div>
+                    <p className="font-semibold text-sm sm:text-base">Add</p>
                   </div>
                 </div>
 
@@ -152,8 +199,41 @@ export default function UsersList() {
             ))}
           </div>
 
-          {/* Empty State */}
-          {users.length === 0 && (
+          {/* Empty State for Search Results */}
+          {searchTerm && filteredUsers.length === 0 && (
+            <div className="text-center py-12">
+              <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 bg-gray-700/50">
+                <svg
+                  className="w-10 h-10 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              </div>
+              <p className="text-xl font-medium text-white mb-2">
+                No users found
+              </p>
+              <p className="text-gray-400 mb-4">
+                Try adjusting your search terms
+              </p>
+              <button
+                onClick={() => setSearchTerm("")}
+                className="px-4 py-2 rounded-lg bg-orange-500 hover:bg-orange-600 text-white font-medium transition-colors duration-200"
+              >
+                Clear Search
+              </button>
+            </div>
+          )}
+
+          {/* Empty State for No Users */}
+          {!searchTerm && users.length === 0 && (
             <div className="text-center py-12">
               <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 bg-gray-700/50">
                 <svg

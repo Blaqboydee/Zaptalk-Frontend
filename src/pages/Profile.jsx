@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
 import api from "../api/api";
 
 export default function Profile() {
+  const {logout } = useContext(AuthContext);
   const [profile, setProfile] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({ name: "", email: "" });
@@ -24,7 +26,7 @@ export default function Profile() {
         setEditForm({
           name: response.data.user.name,
           email: response.data.user.email,
-          status: response.data.user.status
+          bioStatus: response.data.user.bioStatus
         });
         setAvatarPreview(response.data.user.avatar);
       } catch (err) {
@@ -40,11 +42,13 @@ export default function Profile() {
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
     if (!isEditing && profile)
-      setEditForm({ name: profile.name, email: profile.email , status: profile.status});
+      setEditForm({ name: profile.name, email: profile.email , bioStatus: profile.bioStatus});
   };
 
   // Save profile changes
   const handleSave = async () => {
+    console.log(editForm);
+    
     try {
       const response = await api.put("/users/profile", editForm, {
         headers: { Authorization: `Bearer ${token}` },
@@ -79,10 +83,7 @@ export default function Profile() {
 
   // Logout
   const handleLogout = () => {
-    
-    localStorage.removeItem("token");
-
-    navigate("/login");
+   logout()
   };
 
   if (!profile) {
@@ -135,9 +136,9 @@ export default function Profile() {
       <main className="relative z-10 flex-1 p-6 flex flex-col items-center">
         <div className="w-full max-w-2xl">
           {/* Profile Card */}
-          <div className="relative bg-gray-800/40 backdrop-blur-xl rounded-3xl shadow-2xl border border-gray-700/50 overflow-hidden">
+          <div className="relative bg-gray-800/40 backdrop-blur-xl rounded-3xl shadow-2xl  overflow-hidden">
             {/* Card Header with Gradient */}
-            <div className="relative h-32">
+            <div className="relative h-20 lg:h-32">
               <div className="absolute inset-0 bg-gradient-to-br from-transparent via-gray-800/20 to-gray-900/60"></div>
             </div>
 
@@ -196,7 +197,7 @@ export default function Profile() {
                 {!isEditing ? (
                   <div className="text-center w-full space-y-3 lg:space-y-6">
                     <div className="space-y-2">
-                      <h2 className="text-2xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+                      <h2 className="lg:text-2xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
                         {profile.name}
                       </h2>
                       <p className="text-gray-400 text-sm lg:text-lg break-all">{profile.email}</p>
@@ -251,7 +252,7 @@ export default function Profile() {
                         onChange={(e) =>
                           setEditForm({ ...editForm, email: e.target.value })
                         }
-                        className="w-full pl-12 pr-4 py-4 rounded-xl bg-gray-700/30 backdrop-blur-md text-white border border-gray-600/50 focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500/50 transition-all duration-300 placeholder-gray-400"
+                        className="text-base w-full pl-12 pr-4 py-4 rounded-xl bg-gray-700/30 backdrop-blur-md text-white border border-gray-600/50 focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500/50 transition-all duration-300 placeholder-gray-400"
                         placeholder="Your Email"
                       />
                     </div>
@@ -264,9 +265,9 @@ export default function Profile() {
                       </div>
                       <input
                         type="text"
-                        value={editForm.status}
+                        value={editForm.bioStatus}
                         onChange={(e) =>
-                          setEditForm({ ...editForm, status: e.target.value })
+                          setEditForm({ ...editForm, bioStatus: e.target.value })
                         }
                         className="w-full pl-12 pr-4 py-4 rounded-xl bg-gray-700/30 backdrop-blur-md text-white border border-gray-600/50 focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500/50 transition-all duration-300 placeholder-gray-400"
                         placeholder="Your status"

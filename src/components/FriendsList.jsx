@@ -1,7 +1,7 @@
 import React from "react";
 
 const FriendsList = ({ allNewFriends, initChat }) => (
-  <div className=" round backdrop-blur-md">
+  <div className="pl-2 pr-2 border-b border-gray-700 round backdrop-blur-md">
     <div className="max-w-7xl sm:px-4">
       <h3 className="text-md font-semibold mt-3 mb-2 text-white">Friends</h3>
       <div className="overflow-x-auto h-[70px] w-[100%] custom-scrollbar">
