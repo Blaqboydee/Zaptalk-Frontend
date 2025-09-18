@@ -127,7 +127,7 @@ export default function ChatsPage() {
   }, [isMobile, setMessages, setIsChatOpen]);
 
   return (
-    <div className="bg-blue-500">
+    <div className="">
       {/* Mobile Layout - Keep as is */}
       {isMobile ? (
         <div className="flex-1 flex flex-col">
@@ -136,18 +136,18 @@ export default function ChatsPage() {
           )}
 
           <main className="flex-column p-2 overflow-y-auto sm:px-6 lg:px-8">
-               <div className="relative  mb-6">
+               <div className="relative  mb-1">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                 <input
                   type="text"
                   placeholder="Search conversations..."
                   value={searchTerm}
                   onChange={handleSearch}
-                  className="w-full bg-gray-800 border border-gray-800 rounded-xl pl-10 pr-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200"
+                  className="w-full bg-gray-700 border border-gray-800 rounded-xl pl-10 pr-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200"
                 />
               </div>
             {chats.length > 0 ? (
-              <div className="space-y-1 bg-orange-300 h-[30vh] overflow-auto">
+              <div className="space-y-1 h-[50vh] overflow-auto">
                 {filteredChats.map((chat) => (
                   <ChatListItem
                     key={chat._id}
