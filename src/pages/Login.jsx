@@ -48,8 +48,8 @@ export default function Login() {
   };
 
   return (
-    <div className="bg-slate-900 flex items-center justify-center p-8 lg:p-4 min-h-screen">
-      <div className="bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md border border-slate-700">
+    <div className="h-[85vh] lg:min-h-screen bg-slate-800 flex items-center justify-center p-8 lg:p-4">
+      <div className="bg-gray-900 rounded-2xl shadow-2xl w-full max-w-md border border-slate-700">
         {/* Logo Section */}
         <div className="text-center p-8 pb-4">
           <img src={logo} alt="ZapTalk" className="mx-auto h-16 w-auto mb-4" />
