@@ -171,41 +171,6 @@
         }, 500);
       });
       
-      // Prevent pull-to-refresh and other unwanted mobile behaviors
-      document.addEventListener('touchstart', function(e) {
-        if (e.touches.length > 1) return;
-        
-        const touch = e.touches[0];
-        const scrollY = window.pageYOffset || document.documentElement.scrollTop;
-        
-        // Prevent pull-to-refresh when at the top
-        if (scrollY <= 0 && touch.clientY > touch.clientX) {
-          e.preventDefault();
-        }
-      }, { passive: false });
-      
-      document.addEventListener('touchmove', function(e) {
-        const scrollY = window.pageYOffset || document.documentElement.scrollTop;
-        const scrollHeight = document.documentElement.scrollHeight;
-        const windowHeight = window.innerHeight;
-        
-        // Prevent bounce at top and bottom
-        if ((scrollY <= 0) || (scrollY >= scrollHeight - windowHeight)) {
-          e.preventDefault();
-        }
-      }, { passive: false });
-      
-      // Prevent context menu on long press (mobile)
-      document.addEventListener('contextmenu', function(e) {
-        e.preventDefault();
-      });
-      
-      // Prevent text selection on drag (mobile)
-      document.addEventListener('selectstart', function(e) {
-        if (!e.target.matches('input, textarea, [contenteditable="true"]')) {
-          e.preventDefault();
-        }
-      });
     </script>
   </body>
 </html>
