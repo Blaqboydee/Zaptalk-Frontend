@@ -104,11 +104,11 @@ export default function Profile() {
   }
 
   return (
-    <div className=" flex-col relative overflow-hidden">
+    <div className="bg-red-300 h-[100vh] flex-col relative overflow-hidden">
       {/* Background Decorative Elements */}
 
       {/* Header */}
-      <header className="relative z-10 backdrop-blur-xl border-b border-gray-700/50 p-4 flex justify-between items-center">
+      <header className="z-10 backdrop-blur-xl border-b border-gray-700/50 p-4 flex justify-between items-center">
         <div className="flex items-center space-x-4 flex-1">
           <h1 className="text-2xl w-full text-center font-bold text-white">
             Profile
@@ -131,7 +131,7 @@ export default function Profile() {
       <main className="relative z-10 flex-1 p-6 flex flex-col items-center">
         <div className="w-full max-w-2xl">
           {/* Profile Card */}
-          <div className="relative  backdrop-blur-xl rounded-3xl  overflow-hidden">
+          <div className="">
    
 
             {/* Profile Content */}
