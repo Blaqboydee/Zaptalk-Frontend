@@ -84,10 +84,10 @@ export default function SignUp() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 flex items-center justify-center p-6 overflow-hidden">
-      <div className="w-full max-w-md relative z-10">
+    <div className="flex p-6 overflow-hidden">
+      <div className="w-full">
         {/* Sign Up Card */}
-        <div className="rounded-3xl shadow-2xl p-6 backdrop-blur-md bg-gray-800/80 border border-gray-700/50">
+        <div className="rounded-3xl p-6 backdrop-blur-md bg-gray-800/80 border border-gray-700/50">
           {/* Logo Section */}
           <div className="flex justify-center mb-4">
            <img src={logo} alt="ZapTalk" className="mx-auto h-16 w-auto" />

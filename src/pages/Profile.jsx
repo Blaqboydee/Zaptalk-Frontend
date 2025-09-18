@@ -88,7 +88,7 @@ export default function Profile() {
 
   if (!profile) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
+      <div className="flex flex-col items-center justify-center  bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
         <div className="relative">
           <div className="animate-spin w-16 h-16 mb-6 border-4 border-orange-500 border-t-transparent rounded-full"></div>
           <div className="absolute inset-0 w-16 h-16 border-4 border-orange-200/20 rounded-full"></div>
@@ -104,7 +104,7 @@ export default function Profile() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex flex-col relative overflow-hidden">
+    <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex flex-col relative overflow-hidden">
       {/* Background Decorative Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-r from-orange-500/10 to-pink-500/10 rounded-full blur-3xl animate-pulse"></div>

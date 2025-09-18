@@ -16,7 +16,7 @@ export default function UsersList() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+      <div className=" bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 rounded-full flex items-center justify-center mb-6 animate-spin bg-gradient-to-r from-orange-500 to-orange-600">
             <svg
@@ -63,7 +63,7 @@ export default function UsersList() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900">
+    <div className="bg-gray-900">
       {/* Header */}
       <header className="relative bg-gray-800/80 backdrop-blur-md border-b border-gray-700/50 p-2">
         <div className="max-w-7xl mx-auto text-center">
