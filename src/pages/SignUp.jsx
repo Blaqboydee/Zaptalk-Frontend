@@ -94,8 +94,8 @@ export default function SignUp() {
           </div>
           
           <div className="text-center mb-4">
-            <h1 className="text-2xl font-bold text-white mb-2">Create Your Account</h1>
-            <p className="text-gray-400 mt-2">Join ZapTalk and start connecting today</p>
+            <h1 className="text-md lg:text-2xl font-bold text-white mb-2">Create Your Account</h1>
+            <p className="text-sm lg:text-md  text-gray-400 mt-2">Join ZapTalk and start connecting today</p>
             {/* Step indicator */}
             <div className="flex justify-center mt-4 space-x-2">
               <div className={`w-3 h-3 rounded-full ${step === 1 ? 'bg-orange-500' : 'bg-gray-600'}`}></div>
@@ -136,7 +136,7 @@ export default function SignUp() {
                     placeholder="Zaptalker"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 rounded-lg border-b border-gray-600 bg-gray-800 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition-all duration-200"
+                    className="w-full pl-10 pr-4 py-3 rounded-lg border-b border-gray-600 bg-gray-700 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition-all duration-200"
                     required
                   />
                 </div>
@@ -156,7 +156,7 @@ export default function SignUp() {
                     placeholder="you@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 rounded-lg border-b border-gray-600 bg-gray-800 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition-all duration-200"
+                    className="w-full pl-10 pr-4 py-3 rounded-lg border-b border-gray-600 bg-gray-700 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition-all duration-200"
                     required
                   />
                 </div>
@@ -206,7 +206,7 @@ export default function SignUp() {
                     placeholder="Create a strong password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-10 pr-12 py-3 rounded-lg border-b border-gray-600 bg-gray-800 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition-all duration-200"
+                    className="w-full pl-10 pr-12 py-3 rounded-lg border-b border-gray-600 bg-gray-700 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition-all duration-200"
                     required
                   />
                   <button
@@ -263,7 +263,7 @@ export default function SignUp() {
                     placeholder="Confirm your password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className={`w-full pl-10 pr-12 py-3 rounded-lg border-b border-gray-600 bg-gray-800 text-white placeholder-gray-500 focus:outline-none focus:ring-2 transition-all duration-200 ${
+                    className={`w-full pl-10 pr-12 py-3 rounded-lg border-b border-gray-600 bg-gray-700 text-white placeholder-gray-500 focus:outline-none focus:ring-2 transition-all duration-200 ${
                       confirmPassword && password !== confirmPassword ? 'border-red-500' : 'border-gray-600'
                     }`}
                     required

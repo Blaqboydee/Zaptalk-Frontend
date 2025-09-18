@@ -2,61 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Reset browser defaults and fix mobile dragging */
 * {
-  box-sizing: border-box;
   scroll-behavior: smooth;
-  -webkit-tap-highlight-color: transparent; /* Remove tap highlights */
-}
-
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  width: 100%;
-  overflow-x: hidden; /* Prevent horizontal scroll */
 }
 
 /* iOS Safari safe area handling */
 body {
   padding-top: env(safe-area-inset-top);
   padding-bottom: env(safe-area-inset-bottom);
-  /* Prevent pull-to-refresh and other touch behaviors */
-  overscroll-behavior: none;
-  -webkit-overscroll-behavior: none;
-}
-
-/* Root app container */
-#root {
-  height: 100vh;
-  width: 100vw;
-  overflow: auto; /* Allow scrolling within the app */
-  position: relative;
-  /* Prevent pull-to-refresh and other touch behaviors */
-  overscroll-behavior: none;
-  -webkit-overscroll-behavior: none;
-  touch-action: pan-y; /* Only allow vertical scrolling */
-  -webkit-touch-action: pan-y;
-}
-
-/* Allow text selection and interaction for all clickable elements */
-input, textarea, [contenteditable="true"], a, button, [role="button"], .cursor-pointer, 
-select, label, [tabindex], [onclick], [href] {
-  -webkit-user-select: auto;
-  -moz-user-select: auto;
-  -ms-user-select: auto;
-  user-select: auto;
-  pointer-events: auto;
-}
-
-/* Enable all interactive elements and their children */
-* {
-  pointer-events: auto;
-}
-
-/* Prevent zoom on double tap for buttons */
-button, .cursor-pointer {
-  touch-action: manipulation;
 }
 
 /* ✅ Hide scrollbar for all major browsers */
@@ -71,51 +24,6 @@ button, .cursor-pointer {
   }
 }
 
-/* Fix viewport height issues for mobile */
-@layer utilities {
-  .min-h-screen-mobile {
-    min-height: 100vh;
-    min-height: 100dvh; /* Use dynamic viewport height if supported */
-  }
-  
-  .h-screen-mobile {
-    height: 100vh;
-    height: 100dvh;
-  }
-  
-  /* Mobile-optimized background */
-  .bg-mobile-fixed {
-    background-attachment: fixed;
-  }
-  
-  /* Prevent mobile dragging utility */
-  .touch-pan-y {
-    touch-action: pan-y;
-    overscroll-behavior: none;
-    -webkit-overscroll-behavior: none;
-  }
-}
-
-/* Additional mobile optimizations */
-@media (max-width: 768px) {
-  /* Ensure full coverage on mobile */
-  .min-h-screen {
-    min-height: calc(100vh + env(safe-area-inset-top));
-    min-height: calc(100dvh + env(safe-area-inset-top));
-  }
-  
-  /* Handle notched devices */
-  .bg-gray-900 {
-    margin-top: calc(-1 * env(safe-area-inset-top));
-  }
-  
-  /* Prevent horizontal scroll on small screens */
-  body {
-    overflow-x: hidden;
-    width: 100%;
-  }
-}
-
 /* ✅ ZapTalk Theme Variables */
 :root {
   --zap-dark-primary: #1F2937;  /* gray-900 */
@@ -127,17 +35,4 @@ button, .cursor-pointer {
   --zap-gray: #9CA3AF;          /* gray-400 */
   --zap-accent: #6B7280;        /* gray-500 */
   --zap-dark: #111827;          /* gray-950 */
-}
-
-/* ZapTalk component base styles */
-@layer base {
-  /* Default app container styles */
-  .zap-app-container {
-    @apply h-screen-mobile w-screen overflow-auto bg-gray-900 touch-pan-y;
-  }
-  
-  /* Default page container styles */
-  .zap-page-container {
-    @apply min-h-screen-mobile bg-gray-900 relative touch-pan-y;
-  }
 }
