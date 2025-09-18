@@ -104,7 +104,7 @@ export default function Profile() {
   }
 
   return (
-    <div className="bg-red-300 h-[100vh] flex-col relative overflow-hidden">
+    <div className="h-[60vh] bg-red-700 flex-col relative overflow-hidden">
       {/* Background Decorative Elements */}
 
       {/* Header */}
