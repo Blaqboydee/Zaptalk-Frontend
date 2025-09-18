@@ -79,7 +79,7 @@ const ChatLayout = ({ user }) => {
     
       {/* Main Content */}
 
-      <div className="">
+      <div className="bg-red-500">
         <Outlet context={{ user, allMessages }} />
       </div>
     </div>

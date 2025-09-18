@@ -127,7 +127,7 @@ export default function ChatsPage() {
   }, [isMobile, setMessages, setIsChatOpen]);
 
   return (
-    <div className="flex h-[80vh]">
+    <div className="bg-blue-500">
       {/* Mobile Layout - Keep as is */}
       {isMobile ? (
         <div className="flex-1 flex flex-col">
@@ -147,7 +147,7 @@ export default function ChatsPage() {
                 />
               </div>
             {chats.length > 0 ? (
-              <div className="space-y-1">
+              <div className="space-y-1 bg-orange-300 h-[30vh] overflow-auto">
                 {filteredChats.map((chat) => (
                   <ChatListItem
                     key={chat._id}
