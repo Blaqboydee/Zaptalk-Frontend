@@ -41,7 +41,7 @@ export default function Navbar() {
         <div className={`z-50 ${
       isMobile 
         ? 'fixed bottom-3 left-4'
-        : 'fixed top-2 left-2'    
+        : 'fixed top-4 left-2'    
     }`}>
         <button
           onClick={toggleSidebar}

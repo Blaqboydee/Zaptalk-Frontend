@@ -104,16 +104,11 @@ export default function Profile() {
   }
 
   return (
-    <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex flex-col relative overflow-hidden">
+    <div className=" flex-col relative overflow-hidden">
       {/* Background Decorative Elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-r from-orange-500/10 to-pink-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-orange-500/5 to-yellow-500/5 rounded-full blur-3xl animate-pulse" style={{animationDelay: '4s'}}></div>
-      </div>
 
       {/* Header */}
-      <header className="relative z-10 bg-gray-800/40 backdrop-blur-xl border-b border-gray-700/50 p-4 flex justify-between items-center">
+      <header className="relative z-10 backdrop-blur-xl border-b border-gray-700/50 p-4 flex justify-between items-center">
         <div className="flex items-center space-x-4 flex-1">
           <h1 className="text-2xl w-full text-center font-bold text-white">
             Profile
@@ -136,14 +131,11 @@ export default function Profile() {
       <main className="relative z-10 flex-1 p-6 flex flex-col items-center">
         <div className="w-full max-w-2xl">
           {/* Profile Card */}
-          <div className="relative bg-gray-800/40 backdrop-blur-xl rounded-3xl shadow-2xl  overflow-hidden">
-            {/* Card Header with Gradient */}
-            <div className="relative h-20 lg:h-32">
-              <div className="absolute inset-0 bg-gradient-to-br from-transparent via-gray-800/20 to-gray-900/60"></div>
-            </div>
+          <div className="relative  backdrop-blur-xl rounded-3xl  overflow-hidden">
+   
 
             {/* Profile Content */}
-            <div className="relative p-6 -mt-16">
+            <div className="relative p-6">
               {/* Avatar Section */}
               <div className="flex flex-col items-center space-y-4">
                 <div className="relative group">
