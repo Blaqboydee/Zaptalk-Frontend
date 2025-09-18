@@ -15,11 +15,6 @@ html, body {
   height: 100%;
   width: 100%;
   overflow-x: hidden; /* Prevent horizontal scroll */
-  position: fixed; /* Prevent any scrolling of the main body */
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
 }
 
 /* iOS Safari safe area handling */
@@ -57,10 +52,6 @@ select, label, [tabindex], [onclick], [href] {
 /* Enable all interactive elements and their children */
 * {
   pointer-events: auto;
-  -webkit-user-select: auto;
-  -moz-user-select: auto;
-  -ms-user-select: auto;
-  user-select: auto;
 }
 
 /* Prevent zoom on double tap for buttons */
