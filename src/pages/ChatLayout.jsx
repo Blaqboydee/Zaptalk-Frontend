@@ -37,12 +37,8 @@ const ChatLayout = ({ user }) => {
             <h1 className="text-2xl font-bold text-white">Chats</h1>
           </div>
         </div>
-      </header>
 
-
-   
-
-      {/* Navigation Tabs */}
+          {/* Navigation Tabs */}
       <div className=" backdrop-blur-md border-b border-gray-700/50">
         <div className="max-w-7xl mx-auto px-4">
           <nav className="flex space-x-8">
@@ -76,6 +72,12 @@ const ChatLayout = ({ user }) => {
         </div>
       </div>
 
+      </header>
+
+
+   
+
+    
       {/* Main Content */}
 
       <div className="">
