@@ -27,21 +27,20 @@ const ChatLayout = ({ user }) => {
   }, [apiUrl]);
 
   return (
-    <div className="bg-red-600">
+    <div className="">
       {/* Main Header */}
-      <header className="z-40 backdrop-blur-md border-b flex justify-end border-gray-700/50">
-        <div className="max-w-7xl w-[70%] flex flex-wrap justify-between items-end px-4 sm:px-6 lg:px-8 py-4">
+      <header className="z-40 backdrop-blur-md border-b flex flex-col  border-gray-700/50">
+        <div className="max-w-7xl  flex flex-wrap justify-between items-end px-4 sm:px-6 lg:px-8 py-4">
           {/* Left Section */}
-          <div className="flex items-center gap-3">
-            <MessageSquare size={28} className="text-gray-400" />
-            <h1 className="text-2xl font-bold text-white">Chats</h1>
+          <div className="flex items-center gap-3 text-center w-full justify-center">
+            <h1 className="text-lg lg:text-2xl font-bold text-white">Chats</h1>
           </div>
         </div>
 
           {/* Navigation Tabs */}
       <div className=" backdrop-blur-md border-b border-gray-700/50">
         <div className="max-w-7xl mx-auto px-4">
-          <nav className="flex space-x-8">
+          <nav className="flex space-x-8 justify-center">
             <NavLink
               to="/allchats/directmessages"
               className={({ isActive }) =>
@@ -53,7 +52,7 @@ const ChatLayout = ({ user }) => {
               }
             >
               <MessageSquare size={18} className="text-gray-400" />
-              Direct Messages
+              DMs
             </NavLink>
             <NavLink
               to="/allchats/groups"

@@ -40,37 +40,22 @@ export default function Navbar() {
       {/* Fixed Toggle Button - Always visible */}
         <div className={`z-50 ${
       isMobile 
-        ? 'fixed bottom-4 left-4'
-        : 'fixed top-4 left-4'    
+        ? 'fixed bottom-3 left-4'
+        : 'fixed top-2 left-2'    
     }`}>
         <button
           onClick={toggleSidebar}
-          className={`bg-gray-800 text-white  ${isMobile? "p-3" : "p-2"} rounded-lg shadow-lg hover:bg-gray-900 focus:outline-none transition-all duration-200`}
+          className={`bg-gray-800 text-white  ${isMobile? "p-3" : "p-1"} rounded-full shadow-lg hover:bg-gray-900 focus:outline-none transition-all duration-200`}
           aria-label="Toggle navigation menu"
         >
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            {isSidebarOpen ? (
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            ) : (
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M4 6h16M4 12h16m-7 6h7"
-              />
-            )}
-          </svg>
+ <svg
+  className="w-6 h-6"
+  fill="currentColor"
+  viewBox="0 0 24 24"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+</svg>
         </button>
       </div>
 
