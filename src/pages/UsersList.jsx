@@ -73,7 +73,7 @@ export default function UsersList() {
       {/* Animated background elements */}
 
       {/* Header */}
-      <header className="relative bg-gradient-to-r from-gray-800/90 via-gray-700/80 to-gray-800/90 backdrop-blur-xl border-b border-gray-600/50 shadow-2xl">
+      <header className="sticky top-0 bg-gradient-to-r from-gray-800/90 via-gray-700/80 to-gray-800/90 backdrop-blur-xl border-b border-gray-600/50 shadow-2xl">
         <div className="max-w-7xl mx-auto py-3 lg:px-4 lg:py-6">
           <div className="text-center">
             <h2 className="text-lg lg:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-orange-500 to-orange-600 mb-2">

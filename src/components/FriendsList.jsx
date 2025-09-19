@@ -36,16 +36,16 @@ const handleTouchCancel = () => {
 
 return(
     <div className="pl-2 pr-2 border-b border-gray-700 rounded-lg backdrop-blur-md bg-gradient-to-r from-gray-900/50 via-gray-800/30 to-gray-900/50">
-    <div className="max-w-7xl sm:px-4">
+    <div className="max-w-7xl sm:px-4 ">
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-lg font-bold mt-3 text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-orange-500 to-orange-600">
+        <h3 className="text-lg font-bold mt-3 text-transparent bg-clip-text bg-orange-400 ">
           Friends ({friends.length})
         </h3>
-        <div className="mt-3 w-8 h-0.5 bg-gradient-to-r from-orange-400 to-orange-600 rounded-full"></div>
+        {/* <div className="mt-3 w-8 h-0.5 bg-gradient-to-r from-orange-400 to-orange-600 rounded-full"></div> */}
       </div>
       
       <div className="overflow-x-auto h-[85px] w-full custom-scrollbar pb-2">
-        <div className="flex gap-4 min-w-max">
+        <div className="flex gap-4 min-w-max ">
           {[...friends].reverse().map((friend, index) => (
             <div 
               key={friend._id}
@@ -149,9 +149,9 @@ return(
           {friends.length === 0 && (
             <div className="flex items-center justify-center w-full h-full min-w-[300px]">
               <div className="text-center text-gray-400">
-                <div className="w-12 h-12 mx-auto mb-2 rounded-full bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center">
+                {/* <div className="w-12 h-12 mx-auto mb-2 rounded-full bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center">
                   <span className="text-xl">👥</span>
-                </div>
+                </div> */}
                 <p className="text-sm">No friends yet</p>
                 <p className="text-xs text-gray-500">Add some friends to get started!</p>
               </div>
