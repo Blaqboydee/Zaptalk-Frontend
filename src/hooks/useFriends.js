@@ -1,92 +1,80 @@
-import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
-import { useGlobalSocket } from "../context/SocketContext";
+import { useState, useEffect, useCallback, useContext } from "react";
+import axios from "axios";
+import { AuthContext } from "../context/AuthContext";
+const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
+export function useFriends() {
+  const [friends, setFriends] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const { user : {id}} = useContext(AuthContext);
 
-export const useFriends = () => {
-  const {socket} = useGlobalSocket();
-  const location = useLocation();
+  // Fetch friends
+  const fetchFriends = useCallback(async () => {
+    if (!id) return;
+    setLoading(true);
+    try {
+      const res = await axios.get(`${apiUrl}/friends/${id}/friends`);
+      // console.log(res.data);
+      setFriends(res.data);
+      setError(null);
+    } catch (err) {
+      console.error("Failed to fetch friends:", err);
+      setError(err.response?.data?.message || "Failed to load friends");
+    } finally {
+      setLoading(false);
+    }
+  }, [id]);
 
-  const [allNewFriends, setAllNewFriends] = useState(() => {
-    const saved = localStorage.getItem("friends");
-    if (!saved) return [];
-
-    const friends = JSON.parse(saved);
-    const unique = Array.from(
-      new Map(
-        friends.map((f) => [f.otherUserId || f.otherUserName?.toLowerCase(), f])
-      ).values()
-    );
-    localStorage.setItem("friends", JSON.stringify(unique));
-    return unique;
-  });
-
-  // Deduplicate on mount
-  useEffect(() => {
-    const saved = localStorage.getItem("friends");
-    if (saved) {
-      const friends = JSON.parse(saved);
-      const unique = Array.from(
-        new Map(
-          friends.map((f) => [f.otherUserId || f.otherUserName?.toLowerCase(), f])
-        ).values()
-      );
-      if (unique.length !== friends.length) {
-        localStorage.setItem("friends", JSON.stringify(unique));
-        setAllNewFriends(unique);
+  // Add friend
+  const addFriend = useCallback(
+    async (friendId) => {
+      try {
+        const res = await axios.post(`${apiUrl}/friends/add-friend/${friendId}`, {
+          id,
+        });
+        // refresh friends list
+        fetchFriends();
+        return res.data;
+      } catch (err) {
+        console.error("Add friend failed:", err);
+        setError(err.response?.data?.message || "Could not add friend");
       }
-    }
-  }, []);
+    },
+    [id, fetchFriends]
+  );
 
-   // Add new friend via navigation state
-  useEffect(() => {
-    const newFriend = location.state;
-    if (newFriend?.otherUserId) {
-      setAllNewFriends((prev) => {
-        const exists = prev.some(
-          (f) =>
-            f.otherUserId === newFriend.otherUserId ||
-            (f.otherUserName &&
-              newFriend.otherUserName &&
-              f.otherUserName.toLowerCase() ===
-                newFriend.otherUserName.toLowerCase())
-        );
-        if (exists) return prev;
-
-        const updated = [...prev, newFriend];
-        localStorage.setItem("friends", JSON.stringify(updated));
-        return updated;
-      });
-    }
-  }, [location.state]);
-
-  // 🔥 FIXED: Handle consistent status structure from server
-  useEffect(() => {
-    if (!socket) return;
-    
-    const handleStatusUpdate = ({ userId, status }) => {
-      console.log("Status update received:", { userId, status }); // Debug log
+  // Remove friend
+  const removeFriend = useCallback(
+    async (friendId) => {
+      console.log(friendId);
       
-      setAllNewFriends((prev) => {
-        const updated = prev.map((friend) =>
-          friend.otherUserId === userId
-            ? {
-                ...friend,
-                status, //  Use the complete status object from server
-              }
-            : friend
-        );
-        localStorage.setItem("friends", JSON.stringify(updated));
-        return updated;
-      });
-    };
+      try {
+        const res = await axios.delete(`${apiUrl}/friends/remove-friend/${friendId}`, {
+          data: { id },
+        });
+        // refresh friends list
+        fetchFriends();
+        return res.data;
+      } catch (err) {
+        console.error("Remove friend failed:", err);
+        setError(err.response?.data?.message || "Could not remove friend");
+      }
+    },
+    [id, fetchFriends]
+  );
 
-    socket.on("user-status-updated", handleStatusUpdate);
+  // Fetch on mount
+  useEffect(() => {
+    fetchFriends();
+  }, [fetchFriends]);
 
-    return () => {
-      socket.off("user-status-updated", handleStatusUpdate);
-    };
-  }, [socket]);
-
-  return { allNewFriends, setAllNewFriends };
-};
+  return {
+    friends,
+    loading,
+    error,
+    addFriend,
+    removeFriend,
+    refetch: fetchFriends,
+  };
+}

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { formatTime } from "../utils/formatTime";
 import { useGlobalSocket } from "../context/SocketContext";
 import { useSocket } from "../hooks/useSocket";
+import { useFriends } from "../hooks/useFriends";
 
 const ChatListItem = ({
   chats,
@@ -13,6 +14,7 @@ const ChatListItem = ({
   chatToUpdate,
 }) => {
   const secondUser = chat.users?.find((u) => u._id !== user.id);
+  const {friends} = useFriends()
   const [isDotVisible, setIsDotVisible] = useState(true);
   const filteredMessages =
     allMessages?.filter((message) => message.chatId === chat._id) || [];

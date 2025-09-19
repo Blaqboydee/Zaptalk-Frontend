@@ -33,7 +33,7 @@ export function SocketProvider({ children }) {
     if (!socket || !user) return;
 
     const handleConnect = () => {
-      console.log("Socket connected:", socket.id);
+      // console.log("Socket connected:", socket.id);
       socket.emit("user-online", user.id);
     };
 
@@ -53,7 +53,7 @@ export function SocketProvider({ children }) {
         const chatIds = res.data.map((chat) => chat._id);
 
         socket.emit("join_chats", chatIds);
-        console.log("Joined chats:", chatIds);
+        // console.log("Joined chats:", chatIds);
       } catch (err) {
         console.error("Failed to fetch user chats:", err);
       }

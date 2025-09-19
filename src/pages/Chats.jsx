@@ -49,7 +49,7 @@ export default function ChatsPage() {
     addMessage,
     setMessages,
   } = useMessages(selectedChatId);
-  const { allNewFriends } = useFriends();
+  const { friends } = useFriends();
 
   // Register the chat update callback with the socket context
   useEffect(() => {
@@ -59,6 +59,9 @@ export default function ChatsPage() {
   const chatToUpdate = chats.find(
     (theChat) => theChat._id === newMessage?.chatId
   );
+
+
+ 
 
   const handleMessageReceived = useCallback((message) => {
     console.log("socket received:", message);
@@ -131,9 +134,9 @@ export default function ChatsPage() {
       {/* Mobile Layout - Keep as is */}
       {isMobile ? (
         <div className="flex-1 flex flex-col">
-          {allNewFriends.length > 0 && (
-            <FriendsList allNewFriends={allNewFriends} initChat={initChat} />
-          )}
+        
+            <FriendsList initChat={initChat} />
+          
 
           <main className="flex-column p-2 overflow-y-auto sm:px-6 lg:px-8">
                <div className="relative  mb-1">
@@ -292,15 +295,13 @@ export default function ChatsPage() {
             </div>
 
             {/* Friends List */}
-            {allNewFriends.length > 0 && (
+           
               <div className="px-6 py-4 border-b border-gray-700">
                 <FriendsList
-                  allNewFriends={allNewFriends}
                   initChat={initChat}
                 />
               </div>
-            )}
-
+          
             {/* Chat List */}
             <div className="flex-1 overflow-y-auto custom-scrollbar">
               {filteredChats.length > 0 ? (

@@ -7,7 +7,9 @@ export const useChatInitialization = (user, chats, addChat, setSelectedChatId, s
   const initChatRef = useRef(false);
 
   const initChat = async (friend) => {
-    console.log("🚀 initChat started for:", user.id, friend.otherUserId);
+    console.log(friend);
+    
+    console.log("initChat started for:", user.id, friend._id);
     initChatRef.current = true;
     setIsInitializing(true);
 
@@ -15,12 +17,12 @@ export const useChatInitialization = (user, chats, addChat, setSelectedChatId, s
       const existingChat = chats.find((chat) =>
         chat.isDirect &&
         chat.users.some((u) => u._id === user.id) &&
-        chat.users.some((u) => u._id === friend.otherUserId)
+        chat.users.some((u) => u._id === friend._id)
       );
 
       if (existingChat) {
         setSelectedChatId(existingChat._id);
-        setOtherUser({ _id: friend.otherUserId, name: friend.otherUserName });
+        setOtherUser({ _id: friend._id, name: friend.name });
         const messagesRes = await fetch(`${apiUrl}/messages?chatId=${existingChat._id}`);
         if (messagesRes.ok) {
           const messagesData = await messagesRes.json();
@@ -34,7 +36,7 @@ export const useChatInitialization = (user, chats, addChat, setSelectedChatId, s
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          userIds: [user.id, friend.otherUserId],
+          userIds: [user.id, friend._id],
           isDirect: true,
         }),
       });
@@ -48,7 +50,7 @@ export const useChatInitialization = (user, chats, addChat, setSelectedChatId, s
       const chatData = await chatRes.json();
       setSelectedChatId(chatData._id);
       addChat(chatData);
-      setOtherUser({ _id: friend.otherUserId, name: friend.otherUserName });
+      setOtherUser({ _id: friend._id, name: friend.name });
 
       const messagesRes = await fetch(`${apiUrl}/messages?chatId=${chatData._id}`);
       if (messagesRes.ok) {

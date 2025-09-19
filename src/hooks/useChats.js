@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { useFriends } from "./useFriends";
+
 const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 export const useChats = (userId) => {
@@ -6,7 +8,8 @@ export const useChats = (userId) => {
   const [isLoading, setIsLoading] = useState(false);
   const [filteredChats, setFilteredChats] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-
+  const { friends } = useFriends();
+  
   useEffect(() => {
     const fetchChats = async () => {
       if (!userId) return;
@@ -33,26 +36,40 @@ export const useChats = (userId) => {
     fetchChats();
   }, [userId]);
 
-  // Handle filtering based on search term
+  // Filter chats to only include those with friends (when no search term)
   useEffect(() => {
     if (!searchTerm.trim()) {
-      setFilteredChats(chats);
+      // Filter chats to only show those that include friends
+      const friendFilteredChats = chats?.filter(chat => 
+        chat.users?.some(chatUser => 
+          friends?.some(friend => friend._id === chatUser._id)
+        )
+      ) || [];
+      
+      setFilteredChats(friendFilteredChats);
       return;
     }
 
-    const chatsWithOtherUsers = chats
+    // When there's a search term, first filter by friends, then by search
+    const friendFilteredChats = chats?.filter(chat => 
+      chat.users?.some(chatUser => 
+        friends?.some(friend => friend._id === chatUser._id)
+      )
+    ) || [];
+
+    const chatsWithOtherUsers = friendFilteredChats
       .map((chat) => ({
         chat,
         otherUser: chat.users.find((u) => u._id !== userId),
       }))
       .filter((item) => item.otherUser);
 
-    const filtered = chatsWithOtherUsers.filter((item) =>
+    const searchFiltered = chatsWithOtherUsers.filter((item) =>
       item.otherUser.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    setFilteredChats(filtered.map((item) => item.chat));
-  }, [chats, searchTerm, userId]);
+    setFilteredChats(searchFiltered.map((item) => item.chat));
+  }, [chats, searchTerm, userId, friends]);
 
   const updateChatOnMessage = (chatId, newMessage) => {
     console.log("Sorting chat to top:", chatId);
