@@ -19,7 +19,7 @@ const MessageInput = ({ onSendMessage, disabled = false }) => {
   };
 
   return (
-    <div className="p-4 border-t border-gray-600 sticky bottom-0">
+    <div className="p-4 border-t border-gray-600 fixed w-full bottom-0 z-50">
       <div className="flex gap-2">
         <input
           type="text"

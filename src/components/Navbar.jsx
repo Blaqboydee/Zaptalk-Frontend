@@ -83,7 +83,7 @@ export default function Navbar() {
 
       {/* Off-Canvas Sidebar */}
       <div
-        className={`fixed top-0 left-0 h-screen w-72 bg-slate-900 z-50 transform transition-all duration-500 ease-out ${
+        className={`fixed top-0 left-0 h-screen w-72 bg-gray-800 z-50 transform transition-all duration-500 ease-out ${
           isSidebarOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full"
         }`}
       >
