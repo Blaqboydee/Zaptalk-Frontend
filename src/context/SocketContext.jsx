@@ -160,7 +160,7 @@ export function SocketProvider({ children }) {
       
       // Update sent requests immediately
       setSentRequests(prev => [...prev, { to: { _id: targetUser._id, name:targetUser.name, avatar: targetUser.avatar } }]);
-      toast.friendRequestSent();
+      toast.friendRequestSent(targetUser.name);
       return res.data;
     } catch (err) {
       console.error("Send friend request failed:", err);

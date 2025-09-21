@@ -11,6 +11,9 @@ import { useChats } from "../hooks/useChats";
 import MobileChatModal from "../components/MobileChatModal";
 import { useToast } from "../context/ToastContainer";
 import { useGlobalSocket } from "../context/SocketContext.jsx";
+import { FaUserFriends } from "react-icons/fa";
+import { MdPersonAdd } from "react-icons/md";
+import { FaInbox, FaPaperPlane } from "react-icons/fa"; 
 
 const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -182,46 +185,48 @@ export default function Friends() {
       <div className="max-w-4xl mx-auto px-4 py-6">
         {/* Sticky Tab Navigation */}
         <div className="sticky top-16 z-10 bg-gray-900 rounded-lg shadow-sm mb-6" style={{ backgroundColor: 'var(--zap-dark-primary)' }}>
-          <div className="flex">
-            {[
-              { key: 'friends', label: 'Friends', icon: '👥' },
-              { key: 'add', label: 'Add Friend', icon: '➕' },
-              { key: 'requests', label: 'Requests', icon: '📥' },
-              { key: 'sent', label: 'Sent', icon: '📤' }
-            ].map(tab => (
-             <button
-  key={tab.key}
-  onClick={() => setActiveTab(tab.key)}
-  className={` min-w-0 px-4 py-3 text-sm bg-orange font-medium text-center border-b-2 transition-colors whitespace-nowrap ${
-    activeTab === tab.key
-      ? 'border-orange-600 text-orange-400'
-      : 'border-transparent text-gray-300 hover:text-white hover:border-gray-600'
-  }`}
-  style={{
-    color: activeTab === tab.key ? '#FB923C' : 'var(--zap-gray-light)',
-    borderBottomColor: activeTab === tab.key ? '#EA580C' : 'transparent'
-  }}
->
-  <span className="">{tab.icon}</span>
-  {tab.label}
-  {getTabCount(tab.key) > 0 && (
-    <span className="ml-2 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-orange-600 rounded-full">
-      {getTabCount(tab.key)}
-    </span>
-  )}
-</button>
+    <div className="flex justify-between gap-2">
+  {[
+    { key: "friends", icon: <FaUserFriends /> },
+    { key: "add", icon: <MdPersonAdd /> },
+    { key: "requests", icon: <FaInbox /> },
+    { key: "sent", icon: <FaPaperPlane /> },
+  ].map((tab) => (
+    <button
+      key={tab.key}
+      onClick={() => setActiveTab(tab.key)}
+      className={`relative flex flex-col items-center justify-center flex-1 py-3 text-sm font-medium transition-colors border-b-2 ${
+        activeTab === tab.key
+          ? "border-orange-600 text-orange-400"
+          : "border-transparent text-gray-300 hover:text-white hover:border-gray-600"
+      }`}
+      style={{
+        color: activeTab === tab.key ? "#FB923C" : "var(--zap-gray-light)",
+        borderBottomColor: activeTab === tab.key ? "#EA580C" : "transparent",
+      }}
+    >
+      {/* icon */}
+      <span className="text-xl">{tab.icon}</span>
 
-            ))}
-          </div>
+      {/* count bubble */}
+      {getTabCount(tab.key) > 0 && (
+        <span className="absolute top-1 right-5 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-orange-600 rounded-full shadow-md">
+          {getTabCount(tab.key)}
+        </span>
+      )}
+    </button>
+  ))}
+</div>
+
         </div>
 
         {/* Tab Content */}
         <div className="bg-gray-900 rounded-lg shadow-sm" style={{ backgroundColor: 'var(--zap-dark-primary)' }}>
           {/* Friends Tab */}
           {activeTab === "friends" && (
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-white" style={{ color: 'var(--zap-white)' }}>
+            <div className="p-3 lg:p-6">
+              <div className="flex items-center justify-between lg:mb-4">
+                <h2 className="lg:text-lg font-semibold text-white" style={{ color: 'var(--zap-white)' }}>
                   Your Friends ({friends.length})
                 </h2>
               </div>
@@ -245,18 +250,18 @@ export default function Friends() {
                         )}
                       </div>
                       <div className="flex-1">
-                        <h3 className="font-medium text-white" style={{ color: 'var(--zap-white)' }}>{f.name}</h3>
-                        <p className="text-sm text-gray-400">Friend</p>
+                        <h3 className="text-[14px] lg:text-base font-medium text-white" style={{ color: 'var(--zap-white)' }}>{f.name}</h3>
+                        <p className="text-[12px] lg:text-sm text-gray-400">Friend</p>
                       </div>
                       <button 
                         onClick={() => handleMessageFriend(f)}
-                        className="mr-3 px-3 py-1 bg-orange-600 hover:bg-orange-500 text-white text-sm font-medium rounded-lg transition-colors"
+                        className="mr-3 px-3 py-2 bg-orange-600 hover:bg-orange-500 text-white text-sm font-medium rounded-lg transition-colors"
                       >
                         Message
                       </button>
                       <button 
                         onClick={() => removeFriend(f._id)}
-                        className="mr-3 px-3 py-1 bg-red-700 hover:bg-red-600 text-white text-sm font-medium rounded-lg transition-colors"
+                        className="mr-3 px-3 py-2 bg-red-700 hover:bg-red-600 text-white text-sm font-medium rounded-lg transition-colors"
                       >
                         Remove
                       </button>
@@ -269,9 +274,9 @@ export default function Friends() {
 
           {/* Add Friend Tab */}
           {activeTab === "add" && (
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-white" style={{ color: 'var(--zap-white)' }}>
+            <div className="p-3 lg:p-6">
+              <div className="flex items-center justify-between mb-2 lg:mb-4">
+                <h2 className="lg:text-lg font-semibold text-white" style={{ color: 'var(--zap-white)' }}>
                   Add Friends
                 </h2>
               </div>
@@ -281,7 +286,7 @@ export default function Friends() {
                   <p className="text-gray-400">No users found</p>
                 </div>
               ) : (
-                <div className="space-y-3">
+                <div className="lg:space-y-3">
                   {users.map(u => {
                     const isLoading = loadingRequests.has(u._id);
                     const requestSent = isRequestSent(u._id);
@@ -331,8 +336,8 @@ export default function Friends() {
                           )}
                         </div>
                         <div className="flex-1">
-                          <h3 className="font-medium text-white" style={{ color: 'var(--zap-white)' }}>{u.name}</h3>
-                          <p className="text-sm text-gray-400">
+                          <h3 className=" text-[14px] lg:text-base font-medium text-white" style={{ color: 'var(--zap-white)' }}>{u.name}</h3>
+                          <p className="text-[12px] lg:text-sm text-gray-400">
                             {isFriend ? "Friend" : pendingRequest ? "Wants to be your friend" : "User"}
                           </p>
                         </div>
@@ -360,9 +365,9 @@ export default function Friends() {
 
           {/* Friend Requests Tab */}
           {activeTab === "requests" && (
-            <div className="p-6">
+            <div className="p-3 lg:p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-white" style={{ color: 'var(--zap-white)' }}>
+                <h2 className="lg:text-lg font-semibold text-white" style={{ color: 'var(--zap-white)' }}>
                   Friend Requests ({friendRequests.length})
                 </h2>
               </div>
@@ -372,9 +377,9 @@ export default function Friends() {
                   <p className="text-gray-400">No pending requests</p>
                 </div>
               ) : (
-                <div className="space-y-3">
+                <div className="lg:space-y-3">
                   {friendRequests.map(r => (
-                    <div key={r._id} className="flex items-center p-3 rounded-lg hover:bg-gray-800 transition-colors">
+                    <div key={r._id} className="flex items-center lg:p-3 rounded-lg hover:bg-gray-800 transition-colors">
                       <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold mr-3 ${
                         r.from.avatar ? '' : 'bg-orange-500'
                       }`}>
@@ -385,8 +390,8 @@ export default function Friends() {
                         )}
                       </div>
                       <div className="flex-1">
-                        <h3 className="font-medium text-white" style={{ color: 'var(--zap-white)' }}>{r.from.name}</h3>
-                        <p className="text-sm text-gray-400">Wants to be friends</p>
+                        <h3 className="text-[14px] lg:text-base font-medium text-white" style={{ color: 'var(--zap-white)' }}>{r.from.name}</h3>
+                        <p className="text-[12px] lg:text-sm text-gray-400">Wants to be friends</p>
                       </div>
                       <div className="flex space-x-2">
                         <button 
@@ -411,9 +416,9 @@ export default function Friends() {
 
           {/* Sent Requests Tab */}
           {activeTab === "sent" && (
-            <div className="p-6">
+            <div className="p-3 lg:p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-white" style={{ color: 'var(--zap-white)' }}>
+                <h2 className="lg:text-lg font-semibold text-white" style={{ color: 'var(--zap-white)' }}>
                   Sent Requests ({sentRequests.length})
                 </h2>
               </div>
@@ -423,7 +428,7 @@ export default function Friends() {
                   <p className="text-gray-400">No sent requests</p>
                 </div>
               ) : (
-                <div className="space-y-3">
+                <div className="lg:space-y-3">
                   {sentRequests.map(r => (
                     <div key={r._id} className="flex items-center p-3 rounded-lg hover:bg-gray-800 transition-colors">
                       <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold mr-3 ${
@@ -436,8 +441,8 @@ export default function Friends() {
                         )}
                       </div>
                       <div className="flex-1">
-                        <h3 className="font-medium text-white" style={{ color: 'var(--zap-white)' }}>{r.to.name}</h3>
-                        <p className="text-sm text-gray-400">Request pending</p>
+                        <h3 className="text-[14px] lg:text-base font-medium text-white" style={{ color: 'var(--zap-white)' }}>{r.to.name}</h3>
+                        <p className="text-[12px] lg:text-sm text-gray-400">Request pending</p>
                       </div>
                       <button 
                         onClick={() => cancelFriendRequest(r.to._id)}
