@@ -91,7 +91,9 @@ export default function Friends() {
 
   // Handle opening chat with a friend
   const handleMessageFriend = async (friend) => {
-    console.log(friend);
+    console.log("FRIEND", friend);
+    console.log(user);
+    
     
     try {
       // Check if chat already exists
