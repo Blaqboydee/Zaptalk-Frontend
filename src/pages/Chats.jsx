@@ -3,7 +3,6 @@ import { useNavigate, useOutletContext } from "react-router-dom";
 import {
   Plus,
   MessageCircle,
-  X,
   Search,
   MoreVertical,
   Phone,
@@ -15,7 +14,7 @@ import { useUsers } from "../context/UsersContext";
 import { useSocket } from "../hooks/useSocket";
 import { useChats } from "../hooks/useChats";
 import { useMessages } from "../hooks/useMessages";
-import { useFriends } from "../hooks/useFriends";
+import { useFriends } from "../hooks/useFriends.js";
 import { useChatInitialization } from "../hooks/useChatInitialization";
 import { useResponsive } from "../hooks/useResponsive";
 import { useSound } from "../hooks/useSound";
@@ -26,6 +25,7 @@ import ChatListItem from "../components/ChatListItems";
 import ChatMessages from "../components/ChatMessages";
 import FriendsList from "../components/FriendsList";
 import MessageInput from "../components/MessageInput";
+import MobileChatModal from "../components/MobileChatModal";
 
 export default function ChatsPage() {
   const { user, allMessages } = useOutletContext();
@@ -59,9 +59,6 @@ export default function ChatsPage() {
   const chatToUpdate = chats.find(
     (theChat) => theChat._id === newMessage?.chatId
   );
-
-
- 
 
   const handleMessageReceived = useCallback((message) => {
     console.log("socket received:", message);
@@ -131,24 +128,22 @@ export default function ChatsPage() {
 
   return (
     <div className="">
-      {/* Mobile Layout - Keep as is */}
+      {/* Mobile Layout */}
       {isMobile ? (
         <div className="flex-1 flex flex-col">
-        
-            <FriendsList initChat={initChat} />
-          
+          {/* <FriendsList initChat={initChat} /> */}
 
           <main className="flex-column p-2 overflow-y-auto sm:px-6 lg:px-8">
-               <div className="relative  mb-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                <input
-                  type="text"
-                  placeholder="Search conversations..."
-                  value={searchTerm}
-                  onChange={handleSearch}
-                  className="w-full bg-gray-700 border border-gray-800 rounded-xl pl-10 pr-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200"
-                />
-              </div>
+            <div className="relative mb-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <input
+                type="text"
+                placeholder="Search conversations..."
+                value={searchTerm}
+                onChange={handleSearch}
+                className="w-full bg-gray-700 border border-gray-800 rounded-xl pl-10 pr-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200"
+              />
+            </div>
             {chats.length > 0 ? (
               <div className="space-y-1 h-[50vh] overflow-auto">
                 {filteredChats.map((chat) => (
@@ -205,64 +200,19 @@ export default function ChatsPage() {
             )}
           </main>
 
-          <button
-            onClick={() => navigate("/users")}
-            className="fixed bottom-6 right-6 w-16 h-16 text-white rounded-full shadow-2xl bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 transition-all duration-200 hover:scale-110 flex items-center justify-center z-50"
-          >
-            <Plus className="w-8 h-8" />
-          </button>
-
-          {/* Mobile Chat Modal */}
-          {isOffcanvasOpen && selectedChatId && otherUser && (
-            <div className="fixed inset-0 z-50">
-              <div
-                className="absolute inset-0 bg-black bg-opacity-50"
-                onClick={closeOffcanvas}
-              />
-              <div className="absolute inset-0 bg-gray-800 flex flex-col">
-                <div className="h-[70px] border-b border-gray-700 flex items-center justify-between px-4">
-                  <div className="flex items-center gap-3">
-                    <button
-                      onClick={closeOffcanvas}
-                      className="hover:bg-gray-700 rounded-full p-2 transition-colors"
-                    >
-                      <X size={20} className="text-white" />
-                    </button>
-
-                     <div className="relative">
-                      <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold bg-gradient-to-br from-orange-400 to-orange-600 overflow-hidden">
-                        {otherUser?.avatar ? (
-                          <img
-                            src={otherUser.avatar}
-                            alt={otherUser?.name || "User"}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          otherUser?.name?.charAt(0)?.toUpperCase() || "U"
-                        )}
-                      </div>
-
-                      <div className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 ${otherUser?.status?.state == "online" ?  "bg-green-500" : "bg-gray-400"   }  border-2 border-gray-800 rounded-full`}></div>
-                    </div>
-
-                    <h2 className="font-bold text-white">
-                      {otherUser.name || "Chat"}
-                    </h2>
-                    
-                  </div>
-                </div>
-                <ChatMessages
-                  messages={messages}
-                  user={user}
-                  otherUser={otherUser}
-                  isLoadingMessages={isLoadingMessages}
-                  messagesEndRef={messagesEndRef}
-                  isMobile={isMobile}
-                />
-                <MessageInput onSendMessage={sendMessage} />
-              </div>
-            </div>
-          )}
+          {/* Mobile Chat Modal - Now as a separate component */}
+          <MobileChatModal
+            isOpen={isOffcanvasOpen}
+            onClose={closeOffcanvas}
+            selectedChatId={selectedChatId}
+            otherUser={otherUser}
+            messages={messages}
+            user={user}
+            isLoadingMessages={isLoadingMessages}
+            messagesEndRef={messagesEndRef}
+            onSendMessage={sendMessage}
+            isMobile={isMobile}
+          />
         </div>
       ) : (
         /* Desktop Layout */
@@ -295,13 +245,10 @@ export default function ChatsPage() {
             </div>
 
             {/* Friends List */}
-           
-              <div className="px-6 py-4 border-b border-gray-700">
-                <FriendsList
-                  initChat={initChat}
-                />
-              </div>
-          
+            <div className="px-6 py-4 border-b border-gray-700">
+              <FriendsList initChat={initChat} />
+            </div>
+
             {/* Chat List */}
             <div className="flex-1 overflow-y-auto custom-scrollbar">
               {filteredChats.length > 0 ? (
@@ -364,13 +311,13 @@ export default function ChatsPage() {
                         )}
                       </div>
 
-                      <div className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 ${otherUser?.status?.state == "online" ?  "bg-green-500" : "bg-gray-400"   }  border-2 border-gray-800 rounded-full`}></div>
+                      <div className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 ${otherUser?.status?.state === "online" ? "bg-green-500" : "bg-gray-400"} border-2 border-gray-800 rounded-full`}></div>
                     </div>
                     <div className="">
                       <h2 className="font-semibold text-white">
                         {otherUser.name || "Chat"}
                       </h2>
-                      <p className={`text-xs ${otherUser?.status?.state == "online" ?  "text-green-400" : "text-gray-400"   } `}>
+                      <p className={`text-xs ${otherUser?.status?.state === "online" ? "text-green-400" : "text-gray-400"}`}>
                         {otherUser?.status?.state}
                       </p>
                     </div>

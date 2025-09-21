@@ -2,20 +2,33 @@ import { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUsers } from "../context/UsersContext";
 import { AuthContext } from "../context/AuthContext";
-import { useFriends } from "../hooks/useFriends";
-import axios from "axios";
+import { useFriends } from "../hooks/useFriends.js";
+import { useToast } from "../context/ToastContainer.jsx";
 
 const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 export default function UsersList() {
-  const navigate = useNavigate();
+ 
   const { users, loading } = useUsers();
+  const {toast} = useToast();
   const { user } = useContext(AuthContext);
   
   const [searchTerm, setSearchTerm] = useState("");
   const [addingFriendId, setAddingFriendId] = useState(null);
+  const [cancelingFriendId, setCancelingFriendId] = useState(null);
   const [recentlyAdded, setRecentlyAdded] = useState(new Set());
-  const { friends, refetch } = useFriends();
+   const { 
+  friends, 
+  requests, 
+  sentRequests, 
+  addFriend,
+  acceptFriendRequest, 
+  rejectFriendRequest, 
+  cancelFriendRequest,
+  refetchAll,
+  // loading, 
+  error 
+} = useFriends();
 
   // Filter users based on search term and exclude current user
   const filteredUsers = users.filter(
@@ -25,34 +38,32 @@ export default function UsersList() {
        u.email.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
-  const handleAddFriend = async (otherUser) => {
-    const userId = user.id;
-    if (!userId) return;
-    
-    setAddingFriendId(otherUser._id);
-   
+  // Handle adding friend
+  const handleAddFriend = async (friendId, username) => {
+    setAddingFriendId(friendId);
     try {
-      const res = await axios.post(`${apiUrl}/friends/add-friend/${otherUser._id}`, {
-        userId,
-      });
-
-      console.log("Friend added:", res.data.friend);
-      
-      // Add to recently added set for visual feedback
-      setRecentlyAdded(prev => new Set([...prev, otherUser._id]));
-      
-      // Refetch friends list
-      await refetch();
-      
-      // Add haptic feedback if available
-      if (navigator.vibrate) {
-        navigator.vibrate(100);
-      }
-      
-    } catch (err) {
-      console.error("Error adding friend:", err.response?.data || err.message);
+      await addFriend(friendId);
+      toast.friendRequestSent(username)
+      // Instant UI update - refetch to get latest data
+      await refetchAll();
+    } catch (error) {
+      console.error('Failed to add friend:', error);
     } finally {
       setAddingFriendId(null);
+    }
+  };
+
+  // Handle canceling friend request
+  const handleCancelRequest = async (friendId) => {
+    setCancelingFriendId(friendId);
+    try {
+      await cancelFriendRequest(friendId);
+      // Instant UI update - refetch to get latest data
+      await refetchAll();
+    } catch (error) {
+      console.error('Failed to cancel friend request:', error);
+    } finally {
+      setCancelingFriendId(null);
     }
   };
 
@@ -142,7 +153,9 @@ export default function UsersList() {
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 lg:gap-6">
               {filteredUsers.map((u, index) => {
                 const isFriend = friends?.some((f) => f._id === u._id);
+                const hasSentRequest = sentRequests?.some((r) => r.to._id === u._id);
                 const isAdding = addingFriendId === u._id;
+                const isCanceling = cancelingFriendId === u._id;
                 const wasRecentlyAdded = recentlyAdded.has(u._id);
                 
                 return (
@@ -155,18 +168,24 @@ export default function UsersList() {
                   >
             
 
-                    {/* Add Friend Button */}
+                    {/* Action Button */}
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        if (!isFriend && !isAdding) {
-                          handleAddFriend(u);
+                        if (hasSentRequest && !isCanceling) {
+                          handleCancelRequest(u._id);
+                        } else if (!isFriend && !isAdding && !hasSentRequest) {
+                          handleAddFriend(u._id, u.name);
                         }
                       }}
-                      disabled={isFriend || isAdding}
+                      disabled={isFriend || isAdding || isCanceling}
                       className={`absolute top-1 right-1 w-8 h-8 rounded-full flex justify-center items-center z-50 shadow-lg transition-all duration-500 transform border-2 border-gray-800 ${
                         isFriend || wasRecentlyAdded
                           ? "bg-gradient-to-r from-green-500 to-green-600 cursor-not-allowed scale-100"
+                          : hasSentRequest
+                          ? isCanceling 
+                            ? "bg-gradient-to-r from-gray-400 to-gray-500 animate-pulse cursor-not-allowed scale-110"
+                            : "bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 hover:scale-110 cursor-pointer"
                           : isAdding
                           ? "bg-gradient-to-r from-orange-400 to-orange-500 animate-pulse cursor-not-allowed scale-110"
                           : "bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 hover:scale-110 cursor-pointer"
@@ -176,6 +195,20 @@ export default function UsersList() {
                         <svg className="w-4 h-4 text-white animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                         </svg>
+                      ) : hasSentRequest ? (
+                        isCanceling ? (
+                          <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        ) : (
+                          <svg
+                            className="w-4 h-4 text-white font-bold transition-transform duration-300"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            strokeWidth={3}
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M20 12H4" />
+                          </svg>
+                        )
                       ) : isAdding ? (
                         <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                       ) : (
@@ -217,15 +250,7 @@ export default function UsersList() {
                       </div>
                     </div>
 
-                    {/* Hover Overlay */}
-                    {!isFriend && !wasRecentlyAdded && (
-                      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center bg-gradient-to-br from-orange-500/90 via-orange-600/90 to-orange-700/90 rounded-2xl">
-                        <div className="text-white text-center transform scale-75 group-hover:scale-100 transition-transform duration-300">
-                          <div className="text-3xl mb-2 animate-bounce">+</div>
-                          <p className="font-semibold text-sm">Add Friend</p>
-                        </div>
-                      </div>
-                    )}
+          
 
                     {/* Friend added overlay */}
                     {(isFriend || wasRecentlyAdded) && (
@@ -237,10 +262,23 @@ export default function UsersList() {
                       </div>
                     )}
 
+                    {/* Sent request overlay */}
+                    {hasSentRequest && (
+                      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center bg-gradient-to-br from-yellow-500/90 via-yellow-600/90 to-yellow-700/90 rounded-2xl">
+                        <div className="text-white text-center">
+                          <div className="text-3xl mb-2">⏳</div>
+                          <p className="font-semibold text-sm">Request Sent</p>
+                          <p className="text-xs opacity-80">Click to cancel</p>
+                        </div>
+                      </div>
+                    )}
+
                     {/* Accent Border */}
                     <div className={`absolute bottom-0 left-0 right-0 h-1 transform transition-all duration-500 ${
                       isFriend || wasRecentlyAdded 
                         ? 'scale-x-100 bg-green-500' 
+                        : hasSentRequest
+                        ? 'scale-x-100 bg-yellow-500'
                         : 'scale-x-0 group-hover:scale-x-100 bg-gradient-to-r from-orange-500 to-orange-600'
                     }`}></div>
 

@@ -1,21 +1,38 @@
+// hooks/useFriends.js
 import { useState, useEffect, useCallback, useContext } from "react";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
+import { useGlobalSocket } from "../context/SocketContext.jsx";
+
 const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 export function useFriends() {
-  const [friends, setFriends] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const { user : {id}} = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
+  const { id, name } = user || {};
+  
+  // Get everything from Socket context for real-time updates
+  const {
+    friends,
+    friendRequests,
+    sentRequests,
+    setFriends,
+    setFriendRequests,
+    setSentRequests,
+    sendFriendRequest,
+    acceptFriendRequest,
+    rejectFriendRequest,
+    removeFriend,
+    cancelFriendRequest
+  } = useGlobalSocket();
 
-  // Fetch friends
+  // Fetch friends from API and sync with context
   const fetchFriends = useCallback(async () => {
     if (!id) return;
     setLoading(true);
     try {
       const res = await axios.get(`${apiUrl}/friends/${id}/friends`);
-      // console.log(res.data);
       setFriends(res.data);
       setError(null);
     } catch (err) {
@@ -24,57 +41,116 @@ export function useFriends() {
     } finally {
       setLoading(false);
     }
-  }, [id]);
+  }, [id, setFriends]);
 
-  // Add friend
+  // Fetch incoming friend requests from API and sync with context
+  const fetchFriendRequests = useCallback(async () => {
+    if (!id) return;
+    setLoading(true);
+    try {
+      const res = await axios.get(`${apiUrl}/friendRequests/${id}`);
+      setFriendRequests(res.data);
+      setError(null);
+    } catch (err) {
+      console.error("Failed to fetch friend requests:", err);
+      setError(err.response?.data?.message || "Failed to load friend requests");
+    } finally {
+      setLoading(false);
+    }
+  }, [id, setFriendRequests]);
+
+  // Fetch sent friend requests from API and sync with context
+  const fetchSentRequests = useCallback(async () => {
+    if (!id) return;
+    setLoading(true);
+    try {
+      const res = await axios.get(`${apiUrl}/friendRequests/${id}/sent`);
+      setSentRequests(res.data);
+      setError(null);
+    } catch (err) {
+      console.error("Failed to fetch sent requests:", err);
+      setError(err.response?.data?.message || "Failed to load sent requests");
+    } finally {
+      setLoading(false);
+    }
+  }, [id, setSentRequests]);
+
+  // Wrapper for sendFriendRequest to handle loading
   const addFriend = useCallback(
-    async (friendId) => {
+    async (friendId=friendId._id, senderName = name) => {
       try {
-        const res = await axios.post(`${apiUrl}/friends/add-friend/${friendId}`, {
-          id,
-        });
-        // refresh friends list
-        fetchFriends();
-        return res.data;
+        setLoading(true);
+        const result = await sendFriendRequest(friendId, senderName);
+        return result;
       } catch (err) {
-        console.error("Add friend failed:", err);
         setError(err.response?.data?.message || "Could not add friend");
+        throw err;
+      } finally {
+        setLoading(false);
       }
     },
-    [id, fetchFriends]
+    [sendFriendRequest, name]
   );
 
-  // Remove friend
-  const removeFriend = useCallback(
+  // Wrapper for removeFriend to handle loading
+  const handleRemoveFriend = useCallback(
     async (friendId) => {
-      console.log(friendId);
-      
       try {
-        const res = await axios.delete(`${apiUrl}/friends/remove-friend/${friendId}`, {
-          data: { id },
-        });
-        // refresh friends list
-        fetchFriends();
-        return res.data;
+        setLoading(true);
+        const result = await removeFriend(friendId, name);
+        return result;
       } catch (err) {
-        console.error("Remove friend failed:", err);
         setError(err.response?.data?.message || "Could not remove friend");
+        throw err;
+      } finally {
+        setLoading(false);
       }
     },
-    [id, fetchFriends]
+    [removeFriend, name]
   );
 
-  // Fetch on mount
+  // Fetch all data on mount
   useEffect(() => {
+    if (id) {
+      fetchFriends();
+      fetchFriendRequests();
+      fetchSentRequests();
+    }
+  }, [fetchFriends, fetchFriendRequests, fetchSentRequests]);
+
+  // Refresh all friend-related data
+  const refetchAll = useCallback(() => {
     fetchFriends();
-  }, [fetchFriends]);
+    fetchFriendRequests();
+    fetchSentRequests();
+  }, [fetchFriends, fetchFriendRequests, fetchSentRequests]);
 
   return {
+    // State from Socket context (real-time)
     friends,
+    friendRequests,
+    sentRequests,
     loading,
     error,
+    
+    // Friend management functions from Socket context
     addFriend,
-    removeFriend,
-    refetch: fetchFriends,
+    removeFriend: handleRemoveFriend,
+    acceptFriendRequest,
+    rejectFriendRequest,
+    cancelFriendRequest,
+    
+    // Fetch methods for manual refresh
+    fetchFriends,
+    fetchFriendRequests,
+    fetchSentRequests,
+    
+    // Utilities
+    refetch: fetchFriends, // Keep backward compatibility
+    refetchAll, // New method to refresh all data
+    
+    // Deprecated setters (kept for backward compatibility but use context ones)
+    setRequests: setFriendRequests,
+    setSentRequests,
   };
 }

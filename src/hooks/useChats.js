@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useFriends } from "./useFriends";
+import { useFriends } from "./useFriends.js";
 
 const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
 

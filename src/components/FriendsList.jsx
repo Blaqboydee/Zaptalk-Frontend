@@ -1,5 +1,5 @@
 import React, {useContext, useState, useRef} from "react";
-import { useFriends } from "../hooks/useFriends";
+import { useFriends } from "../hooks/useFriends.js";
 import { AuthContext } from "../context/AuthContext";
 import axios from "axios";
 

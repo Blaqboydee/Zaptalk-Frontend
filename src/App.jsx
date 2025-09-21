@@ -12,6 +12,7 @@ import Chats from "./pages/Chats"
 import UsersList from "./pages/UsersList";
 import ChatLayout from "./pages/ChatLayout";
 import GroupChats from "./pages/GroupChats";
+import Friends from "./pages/Friends";
 
 // Loading component with mobile-optimized styling
 function LoadingScreen() {
@@ -112,6 +113,11 @@ function AppContent() {
         <Route
           path="/users"
           element={user ? <UsersList socket={socket} user={user} /> : <Navigate to="/login" />}
+        />
+
+        <Route
+          path="/friends"
+          element={user ? <Friends socket={socket} user={user} /> : <Navigate to="/login" />}
         />
       </Routes>
     </div>
