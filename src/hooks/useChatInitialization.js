@@ -7,9 +7,9 @@ export const useChatInitialization = (user, chats, addChat, setSelectedChatId, s
   const initChatRef = useRef(false);
 
   const initChat = async (friend) => {
-    console.log(friend);
+    // console.log(friend);
     
-    console.log("initChat started for:", user.id, friend._id);
+    // console.log("initChat started for:", user.id, friend._id);
     initChatRef.current = true;
     setIsInitializing(true);
 
@@ -29,7 +29,7 @@ export const useChatInitialization = (user, chats, addChat, setSelectedChatId, s
           setMessages(messagesData || []);
         }
         if (isMobile) setIsOffcanvasOpen(true);
-        console.log("Using existing chat");
+        // console.log("Using existing chat");
         return;
       }
       const chatRes = await fetch(`${apiUrl}/chats`, {
@@ -60,7 +60,7 @@ export const useChatInitialization = (user, chats, addChat, setSelectedChatId, s
         setMessages(chatData.messages || []);
       }
 
-      console.log("initChat finished successfully");
+      // console.log("initChat finished successfully");
       if (isMobile) setIsOffcanvasOpen(true);
     } catch (err) {
       console.error("Error initializing chat:", err);

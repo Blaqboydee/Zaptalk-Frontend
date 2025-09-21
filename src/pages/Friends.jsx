@@ -24,9 +24,12 @@ export default function Friends() {
   const [isChatModalOpen, setIsChatModalOpen] = useState(false);
   const [selectedChatId, setSelectedChatId] = useState(null);
   const [otherUser, setOtherUser] = useState(null);
+  const [isOffcanvasOpen, setIsOffcanvasOpen] = useState(false);
   
   // Loading state for friend requests
   const [loadingRequests, setLoadingRequests] = useState(new Set());
+  // Loading state for message buttons
+  const [initializingChats, setInitializingChats] = useState(new Set());
 
   // Use the simplified hook that gets everything from Socket context
   const { 
@@ -45,9 +48,9 @@ export default function Friends() {
   // Get direct access to Socket context for any additional functionality
   const { socket } = useGlobalSocket();
   
-  console.log("Friend Requests:", friendRequests);
-  console.log("Friends:", friends);
-  console.log("Sent Requests:", sentRequests);
+  // console.log("Friend Requests:", friendRequests);
+  // console.log("Friends:", friends);
+  // console.log("Sent Requests:", sentRequests);
 
   const { users } = useUsers();
   const { user } = useContext(AuthContext);
@@ -64,6 +67,18 @@ export default function Friends() {
   } = useMessages(selectedChatId);
 
   const { toast } = useToast();
+
+  // Initialize the chat initialization hook
+  const { initChat, isInitializing } = useChatInitialization(
+    user,
+    chats,
+    addChat,
+    setSelectedChatId,
+    setOtherUser,
+    setMessages,
+    isMobile,
+    setIsOffcanvasOpen
+  );
 
   // Socket hook for real-time messaging
   const handleMessageReceived = useCallback((message) => {
@@ -89,35 +104,30 @@ export default function Friends() {
     [socketSendMessage, selectedChatId, user.id]
   );
 
-  // Handle opening chat with a friend
+  // Updated handler using initChat
   const handleMessageFriend = async (friend) => {
-    console.log("FRIEND", friend);
-    console.log(user);
+    // console.log("FRIEND", friend);
+    // console.log(user);
     
+    // Add friend to initializing set
+    setInitializingChats(prev => new Set([...prev, friend._id]));
     
     try {
-      // Check if chat already exists
-      let existingChat = chats.find(chat => 
-        chat.users.some(u => u._id === friend._id)
-      );
-
-      if (!existingChat) {
-        // Create new chat
-        const response = await axios.post(`${apiUrl}/chats`, {
-          userId: user.id,
-          otherUserId: friend._id
-        });
-        existingChat = response.data;
-        addChat(existingChat);
+      await initChat(friend);
+      // Open modal for mobile if not already handled by initChat
+      if (isMobile && !isOffcanvasOpen) {
+        setIsChatModalOpen(true);
       }
-
-      // Set up modal state
-      setSelectedChatId(existingChat._id);
-      setOtherUser(friend);
-      setIsChatModalOpen(true);
     } catch (error) {
       console.error('Error opening chat:', error);
       toast.error('Failed to open chat');
+    } finally {
+      // Remove friend from initializing set
+      setInitializingChats(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(friend._id);
+        return newSet;
+      });
     }
   };
 
@@ -127,6 +137,7 @@ export default function Friends() {
     setSelectedChatId(null);
     setOtherUser(null);
     setMessages([]);
+    setIsOffcanvasOpen(false);
   };
 
   // Handle sending friend request - simplified
@@ -187,39 +198,38 @@ export default function Friends() {
       <div className="max-w-4xl mx-auto px-4 py-6">
         {/* Sticky Tab Navigation */}
         <div className="sticky top-16 z-10 bg-gray-900 rounded-lg shadow-sm mb-6" style={{ backgroundColor: 'var(--zap-dark-primary)' }}>
-    <div className="flex justify-between gap-2">
-  {[
-    { key: "friends", icon: <FaUserFriends /> },
-    { key: "add", icon: <MdPersonAdd /> },
-    { key: "requests", icon: <FaInbox /> },
-    { key: "sent", icon: <FaPaperPlane /> },
-  ].map((tab) => (
-    <button
-      key={tab.key}
-      onClick={() => setActiveTab(tab.key)}
-      className={`relative flex flex-col items-center justify-center flex-1 py-3 text-sm font-medium transition-colors border-b-2 ${
-        activeTab === tab.key
-          ? "border-orange-600 text-orange-400"
-          : "border-transparent text-gray-300 hover:text-white hover:border-gray-600"
-      }`}
-      style={{
-        color: activeTab === tab.key ? "#FB923C" : "var(--zap-gray-light)",
-        borderBottomColor: activeTab === tab.key ? "#EA580C" : "transparent",
-      }}
-    >
-      {/* icon */}
-      <span className="text-xl">{tab.icon}</span>
+          <div className="flex justify-between gap-2">
+            {[
+              { key: "friends", icon: <FaUserFriends /> },
+              { key: "add", icon: <MdPersonAdd /> },
+              { key: "requests", icon: <FaInbox /> },
+              { key: "sent", icon: <FaPaperPlane /> },
+            ].map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
+                className={`relative flex flex-col items-center justify-center flex-1 py-3 text-sm font-medium transition-colors border-b-2 ${
+                  activeTab === tab.key
+                    ? "border-orange-600 text-orange-400"
+                    : "border-transparent text-gray-300 hover:text-white hover:border-gray-600"
+                }`}
+                style={{
+                  color: activeTab === tab.key ? "#FB923C" : "var(--zap-gray-light)",
+                  borderBottomColor: activeTab === tab.key ? "#EA580C" : "transparent",
+                }}
+              >
+                {/* icon */}
+                <span className="text-xl">{tab.icon}</span>
 
-      {/* count bubble */}
-      {getTabCount(tab.key) > 0 && (
-        <span className="absolute top-1 right-5 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-orange-600 rounded-full shadow-md">
-          {getTabCount(tab.key)}
-        </span>
-      )}
-    </button>
-  ))}
-</div>
-
+                {/* count bubble */}
+                {getTabCount(tab.key) > 0 && (
+                  <span className="absolute top-1 right-5 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-orange-600 rounded-full shadow-md">
+                    {getTabCount(tab.key)}
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Tab Content */}
@@ -257,9 +267,21 @@ export default function Friends() {
                       </div>
                       <button 
                         onClick={() => handleMessageFriend(f)}
-                        className="mr-3 px-3 py-2 bg-orange-600 hover:bg-orange-500 text-white text-sm font-medium rounded-lg transition-colors"
+                        disabled={initializingChats.has(f._id)}
+                        className={`mr-3 px-3 py-2 text-white text-sm font-medium rounded-lg transition-colors ${
+                          initializingChats.has(f._id)
+                            ? 'bg-orange-400 cursor-not-allowed' 
+                            : 'bg-orange-600 hover:bg-orange-500'
+                        }`}
                       >
-                        Message
+                        {initializingChats.has(f._id) ? (
+                          <div className="flex items-center space-x-2">
+                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                            <span>Opening...</span>
+                          </div>
+                        ) : (
+                          'Message'
+                        )}
                       </button>
                       <button 
                         onClick={() => removeFriend(f._id)}
@@ -453,11 +475,6 @@ export default function Friends() {
                         Cancel
                       </button>
                     </div>
-                    // <>
-                    // <p>hello</p> <span>{r.to._id}</span>
-                    // </>
-                    
-
                   ))}
                 </div>
               )}
@@ -468,7 +485,7 @@ export default function Friends() {
 
       {/* Mobile Chat Modal */}
       <MobileChatModal
-        isOpen={isChatModalOpen}
+        isOpen={isChatModalOpen || isOffcanvasOpen}
         onClose={closeChatModal}
         selectedChatId={selectedChatId}
         otherUser={otherUser}

@@ -73,11 +73,11 @@ export function SocketProvider({ children }) {
       if (msg.senderId._id === user?.id) return;
 
       if (!isChatOpen) {
-        console.log(`New message from ${msg.senderId.name}`);
+        // console.log(`New message from ${msg.senderId.name}`);
         toast.success(`New message from ${msg.senderId.name}`);
       }
 
-      console.log("Global message received:", msg);
+      // console.log("Global message received:", msg);
       setMessages((prev) => [...prev, msg]);
       setNewMessage(msg);
 
@@ -99,14 +99,14 @@ export function SocketProvider({ children }) {
 
     // When you receive a friend request
     const handleFriendRequestReceived = (data) => {
-      console.log("📩 Friend request received:", data);
+      // console.log(" Friend request received:", data);
       toast.friendRequest(data.from.name);
       setFriendRequests((prev) => [...prev, data]);
     };
 
     // When your request is accepted
     const handleFriendRequestAccepted = (data) => {
-      console.log("✅ Friend request accepted:", data);
+      // console.log("Friend request accepted:", data);
       toast.friendAccepted(`${data.friend.username || data.friend.name}`);
       
       // Add to friends list
@@ -118,7 +118,7 @@ export function SocketProvider({ children }) {
 
     // When you are removed as a friend
     const handleFriendRemoved = (data) => {
-      console.log("❌ Friend removed:", data);
+      // console.log("Friend removed:", data);
       toast.error(`${data.name} removed you as a friend`);
       setFriends((prev) => prev.filter((f) => f._id !== data.friendId));
     };
@@ -150,7 +150,7 @@ export function SocketProvider({ children }) {
 
   // Friend management functions - centralized here
   const sendFriendRequest = async (targetUser, senderName) => {
-    console.log(targetUser);
+    // console.log(targetUser);
     
     try {
       const res = await axios.post(`${apiUrl}/friendRequests/${targetUser._id}`, {
@@ -170,7 +170,7 @@ export function SocketProvider({ children }) {
   };
 
   const acceptFriendRequest = async (requesterId, requesterName) => {
-    console.log(requesterId);
+    // console.log(requesterId);
     
     try {
       const res = await axios.post(`${apiUrl}/friendRequests/${requesterId}/accept`, {
@@ -178,7 +178,7 @@ export function SocketProvider({ children }) {
         requesterName: requesterName
       });
 
-      console.log(res.data);
+      // console.log(res.data);
       
       
       // Update state immediately
