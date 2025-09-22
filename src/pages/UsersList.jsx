@@ -3,7 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { useUsers } from "../context/UsersContext";
 import { AuthContext } from "../context/AuthContext";
 import { useFriends } from "../hooks/useFriends.js";
+// import { MdGroup, FaUserPlus } from "react-icons/md";
+import { FaUser, FaUserFriends, FaComments, FaUserPlus } from "react-icons/fa";
+
 import { useToast } from "../context/ToastContainer.jsx";
+
 
 const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -39,12 +43,14 @@ export default function UsersList() {
   );
 
   // Handle adding friend
-  const handleAddFriend = async (friendId, username) => {
-    setAddingFriendId(friendId);
+  const handleAddFriend = async (targetUser) => {
+    console.log(targetUser._id);
+    console.log(user);
+    
+    
+    setAddingFriendId(targetUser._id);
     try {
-      await addFriend(friendId);
-      toast.friendRequestSent(username)
-      // Instant UI update - refetch to get latest data
+      await addFriend(targetUser, user.id);
       await refetchAll();
     } catch (error) {
       console.error('Failed to add friend:', error);
@@ -87,10 +93,14 @@ export default function UsersList() {
       <header className="sticky top-0 bg-gradient-to-r from-gray-800/90 via-gray-700/80 to-gray-800/90 backdrop-blur-xl border-b border-gray-600/50 shadow-2xl">
         <div className="max-w-7xl mx-auto py-3 lg:px-4 lg:py-6">
           <div className="text-center">
-            <h2 className="text-lg lg:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-orange-500 to-orange-600 mb-2">
-              👥 Discover People
+            <div className="flex w-full justify-center gap-3">
+               <span><FaUserPlus size={28}/></span> 
+                 <h2 className="text-md lg:text-lg font-bold mb-2">
+              Discover People
             </h2>
-            <p className="text-gray-300 lg:text-lg">Connect with amazing people around the world</p>
+            </div>
+          
+            <p className="text-gray-300 text-sm lg:text-lg mt-2">Connect with amazing people around the world</p>
     
           </div>
         </div>
@@ -175,7 +185,7 @@ export default function UsersList() {
                         if (hasSentRequest && !isCanceling) {
                           handleCancelRequest(u._id);
                         } else if (!isFriend && !isAdding && !hasSentRequest) {
-                          handleAddFriend(u._id, u.name);
+                          handleAddFriend(u);
                         }
                       }}
                       disabled={isFriend || isAdding || isCanceling}

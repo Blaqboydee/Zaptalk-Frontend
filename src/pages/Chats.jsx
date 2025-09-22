@@ -32,7 +32,7 @@ export default function ChatsPage() {
   const navigate = useNavigate();
   const { isChatOpen, setIsChatOpen, newMessage, registerChatUpdateCallback } = useGlobalSocket();
   const { users, loading } = useUsers();
-  useSound();
+
 
   // State
   const [selectedChatId, setSelectedChatId] = useState(null);
@@ -73,8 +73,11 @@ export default function ChatsPage() {
   useEffect(() => {
     if (messageData) {
       console.log("Latest message outside the hook:", messageData);
+      
     }
   }, [messageData]);
+
+  useSound(messageData);
 
   const { initChat } = useChatInitialization(
     user,

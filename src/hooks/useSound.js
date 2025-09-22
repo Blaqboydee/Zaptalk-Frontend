@@ -1,19 +1,21 @@
-import { useEffect } from "react";
+import { useEffect, useContext } from "react";
+import { useAuth } from "../context/AuthContext";
 import { useSocket } from "./useSocket";
 
-export function useSound() {
-    const {socket} = useSocket()
+export function useSound(messageData) {
+    const { user } = useAuth();
+    console.log(user);
+    
+  
   useEffect(() => {
-    if (!socket) return;
+    if (!messageData) return;
+    if (user.id === messageData.senderId._id) return
 
-    const sound = new Audio("/sounds/notification.wav"); 
+    console.log("Latest message inside useSound:", messageData);
 
-    const handleNewMessage = () => {
-        sound.play().catch(() => {}); 
-    };
+    const sound = new Audio("/sounds/notification.wav");
+    sound.play().catch(() => {});
 
-socket.on("receive_message", handleNewMessage);
-return () => socket.off("receive_message", handleNewMessage);
-
-  }, [socket]);
+  }, [messageData]); 
 }
+

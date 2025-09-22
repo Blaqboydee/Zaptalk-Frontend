@@ -5,6 +5,7 @@ import { useAuth } from "./AuthContext";
 import axios from "axios";
 import { useToast } from "./ToastContainer";
 
+
 const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
 const SocketContext = createContext();
 
@@ -16,7 +17,7 @@ export function SocketProvider({ children }) {
   const [newMessage, setNewMessage] = useState(null);
   const chatUpdateCallbackRef = useRef(null);
   const { toast } = useToast();
-
+ 
   // Friend-related state - centralized here for real-time updates
   const [friendRequests, setFriendRequests] = useState([]);
   const [friends, setFriends] = useState([]);
@@ -77,9 +78,11 @@ export function SocketProvider({ children }) {
         toast.success(`New message from ${msg.senderId.name}`);
       }
 
-      // console.log("Global message received:", msg);
+      console.log("Global message received:", msg);
       setMessages((prev) => [...prev, msg]);
       setNewMessage(msg);
+ 
+
 
       if (chatUpdateCallbackRef.current) {
         chatUpdateCallbackRef.current(msg.chatId, msg);

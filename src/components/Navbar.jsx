@@ -2,6 +2,9 @@ import { Link } from "react-router-dom";
 import { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../context/AuthContext";
 import logo from "../assets/zaptalklogo.png"
+import { FaUser, FaUserFriends, FaComments, FaUserPlus } from "react-icons/fa";
+import { MdAccountCircle, MdGroup, MdChat, MdPersonSearch, MdLogout } from "react-icons/md";
+
 
 export default function Navbar() {
   const { user, logout, profile } = useContext(AuthContext);
@@ -20,7 +23,7 @@ export default function Navbar() {
 
   useEffect(() => {
     const checkDevice = () => {
-      setIsMobile(window.innerWidth < 768); // Tailwind's md breakpoint
+      setIsMobile(window.innerWidth < 768); 
     };
 
     checkDevice();
@@ -57,7 +60,7 @@ export default function Navbar() {
                   className={`${isMobile ? 'w-10 h-10' : 'w-8 h-8'} rounded-xl object-cover avatar`} 
                 />
               ) : (
-                user.name?.charAt(0)?.toUpperCase() || "U"
+                profile.name?.charAt(0)?.toUpperCase() || "U"
               )}
             </div>
           ) : (
@@ -183,7 +186,7 @@ export default function Navbar() {
                       className="flex items-center space-x-3 px-4 py-3 rounded-xl text-white hover:bg-slate-800 transition-all duration-200 group"
                       onClick={closeSidebar}
                     >
-                      <span className="text-lg group-hover:scale-110 transition-transform duration-200">👤</span>
+                      <span className="text-lg group-hover:scale-110 transition-transform duration-200"><MdAccountCircle/></span>
                       <span className="font-medium">Profile</span>
                     </Link>
                     <Link
@@ -191,7 +194,7 @@ export default function Navbar() {
                       className="flex items-center space-x-3 px-4 py-3 rounded-xl text-white hover:bg-slate-800 transition-all duration-200 group"
                       onClick={closeSidebar}
                     >
-                      <span className="text-lg group-hover:scale-110 transition-transform duration-200">💬</span>
+                      <span className="text-lg group-hover:scale-110 transition-transform duration-200"><MdChat/></span>
                       <span className="font-medium">My Chats</span>
                     </Link>
                     <Link
@@ -199,7 +202,7 @@ export default function Navbar() {
                       className="flex items-center space-x-3 px-4 py-3 rounded-xl text-white hover:bg-slate-800 transition-all duration-200 group"
                       onClick={closeSidebar}
                     >
-                      <span className="text-lg group-hover:scale-110 transition-transform duration-200">👥</span>
+                      <span className="text-lg group-hover:scale-110 transition-transform duration-200"><MdGroup/></span>
                       <span className="font-medium">Friends</span>
                     </Link>
                     <Link
@@ -207,7 +210,7 @@ export default function Navbar() {
                       className="flex items-center space-x-3 px-4 py-3 rounded-xl text-white hover:bg-slate-800 transition-all duration-200 group"
                       onClick={closeSidebar}
                     >
-                      <span className="text-lg group-hover:scale-110 transition-transform duration-200">🔍</span>
+                      <span className="text-lg group-hover:scale-110 transition-transform duration-200"><MdPersonSearch/></span>
                       <span className="font-medium">Find Users</span>
                     </Link>
                   </div>
@@ -222,7 +225,7 @@ export default function Navbar() {
                     }}
                     className="flex items-center space-x-3 w-full px-4 py-3 rounded-xl bg-red-600 hover:bg-red-500 text-white transition-all duration-200 shadow-lg hover:shadow-xl group"
                   >
-                    <span className="text-lg group-hover:scale-110 transition-transform duration-200">🚪</span>
+                    <span className="text-lg group-hover:scale-110 transition-transform duration-200"><MdLogout/></span>
                     <span className="font-medium">Logout</span>
                   </button>
                 </div>

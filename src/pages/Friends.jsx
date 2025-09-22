@@ -14,6 +14,7 @@ import { useGlobalSocket } from "../context/SocketContext.jsx";
 import { FaUserFriends } from "react-icons/fa";
 import { MdPersonAdd } from "react-icons/md";
 import { FaInbox, FaPaperPlane } from "react-icons/fa"; 
+import { MdGroup } from "react-icons/md";
 
 const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -188,11 +189,12 @@ export default function Friends() {
     <div className="min-h-screen bg-gray-800" style={{ backgroundColor: 'var(--zap-dark-secondary)' }}>
       {/* Sticky Header */}
       <div className="sticky top-0 z-10 bg-gray-900 shadow-sm border-b border-gray-700" style={{ backgroundColor: 'var(--zap-dark-primary)', borderColor: 'var(--zap-dark-accent)' }}>
-        <div className="max-w-4xl mx-auto px-4 py-4">
-          <h1 className="text-2xl font-bold text-center text-white" style={{ color: 'var(--zap-white)' }}>
-            Friends
-          </h1>
-        </div>
+        <div className="flex w-full justify-center gap-3 py-3">
+                      <span><MdGroup size={28}/></span> 
+                        <h2 className="text-md lg:text-lg mb-2">
+                    Manage your Friends
+                   </h2>
+                   </div>
       </div>
 
       <div className="max-w-4xl mx-auto px-4 py-6">

@@ -2,6 +2,8 @@ import { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import api from "../api/api";
+import { FaUser, FaUserFriends, FaComments, FaUserPlus } from "react-icons/fa";
+
 
 export default function Profile() {
   const {
@@ -16,6 +18,7 @@ export default function Profile() {
   } = useContext(AuthContext);
   const [isEditing, setIsEditing] = useState(false);
   const [avatarFile, setAvatarFile] = useState(null);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
 
   // Toggle edit mode
   const handleEditToggle = () => {
@@ -46,6 +49,7 @@ export default function Profile() {
   // Upload avatar
   const handleAvatarUpload = async () => {
     if (!avatarFile) return;
+    setIsUploadingAvatar(true);
     const formData = new FormData();
     formData.append("avatar", avatarFile);
 
@@ -61,6 +65,22 @@ export default function Profile() {
       setAvatarFile(null);
     } catch (err) {
       console.error("Error uploading avatar:", err);
+    } finally {
+      setIsUploadingAvatar(false);
+    }
+  };
+
+  // Delete avatar
+  const handleDeleteAvatar = async () => {
+    try {
+      const response = await api.delete("/users/delete-avatar", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setProfile(response.data.user);
+      setAvatarPreview(null);
+      setAvatarFile(null);
+    } catch (err) {
+      console.error("Error deleting avatar:", err);
     }
   };
 
@@ -98,11 +118,12 @@ export default function Profile() {
 
       {/* Header */}
       <header className="z-10 backdrop-blur-xl border-b border-gray-700/50 p-4 flex justify-between items-center">
-        <div className="flex items-center space-x-4 flex-1">
-          <h1 className="text-2xl w-full text-center font-bold text-white">
-            Profile
-          </h1>
-        </div>
+       <div className="flex w-full justify-center gap-3">
+                            <span><FaUser size={23}/></span> 
+                              <h2 className="text-md lg:text-lg font-bold mb-2">
+                         Profile
+                         </h2>
+                         </div>
         <button
           onClick={handleLogout}
           className="group relative  px-3 py-2 lg:px-6 lg:py-3 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 rounded-xl text-white font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-red-500/25"
@@ -185,30 +206,68 @@ export default function Profile() {
                   />
                 </div>
 
-                {/* Upload Button */}
-                {avatarFile && (
-                  <button
-                    onClick={handleAvatarUpload}
-                    className="px-6 py-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 rounded-xl text-white font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-orange-500/25"
-                  >
-                    <span className="flex items-center space-x-2">
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                        />
-                      </svg>
-                      <span>Upload Avatar</span>
-                    </span>
-                  </button>
-                )}
+                {/* Avatar directive text */}
+                <p className="text-gray-400 text-sm text-center">
+                  Click on avatar to change it
+                </p>
+
+                {/* Avatar action buttons */}
+                <div className="flex space-x-3">
+                  {/* Upload Button */}
+                  {avatarFile && (
+                    <button
+                      onClick={handleAvatarUpload}
+                      disabled={isUploadingAvatar}
+                      className="px-6 py-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 rounded-xl text-white font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-orange-500/25 disabled:opacity-50 disabled:transform-none disabled:cursor-not-allowed"
+                    >
+                      <span className="flex items-center space-x-2">
+                        {isUploadingAvatar ? (
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        ) : (
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                            />
+                          </svg>
+                        )}
+                        <span>{isUploadingAvatar ? "Uploading..." : "Upload Avatar"}</span>
+                      </span>
+                    </button>
+                  )}
+
+                  {/* Delete Avatar Button */}
+                  {/* {(avatarPreview || profile.avatar) && (
+                    <button
+                      onClick={handleDeleteAvatar}
+                      className="px-6 py-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 rounded-xl text-white font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-red-500/25"
+                    >
+                      <span className="flex items-center space-x-2">
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                          />
+                        </svg>
+                        <span>Delete Avatar</span>
+                      </span>
+                    </button>
+                  )} */}
+                </div>
 
                 {/* Edit / Profile Form */}
                 {!isEditing ? (
