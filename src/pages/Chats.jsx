@@ -30,9 +30,10 @@ import MobileChatModal from "../components/MobileChatModal";
 export default function ChatsPage() {
   const { user, allMessages } = useOutletContext();
   const navigate = useNavigate();
-  const { isChatOpen, setIsChatOpen, newMessage, registerChatUpdateCallback } = useGlobalSocket();
+  const { isChatOpen, setIsChatOpen, newMessage, registerChatUpdateCallback } =
+    useGlobalSocket();
   const { users, loading } = useUsers();
-
+  // const [isLoadingChats, setIsLoadingChats] = useState(true);
 
   // State
   const [selectedChatId, setSelectedChatId] = useState(null);
@@ -41,7 +42,15 @@ export default function ChatsPage() {
 
   // Custom hooks
   const { isMobile } = useResponsive();
-  const { chats, addChat, handleSearch, searchTerm, filteredChats, updateChatOnMessage } = useChats(user?.id);
+  const {
+    chats,
+    addChat,
+    handleSearch,
+    searchTerm,
+    filteredChats,
+    updateChatOnMessage,
+    isLoading,
+  } = useChats(user?.id);
   const {
     messages,
     isLoadingMessages,
@@ -60,10 +69,13 @@ export default function ChatsPage() {
     (theChat) => theChat._id === newMessage?.chatId
   );
 
-  const handleMessageReceived = useCallback((message) => {
-    console.log("socket received:", message);
-    setMessages((prev) => [...prev, message]);
-  }, [setMessages]);
+  const handleMessageReceived = useCallback(
+    (message) => {
+      console.log("socket received:", message);
+      setMessages((prev) => [...prev, message]);
+    },
+    [setMessages]
+  );
 
   const { sendMessage: socketSendMessage, messageData } = useSocket(
     selectedChatId,
@@ -73,51 +85,45 @@ export default function ChatsPage() {
   useEffect(() => {
     if (messageData) {
       console.log("Latest message outside the hook:", messageData);
-      
     }
   }, [messageData]);
 
   useSound(messageData);
 
-const {
-  initChat,
-  addLocalMessage
-} = useChatInitialization(
-  user,
-  chats,
-  addChat,
-  setSelectedChatId,
-  setOtherUser,
-  setMessages,
-  isMobile,
-  setIsOffcanvasOpen
-);
-
+  const { initChat, addLocalMessage } = useChatInitialization(
+    user,
+    chats,
+    addChat,
+    setSelectedChatId,
+    setOtherUser,
+    setMessages,
+    isMobile,
+    setIsOffcanvasOpen
+  );
 
   // Handlers
-const sendMessage = useCallback(
-  (messageContent) => {
-    if (!messageContent.trim() || !selectedChatId) return;
+  const sendMessage = useCallback(
+    (messageContent) => {
+      if (!messageContent.trim() || !selectedChatId) return;
 
-    // send to server
-    socketSendMessage({
-      content: messageContent,
-      senderId: user.id,
-      chatId: selectedChatId,
-    });
+      // send to server
+      socketSendMessage({
+        content: messageContent,
+        senderId: user.id,
+        chatId: selectedChatId,
+      });
 
-    // update local cache/UI instantly
-    addLocalMessage(selectedChatId, {
-      content: messageContent,
-      senderId: user.id,
-      chatId: selectedChatId,
-      _id: Date.now().toString(), // temp id until server sends real one
-      createdAt: new Date().toISOString(),
-    });
-  },
-  [socketSendMessage, selectedChatId, user.id, addLocalMessage]
-);
-
+      // update local cache/UI instantly
+      addLocalMessage(selectedChatId, {
+        content: messageContent,
+        senderId: user.id,
+        chatId: selectedChatId,
+        _id: Date.now().toString(), // temp id until server sends real one
+        createdAt: new Date().toISOString(),
+      });
+    },
+    [socketSendMessage, selectedChatId, user.id, addLocalMessage]
+  );
 
   const openChat = useCallback(
     (chat) => {
@@ -162,7 +168,33 @@ const sendMessage = useCallback(
                 className="w-full bg-gray-700 border border-gray-800 rounded-xl pl-10 pr-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200"
               />
             </div>
-            {chats.length > 0 ? (
+            {isLoading ? (
+              // Loading state
+              <div className="flex flex-col items-center justify-center text-center py-16">
+                <div className="relative mb-8">
+                  <div className="animate-spin w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full"></div>
+                  <div className="absolute inset-0 w-16 h-16 border-4 border-orange-200/20 rounded-full"></div>
+                </div>
+                <div className="flex items-center space-x-2 mb-4">
+                  <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
+                  <div
+                    className="w-2 h-2 bg-orange-600 rounded-full animate-pulse"
+                    style={{ animationDelay: "0.2s" }}
+                  ></div>
+                  <div
+                    className="w-2 h-2 bg-orange-700 rounded-full animate-pulse"
+                    style={{ animationDelay: "0.4s" }}
+                  ></div>
+                </div>
+                <h2 className="text-lg font-semibold text-white mb-2">
+                  Loading chats...
+                </h2>
+                <p className="text-gray-400 text-sm">
+                  Please wait while we fetch your conversations
+                </p>
+              </div>
+            ) : chats.length > 0 ? (
+              // Has chats
               <div className="space-y-1 h-[50vh] overflow-auto">
                 {filteredChats.map((chat) => (
                   <ChatListItem
@@ -178,6 +210,7 @@ const sendMessage = useCallback(
                 ))}
               </div>
             ) : (
+              // No chats (only shown after loading is complete)
               <div className="flex flex-col items-center justify-center text-center py-16">
                 <div className="mb-8 relative">
                   <div className="w-24 h-24 rounded-full flex items-center justify-center shadow-lg bg-gradient-to-br from-orange-400 to-orange-600">
@@ -329,13 +362,25 @@ const sendMessage = useCallback(
                         )}
                       </div>
 
-                      <div className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 ${otherUser?.status?.state === "online" ? "bg-green-500" : "bg-gray-400"} border-2 border-gray-800 rounded-full`}></div>
+                      <div
+                        className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 ${
+                          otherUser?.status?.state === "online"
+                            ? "bg-green-500"
+                            : "bg-gray-400"
+                        } border-2 border-gray-800 rounded-full`}
+                      ></div>
                     </div>
                     <div className="">
                       <h2 className="font-semibold text-white">
                         {otherUser.name || "Chat"}
                       </h2>
-                      <p className={`text-xs ${otherUser?.status?.state === "online" ? "text-green-400" : "text-gray-400"}`}>
+                      <p
+                        className={`text-xs ${
+                          otherUser?.status?.state === "online"
+                            ? "text-green-400"
+                            : "text-gray-400"
+                        }`}
+                      >
                         {otherUser?.status?.state}
                       </p>
                     </div>

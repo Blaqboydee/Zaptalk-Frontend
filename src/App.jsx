@@ -88,11 +88,12 @@ function AppContent() {
   }
 
   const hideNavbar = location.pathname === "/login" || location.pathname === "/signup";
-
+  const hideHeader = location.pathname === "/login" || location.pathname === "/signup"
   return (
     <div className="zap-app-container">
       <Toaster position="top-right" />
-        <Header/>
+     
+      {!hideHeader && <Header/>}
       {!hideNavbar && <Navbar />}
       <Routes>
         <Route path="/" element={<Navigate to="/login" />} />
