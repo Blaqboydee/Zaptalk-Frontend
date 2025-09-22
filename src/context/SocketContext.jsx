@@ -141,6 +141,8 @@ export function SocketProvider({ children }) {
 
   // Emit message
   const sendMessage = (data) => {
+    console.log(data);
+    
     if (socket) {
       socket.emit("send_message", data);
     }

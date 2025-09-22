@@ -13,6 +13,7 @@ import UsersList from "./pages/UsersList";
 import ChatLayout from "./pages/ChatLayout";
 import GroupChats from "./pages/GroupChats";
 import Friends from "./pages/Friends";
+import Header from "./components/Header";
 
 // Loading component with mobile-optimized styling
 function LoadingScreen() {
@@ -91,6 +92,7 @@ function AppContent() {
   return (
     <div className="zap-app-container">
       <Toaster position="top-right" />
+        <Header/>
       {!hideNavbar && <Navbar />}
       <Routes>
         <Route path="/" element={<Navigate to="/login" />} />

@@ -39,15 +39,15 @@ export default function Navbar() {
       {/* Fixed Toggle Button - Always visible */}
       <div className={`z-50 ${
         isMobile 
-          ? 'fixed bottom-6 left-6'
+          ? 'fixed top-3 left-4'
           : 'fixed top-6 left-6'    
       }`}>
           <button
           onClick={toggleSidebar}
-          className={`bg-slate-800 hover:bg-slate-700 text-white ${
-            isMobile ? "p-2" : "p-1.5"
-          } rounded-2xl shadow-2xl transition-all duration-300 hover:scale-105 active:scale-95 border border-slate-600/50`}
-          aria-label="Toggle navigation menu"
+          // className={`bg-slate-800 hover:bg-slate-700 text-white ${
+          //   isMobile ? "p-2" : "p-1.5"
+          // } rounded-full shadow-2xl transition-all duration-300 hover:scale-105 active:scale-95 border border-slate-600/50`}
+          // aria-label="Toggle navigation menu"
         >
           {profile ? (
             <div className={`${isMobile ? 'w-10 h-10' : 'w-8 h-8'} rounded-xl flex items-center justify-center text-white font-semibold ${
@@ -57,7 +57,7 @@ export default function Navbar() {
                 <img 
                   src={profile.avatar} 
                   alt={user.name} 
-                  className={`${isMobile ? 'w-10 h-10' : 'w-8 h-8'} rounded-xl object-cover avatar`} 
+                  className={`${isMobile ? 'w-10 h-10' : 'w-8 h-8'} rounded-full object-cover avatar`} 
                 />
               ) : (
                 profile.name?.charAt(0)?.toUpperCase() || "U"
@@ -182,14 +182,6 @@ export default function Navbar() {
                   </p>
                   <div className="space-y-2">
                     <Link
-                      to="/profile"
-                      className="flex items-center space-x-3 px-4 py-3 rounded-xl text-white hover:bg-slate-800 transition-all duration-200 group"
-                      onClick={closeSidebar}
-                    >
-                      <span className="text-lg group-hover:scale-110 transition-transform duration-200"><MdAccountCircle/></span>
-                      <span className="font-medium">Profile</span>
-                    </Link>
-                    <Link
                       to="/allchats"
                       className="flex items-center space-x-3 px-4 py-3 rounded-xl text-white hover:bg-slate-800 transition-all duration-200 group"
                       onClick={closeSidebar}
@@ -212,6 +204,14 @@ export default function Navbar() {
                     >
                       <span className="text-lg group-hover:scale-110 transition-transform duration-200"><MdPersonSearch/></span>
                       <span className="font-medium">Find Users</span>
+                    </Link>
+                          <Link
+                      to="/profile"
+                      className="flex items-center space-x-3 px-4 py-3 rounded-xl text-white hover:bg-slate-800 transition-all duration-200 group"
+                      onClick={closeSidebar}
+                    >
+                      <span className="text-lg group-hover:scale-110 transition-transform duration-200"><MdAccountCircle/></span>
+                      <span className="font-medium">Profile</span>
                     </Link>
                   </div>
                 </div>

@@ -89,23 +89,6 @@ export default function UsersList() {
     <div className="min-h-screen bg-gray-900 relative overflow-hidden">
       {/* Animated background elements */}
 
-      {/* Header */}
-      <header className="sticky top-0 bg-gradient-to-r from-gray-800/90 via-gray-700/80 to-gray-800/90 backdrop-blur-xl border-b border-gray-600/50 shadow-2xl">
-        <div className="max-w-7xl mx-auto py-3 lg:px-4 lg:py-6">
-          <div className="text-center">
-            <div className="flex w-full justify-center gap-3">
-               <span><FaUserPlus size={28}/></span> 
-                 <h2 className="text-md lg:text-lg font-bold mb-2">
-              Discover People
-            </h2>
-            </div>
-          
-            <p className="text-gray-300 text-sm lg:text-lg mt-2">Connect with amazing people around the world</p>
-    
-          </div>
-        </div>
-      </header>
-
       {/* Search Bar */}
       <div className="relative z-10 p-6">
         <div className="max-w-2xl mx-auto">

@@ -186,16 +186,7 @@ export default function Friends() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-800" style={{ backgroundColor: 'var(--zap-dark-secondary)' }}>
-      {/* Sticky Header */}
-      <div className="sticky top-0 z-10 bg-gray-900 shadow-sm border-b border-gray-700" style={{ backgroundColor: 'var(--zap-dark-primary)', borderColor: 'var(--zap-dark-accent)' }}>
-        <div className="flex w-full justify-center gap-3 py-3">
-                      <span><MdGroup size={28}/></span> 
-                        <h2 className="text-md lg:text-lg mb-2">
-                    Manage your Friends
-                   </h2>
-                   </div>
-      </div>
+    <div className="min-h-screen bg-gray-900" >
 
       <div className="max-w-4xl mx-auto px-4 py-6">
         {/* Sticky Tab Navigation */}

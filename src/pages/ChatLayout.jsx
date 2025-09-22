@@ -27,15 +27,15 @@ const ChatLayout = ({ user }) => {
   }, [apiUrl]);
 
   return (
-    <div className="">
+    <div className="h-screen bg-gray-900">
       {/* Main Header */}
       <header className="sticky top-0 z-40 backdrop-blur-md border-b flex flex-col  border-gray-700/50">
-        <div className="max-w-7xl  flex flex-wrap justify-between items-end px-4 sm:px-6 lg:px-8 py-4">
-          {/* Left Section */}
+        {/* <div className="max-w-7xl  flex flex-wrap justify-between items-end px-4 sm:px-6 lg:px-8 py-4">
+        
           <div className="flex items-center gap-3 text-center w-full justify-center">
             <h1 className="text-lg lg:text-2xl font-bold text-white">Chats</h1>
           </div>
-        </div>
+        </div> */}
 
           {/* Navigation Tabs */}
       <div className=" backdrop-blur-md border-b border-gray-700/50">

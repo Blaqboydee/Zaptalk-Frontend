@@ -113,40 +113,8 @@ export default function Profile() {
   }
 
   return (
-    <div className="flex-col relative overflow-hidden">
+    <div className="h-screen flex-col relative overflow-hidden bg-gray-900">
       {/* Background Decorative Elements */}
-
-      {/* Header */}
-      <header className="z-10 backdrop-blur-xl border-b border-gray-700/50 p-4 flex justify-between items-center">
-       <div className="flex w-full justify-center gap-3">
-                            <span><FaUser size={23}/></span> 
-                              <h2 className="text-md lg:text-lg font-bold mb-2">
-                         Profile
-                         </h2>
-                         </div>
-        <button
-          onClick={handleLogout}
-          className="group relative  px-3 py-2 lg:px-6 lg:py-3 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 rounded-xl text-white font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-red-500/25"
-        >
-          <span className="flex items-center space-x-2">
-            <svg
-              className="w-4 h-4 transition-transform group-hover:rotate-12"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-              />
-            </svg>
-            <span className="hidden lg:block">Logout</span>
-          </span>
-        </button>
-      </header>
-
       {/* Main */}
       <main className="relative z-10 flex-1 p-6 flex flex-col items-center">
         <div className="w-full max-w-2xl">

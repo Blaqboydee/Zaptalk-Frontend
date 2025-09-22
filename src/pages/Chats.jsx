@@ -79,30 +79,45 @@ export default function ChatsPage() {
 
   useSound(messageData);
 
-  const { initChat } = useChatInitialization(
-    user,
-    chats,
-    addChat,
-    setSelectedChatId,
-    setOtherUser,
-    setMessages,
-    isMobile,
-    setIsOffcanvasOpen
-  );
+const {
+  initChat,
+  addLocalMessage
+} = useChatInitialization(
+  user,
+  chats,
+  addChat,
+  setSelectedChatId,
+  setOtherUser,
+  setMessages,
+  isMobile,
+  setIsOffcanvasOpen
+);
+
 
   // Handlers
-  const sendMessage = useCallback(
-    (messageContent) => {
-      if (!messageContent.trim() || !selectedChatId) return;
+const sendMessage = useCallback(
+  (messageContent) => {
+    if (!messageContent.trim() || !selectedChatId) return;
 
-      socketSendMessage({
-        content: messageContent,
-        senderId: user.id,
-        chatId: selectedChatId,
-      });
-    },
-    [socketSendMessage, selectedChatId, user.id]
-  );
+    // send to server
+    socketSendMessage({
+      content: messageContent,
+      senderId: user.id,
+      chatId: selectedChatId,
+    });
+
+    // update local cache/UI instantly
+    addLocalMessage(selectedChatId, {
+      content: messageContent,
+      senderId: user.id,
+      chatId: selectedChatId,
+      _id: Date.now().toString(), // temp id until server sends real one
+      createdAt: new Date().toISOString(),
+    });
+  },
+  [socketSendMessage, selectedChatId, user.id, addLocalMessage]
+);
+
 
   const openChat = useCallback(
     (chat) => {
