@@ -9,7 +9,7 @@ export const useSocket = (selectedChatId, onMessageReceived) => {
   useEffect(() => {
     if (!socket || !selectedChatId) return;
 
-    socket.emit("join_chat", selectedChatId);
+    // socket.emit("join_chat", selectedChatId);
 
     const handleMessage = (msg) => {
       console.log("Frontend received:", msg);

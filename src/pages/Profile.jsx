@@ -33,7 +33,7 @@ export default function Profile() {
 
   // Save profile changes
   const handleSave = async () => {
-    console.log(editForm);
+    // console.log(editForm);
 
     try {
       const response = await api.put("/users/profile", editForm, {

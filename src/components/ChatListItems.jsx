@@ -16,6 +16,8 @@ const ChatListItem = ({
   const secondUser = chat.users?.find((u) => u._id !== user.id);
   const {friends} = useFriends()
   const [isDotVisible, setIsDotVisible] = useState(true);
+  // console.log(allMessages);
+  
   const filteredMessages =
     allMessages?.filter((message) => message.chatId === chat._id) || [];
   const lastMessage =

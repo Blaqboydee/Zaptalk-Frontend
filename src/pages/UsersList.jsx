@@ -44,8 +44,8 @@ export default function UsersList() {
 
   // Handle adding friend
   const handleAddFriend = async (targetUser) => {
-    console.log(targetUser._id);
-    console.log(user);
+    // console.log(targetUser._id);
+    // console.log(user);
     
     
     setAddingFriendId(targetUser._id);

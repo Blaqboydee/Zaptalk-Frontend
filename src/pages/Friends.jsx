@@ -135,7 +135,6 @@ export default function Friends() {
   // Close modal handler
   const closeChatModal = () => {
     setIsChatModalOpen(false);
-    setSelectedChatId(null);
     setOtherUser(null);
     setMessages([]);
     setIsOffcanvasOpen(false);

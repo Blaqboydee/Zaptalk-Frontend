@@ -30,10 +30,9 @@ import MobileChatModal from "../components/MobileChatModal";
 export default function ChatsPage() {
   const { user, allMessages } = useOutletContext();
   const navigate = useNavigate();
-  const { isChatOpen, setIsChatOpen, newMessage, registerChatUpdateCallback } =
+  const {socket, isChatOpen, setIsChatOpen, newMessage, registerChatUpdateCallback } =
     useGlobalSocket();
   const { users, loading } = useUsers();
-  // const [isLoadingChats, setIsLoadingChats] = useState(true);
 
   // State
   const [selectedChatId, setSelectedChatId] = useState(null);
@@ -51,46 +50,45 @@ export default function ChatsPage() {
     updateChatOnMessage,
     isLoading,
   } = useChats(user?.id);
+
   const {
     messages,
     isLoadingMessages,
     messagesEndRef,
     addMessage,
     setMessages,
-  } = useMessages(selectedChatId);
+    editMessage,
+    deleteMessage,
+  } = useMessages(selectedChatId, user?.id);
+  
   const { friends } = useFriends();
 
-  // Register the chat update callback with the socket context
-  useEffect(() => {
-    registerChatUpdateCallback(updateChatOnMessage);
-  }, [registerChatUpdateCallback, updateChatOnMessage]);
-
-  const chatToUpdate = chats.find(
-    (theChat) => theChat._id === newMessage?.chatId
-  );
-
+  // Socket message handler - FIXED: Now properly adds messages to state
   const handleMessageReceived = useCallback(
     (message) => {
-      console.log("socket received:", message);
-      setMessages((prev) => [...prev, message]);
+      console.log("Socket received message:", message);
+      // Add message to current messages state
+      addMessage(message);
     },
-    [setMessages]
+    [addMessage]
   );
 
+  // Socket hook
   const { sendMessage: socketSendMessage, messageData } = useSocket(
     selectedChatId,
     handleMessageReceived
   );
 
+  // Register chat update callback
   useEffect(() => {
-    if (messageData) {
-      console.log("Latest message outside the hook:", messageData);
-    }
-  }, [messageData]);
+    registerChatUpdateCallback(updateChatOnMessage);
+  }, [registerChatUpdateCallback, updateChatOnMessage]);
 
+  // Sound notification
   useSound(messageData);
 
-  const { initChat, addLocalMessage } = useChatInitialization(
+  // Chat initialization
+  const { initChat } = useChatInitialization(
     user,
     chats,
     addChat,
@@ -101,28 +99,31 @@ export default function ChatsPage() {
     setIsOffcanvasOpen
   );
 
-  // Handlers
+  // Message sending handler - FIXED: Now properly handles message sending
   const sendMessage = useCallback(
     (messageContent) => {
-      if (!messageContent.trim() || !selectedChatId) return;
+      if (!messageContent.trim() || !selectedChatId || !user?.id) return;
 
-      // send to server
+      const tempMessage = {
+        _id: `temp-${Date.now()}-${Math.random()}`, // Unique temporary ID
+        content: messageContent,
+        senderId: user.id, // Make sure this matches the format the server returns
+        chatId: selectedChatId,
+        createdAt: new Date().toISOString(),
+        pending: true, // Mark as pending
+      };
+
+      // Add optimistic message immediately
+      addMessage(tempMessage);
+
+      // Send to server via socket
       socketSendMessage({
         content: messageContent,
         senderId: user.id,
         chatId: selectedChatId,
       });
-
-      // update local cache/UI instantly
-      addLocalMessage(selectedChatId, {
-        content: messageContent,
-        senderId: user.id,
-        chatId: selectedChatId,
-        _id: Date.now().toString(), // temp id until server sends real one
-        createdAt: new Date().toISOString(),
-      });
     },
-    [socketSendMessage, selectedChatId, user.id, addLocalMessage]
+    [socketSendMessage, selectedChatId, user?.id, addMessage]
   );
 
   const openChat = useCallback(
@@ -131,33 +132,36 @@ export default function ChatsPage() {
       const secondUser = chat.users?.find((u) => u._id !== user.id);
       if (!secondUser) return;
 
+       if (socket) {
+         console.log('Joining chat room:', chat._id);
+      socket.emit("join_chat", chat._id);
+    }
+
       setOtherUser(secondUser);
       setSelectedChatId(chat._id);
 
       if (isMobile) setIsOffcanvasOpen(true);
     },
-    [user.id, isMobile, setIsChatOpen]
+    [user.id, isMobile, setIsChatOpen, socket]
   );
 
   const closeOffcanvas = useCallback(() => {
     setIsChatOpen(false);
     setIsOffcanvasOpen(false);
+  }, [setIsChatOpen]);
 
-    if (isMobile) {
-      setSelectedChatId(null);
-      setOtherUser(null);
-      setMessages([]);
-    }
-  }, [isMobile, setMessages, setIsChatOpen]);
+  // Find chat that needs updating
+  const chatToUpdate = chats.find(
+    (theChat) => theChat._id === newMessage?.chatId
+  );
 
   return (
     <div className="">
       {/* Mobile Layout */}
       {isMobile ? (
         <div className="flex-1 flex flex-col">
-          {/* <FriendsList initChat={initChat} /> */}
-
           <main className="flex-column p-2 overflow-y-auto sm:px-6 lg:px-8">
+            {/* Search Bar */}
             <div className="relative mb-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <input
@@ -168,33 +172,11 @@ export default function ChatsPage() {
                 className="w-full bg-gray-700 border border-gray-800 rounded-xl pl-10 pr-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200"
               />
             </div>
+
+            {/* Chat List Content */}
             {isLoading ? (
-              // Loading state
-              <div className="flex flex-col items-center justify-center text-center py-16">
-                <div className="relative mb-8">
-                  <div className="animate-spin w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full"></div>
-                  <div className="absolute inset-0 w-16 h-16 border-4 border-orange-200/20 rounded-full"></div>
-                </div>
-                <div className="flex items-center space-x-2 mb-4">
-                  <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
-                  <div
-                    className="w-2 h-2 bg-orange-600 rounded-full animate-pulse"
-                    style={{ animationDelay: "0.2s" }}
-                  ></div>
-                  <div
-                    className="w-2 h-2 bg-orange-700 rounded-full animate-pulse"
-                    style={{ animationDelay: "0.4s" }}
-                  ></div>
-                </div>
-                <h2 className="text-lg font-semibold text-white mb-2">
-                  Loading chats...
-                </h2>
-                <p className="text-gray-400 text-sm">
-                  Please wait while we fetch your conversations
-                </p>
-              </div>
+              <LoadingState />
             ) : chats.length > 0 ? (
-              // Has chats
               <div className="space-y-1 h-[50vh] overflow-auto">
                 {filteredChats.map((chat) => (
                   <ChatListItem
@@ -210,48 +192,11 @@ export default function ChatsPage() {
                 ))}
               </div>
             ) : (
-              // No chats (only shown after loading is complete)
-              <div className="flex flex-col items-center justify-center text-center py-16">
-                <div className="mb-8 relative">
-                  <div className="w-24 h-24 rounded-full flex items-center justify-center shadow-lg bg-gradient-to-br from-orange-400 to-orange-600">
-                    <svg
-                      className="h-12 w-12 text-white"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"
-                      />
-                    </svg>
-                  </div>
-                  <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full animate-pulse bg-orange-400"></div>
-                  <div
-                    className="absolute -bottom-1 -left-2 w-4 h-4 rounded-full animate-pulse bg-orange-500"
-                    style={{ animationDelay: "300ms" }}
-                  ></div>
-                </div>
-                <h2 className="text-md font-bold mb-3 text-white">
-                  No chats yet
-                </h2>
-                <p className="text-md mb-8 max-w-md text-gray-400">
-                  Start your first conversation by connecting with other users
-                  on ZapTalk!
-                </p>
-                <button
-                  onClick={() => navigate("/users")}
-                  className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-8 py-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 font-semibold text-md hover:from-orange-600 hover:to-orange-700"
-                >
-                  Find Users
-                </button>
-              </div>
+              <EmptyChatsState navigate={navigate} />
             )}
           </main>
 
-          {/* Mobile Chat Modal - Now as a separate component */}
+          {/* Mobile Chat Modal */}
           <MobileChatModal
             isOpen={isOffcanvasOpen}
             onClose={closeOffcanvas}
@@ -262,6 +207,8 @@ export default function ChatsPage() {
             isLoadingMessages={isLoadingMessages}
             messagesEndRef={messagesEndRef}
             onSendMessage={sendMessage}
+            onEditMessage={editMessage}
+            onDeleteMessage={deleteMessage}
             isMobile={isMobile}
           />
         </div>
@@ -318,26 +265,7 @@ export default function ChatsPage() {
                   ))}
                 </div>
               ) : (
-                <div className="flex flex-col items-center justify-center h-full text-center p-8">
-                  <div className="mb-6 relative">
-                    <div className="w-20 h-20 rounded-full flex items-center justify-center shadow-lg bg-gradient-to-br from-orange-400 to-orange-600">
-                      <MessageCircle className="h-10 w-10 text-white" />
-                    </div>
-                    <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full animate-pulse bg-orange-400"></div>
-                  </div>
-                  <h3 className="text-xl font-semibold mb-2 text-white">
-                    No chats yet
-                  </h3>
-                  <p className="text-gray-400 mb-6">
-                    Start your first conversation!
-                  </p>
-                  <button
-                    onClick={() => navigate("/users")}
-                    className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-6 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 font-medium hover:from-orange-600 hover:to-orange-700"
-                  >
-                    Find Users ⚡
-                  </button>
-                </div>
+                <EmptyChatsState navigate={navigate} />
               )}
             </div>
           </div>
@@ -347,130 +275,34 @@ export default function ChatsPage() {
             {selectedChatId && otherUser ? (
               <>
                 {/* Chat Header */}
-                <div className="h-16 bg-gray-800 border-b border-gray-700 flex items-center justify-between px-6">
-                  <div className="flex items-center space-x-4">
-                    <div className="relative">
-                      <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold bg-gradient-to-br from-orange-400 to-orange-600 overflow-hidden">
-                        {otherUser?.avatar ? (
-                          <img
-                            src={otherUser.avatar}
-                            alt={otherUser?.name || "User"}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          otherUser?.name?.charAt(0)?.toUpperCase() || "U"
-                        )}
-                      </div>
-
-                      <div
-                        className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 ${
-                          otherUser?.status?.state === "online"
-                            ? "bg-green-500"
-                            : "bg-gray-400"
-                        } border-2 border-gray-800 rounded-full`}
-                      ></div>
-                    </div>
-                    <div className="">
-                      <h2 className="font-semibold text-white">
-                        {otherUser.name || "Chat"}
-                      </h2>
-                      <p
-                        className={`text-xs ${
-                          otherUser?.status?.state === "online"
-                            ? "text-green-400"
-                            : "text-gray-400"
-                        }`}
-                      >
-                        {otherUser?.status?.state}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center space-x-2">
-                    <button className="w-10 h-10 rounded-full bg-gray-700 hover:bg-gray-600 transition-colors flex items-center justify-center">
-                      <Phone className="w-4 h-4 text-gray-300" />
-                    </button>
-                    <button className="w-10 h-10 rounded-full bg-gray-700 hover:bg-gray-600 transition-colors flex items-center justify-center">
-                      <Video className="w-4 h-4 text-gray-300" />
-                    </button>
-                    <button className="w-10 h-10 rounded-full bg-gray-700 hover:bg-gray-600 transition-colors flex items-center justify-center">
-                      <MoreVertical className="w-4 h-4 text-gray-300" />
-                    </button>
-                  </div>
-                </div>
+                <ChatHeader otherUser={otherUser} />
 
                 {/* Chat Messages */}
                 <div className="">
                   <ChatMessages
                     messages={messages}
+                    selectedChatId={selectedChatId}
                     user={user}
                     otherUser={otherUser}
                     isLoadingMessages={isLoadingMessages}
                     messagesEndRef={messagesEndRef}
+                    onEditMessage={editMessage}
+                    onDeleteMessage={deleteMessage}
                   />
                 </div>
 
                 {/* Message Input */}
                 <div className="border-t border-gray-700 bg-gray-800">
-                  <MessageInput onSendMessage={sendMessage} />
+                  <MessageInput 
+                    onSendMessage={sendMessage}
+                    selectedChatId={selectedChatId}
+                    userId={user.id}
+                    otherUserId={otherUser._id}
+                  />
                 </div>
               </>
             ) : (
-              /* Welcome Screen */
-              <div className="flex-1 flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-center p-8">
-                <div className="mb-8 relative">
-                  <div className="w-32 h-32 rounded-full flex items-center justify-center shadow-2xl bg-gradient-to-br from-orange-400 via-orange-500 to-orange-600 animate-pulse">
-                    <MessageCircle className="h-16 w-16 text-white" />
-                  </div>
-                  <div
-                    className="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-gradient-to-r from-orange-300 to-orange-400 animate-bounce"
-                    style={{ animationDelay: "200ms" }}
-                  ></div>
-                  <div
-                    className="absolute -bottom-2 -left-3 w-6 h-6 rounded-full bg-gradient-to-r from-orange-400 to-orange-500 animate-bounce"
-                    style={{ animationDelay: "600ms" }}
-                  ></div>
-                  <div
-                    className="absolute top-8 -left-8 w-4 h-4 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 animate-pulse"
-                    style={{ animationDelay: "1000ms" }}
-                  ></div>
-                </div>
-
-                <p className="text-xl mb-8 max-w-md text-gray-300 leading-relaxed">
-                  Select a conversation from the sidebar to start chatting, or
-                  create a new one!
-                </p>
-
-                <div className="flex flex-col space-y-4 items-center">
-                  <button
-                    onClick={() => navigate("/users")}
-                    className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-8 py-4 rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 font-semibold text-lg hover:from-orange-600 hover:to-orange-700 transform hover:-translate-y-1"
-                  >
-                    Start New Chat 🚀
-                  </button>
-
-                  <div className="flex items-center space-x-6 text-gray-400 text-sm mt-8">
-                    <div className="flex items-center space-x-2">
-                      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                      <span>Secure</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <div
-                        className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"
-                        style={{ animationDelay: "500ms" }}
-                      ></div>
-                      <span>Real-time</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <div
-                        className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"
-                        style={{ animationDelay: "1000ms" }}
-                      ></div>
-                      <span>Lightning Fast</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <WelcomeScreen navigate={navigate} />
             )}
           </div>
         </div>
@@ -478,3 +310,162 @@ export default function ChatsPage() {
     </div>
   );
 }
+
+// Extracted components for better organization
+const LoadingState = () => (
+  <div className="flex flex-col items-center justify-center text-center py-16">
+    <div className="relative mb-8">
+      <div className="animate-spin w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full"></div>
+      <div className="absolute inset-0 w-16 h-16 border-4 border-orange-200/20 rounded-full"></div>
+    </div>
+    <div className="flex items-center space-x-2 mb-4">
+      <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
+      <div
+        className="w-2 h-2 bg-orange-600 rounded-full animate-pulse"
+        style={{ animationDelay: "0.2s" }}
+      ></div>
+      <div
+        className="w-2 h-2 bg-orange-700 rounded-full animate-pulse"
+        style={{ animationDelay: "0.4s" }}
+      ></div>
+    </div>
+    <h2 className="text-lg font-semibold text-white mb-2">Loading chats...</h2>
+    <p className="text-gray-400 text-sm">
+      Please wait while we fetch your conversations
+    </p>
+  </div>
+);
+
+const EmptyChatsState = ({ navigate }) => (
+  <div className="flex flex-col items-center justify-center text-center py-16">
+    <div className="mb-8 relative">
+      <div className="w-24 h-24 rounded-full flex items-center justify-center shadow-lg bg-gradient-to-br from-orange-400 to-orange-600">
+        <MessageCircle className="h-12 w-12 text-white" />
+      </div>
+      <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full animate-pulse bg-orange-400"></div>
+      <div
+        className="absolute -bottom-1 -left-2 w-4 h-4 rounded-full animate-pulse bg-orange-500"
+        style={{ animationDelay: "300ms" }}
+      ></div>
+    </div>
+    <h2 className="text-md font-bold mb-3 text-white">No chats yet</h2>
+    <p className="text-md mb-8 max-w-md text-gray-400">
+      Start your first conversation by connecting with other users on ZapTalk!
+    </p>
+    <button
+      onClick={() => navigate("/users")}
+      className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-8 py-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 font-semibold text-md hover:from-orange-600 hover:to-orange-700"
+    >
+      Find Users
+    </button>
+  </div>
+);
+
+const ChatHeader = ({ otherUser }) => (
+  <div className="h-16 bg-gray-800 border-b border-gray-700 flex items-center justify-between px-6">
+    <div className="flex items-center space-x-4">
+      <div className="relative">
+        <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold bg-gradient-to-br from-orange-400 to-orange-600 overflow-hidden">
+          {otherUser?.avatar ? (
+            <img
+              src={otherUser.avatar}
+              alt={otherUser?.name || "User"}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            otherUser?.name?.charAt(0)?.toUpperCase() || "U"
+          )}
+        </div>
+        <div
+          className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 ${
+            otherUser?.status?.state === "online"
+              ? "bg-green-500"
+              : "bg-gray-400"
+          } border-2 border-gray-800 rounded-full`}
+        ></div>
+      </div>
+      <div className="">
+        <h2 className="font-semibold text-white">
+          {otherUser.name || "Chat"}
+        </h2>
+        <p
+          className={`text-xs ${
+            otherUser?.status?.state === "online"
+              ? "text-green-400"
+              : "text-gray-400"
+          }`}
+        >
+          {otherUser?.status?.state}
+        </p>
+      </div>
+    </div>
+
+    <div className="flex items-center space-x-2">
+      <button className="w-10 h-10 rounded-full bg-gray-700 hover:bg-gray-600 transition-colors flex items-center justify-center">
+        <Phone className="w-4 h-4 text-gray-300" />
+      </button>
+      <button className="w-10 h-10 rounded-full bg-gray-700 hover:bg-gray-600 transition-colors flex items-center justify-center">
+        <Video className="w-4 h-4 text-gray-300" />
+      </button>
+      <button className="w-10 h-10 rounded-full bg-gray-700 hover:bg-gray-600 transition-colors flex items-center justify-center">
+        <MoreVertical className="w-4 h-4 text-gray-300" />
+      </button>
+    </div>
+  </div>
+);
+
+const WelcomeScreen = ({ navigate }) => (
+  <div className="flex-1 flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-center p-8">
+    <div className="mb-8 relative">
+      <div className="w-32 h-32 rounded-full flex items-center justify-center shadow-2xl bg-gradient-to-br from-orange-400 via-orange-500 to-orange-600 animate-pulse">
+        <MessageCircle className="h-16 w-16 text-white" />
+      </div>
+      <div
+        className="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-gradient-to-r from-orange-300 to-orange-400 animate-bounce"
+        style={{ animationDelay: "200ms" }}
+      ></div>
+      <div
+        className="absolute -bottom-2 -left-3 w-6 h-6 rounded-full bg-gradient-to-r from-orange-400 to-orange-500 animate-bounce"
+        style={{ animationDelay: "600ms" }}
+      ></div>
+      <div
+        className="absolute top-8 -left-8 w-4 h-4 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 animate-pulse"
+        style={{ animationDelay: "1000ms" }}
+      ></div>
+    </div>
+
+    <p className="text-xl mb-8 max-w-md text-gray-300 leading-relaxed">
+      Select a conversation from the sidebar to start chatting, or create a new one!
+    </p>
+
+    <div className="flex flex-col space-y-4 items-center">
+      <button
+        onClick={() => navigate("/users")}
+        className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-8 py-4 rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 font-semibold text-lg hover:from-orange-600 hover:to-orange-700 transform hover:-translate-y-1"
+      >
+        Start New Chat
+      </button>
+
+      <div className="flex items-center space-x-6 text-gray-400 text-sm mt-8">
+        <div className="flex items-center space-x-2">
+          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+          <span>Secure</span>
+        </div>
+        <div className="flex items-center space-x-2">
+          <div
+            className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"
+            style={{ animationDelay: "500ms" }}
+          ></div>
+          <span>Real-time</span>
+        </div>
+        <div className="flex items-center space-x-2">
+          <div
+            className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"
+            style={{ animationDelay: "1000ms" }}
+          ></div>
+          <span>Lightning Fast</span>
+        </div>
+      </div>
+    </div>
+  </div>
+);

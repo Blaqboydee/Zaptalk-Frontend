@@ -72,7 +72,7 @@ export const useChats = (userId) => {
   }, [chats, searchTerm, userId, friends]);
 
   const updateChatOnMessage = (chatId, newMessage) => {
-    console.log("Sorting chat to top:", chatId);
+    // console.log("Sorting chat to top:", chatId);
 
     setChats((prevChats) => {
       const chatIndex = prevChats.findIndex(
@@ -80,7 +80,7 @@ export const useChats = (userId) => {
       );
 
       if (chatIndex === -1) {
-        console.log("Chat not found:", chatId);
+        // console.log("Chat not found:", chatId);
         return prevChats;
       }
 
@@ -94,7 +94,7 @@ export const useChats = (userId) => {
       const [chatToMove] = updatedChats.splice(chatIndex, 1);
       updatedChats.unshift(chatToMove);
 
-      console.log("Chat moved to top successfully");
+      // console.log("Chat moved to top successfully");
       return updatedChats;
     });
   };

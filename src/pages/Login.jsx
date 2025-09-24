@@ -22,10 +22,10 @@ export default function Login() {
 
     try {
       const response = await api.post("/auth/login", { email, password });
-      console.log(response);
+      // console.log(response);
       
       const token = response.data.token;
-      console.log(token);
+      // console.log(token);
       
       // Your enhanced login function now returns userId
       const { userId } = login(token);
@@ -33,14 +33,14 @@ export default function Login() {
       // Emit online status using extracted userId
       if (socket && userId) {
         socket.emit("user-online", userId);
-        console.log(`User ${userId} set to online`); // Debug log
+        // console.log(`User ${userId} set to online`); // Debug log
       } else if (!userId) {
         console.warn("No userId extracted from token");
       }
 
       navigate("/allchats");
     } catch (err) {
-      console.log(err);
+      // console.log(err);
       setError(err.response?.data?.message || "Invalid credentials. Please try again.");
     } finally {
       setIsLoading(false);
