@@ -44,7 +44,7 @@ return(
         {/* <div className="mt-3 w-8 h-0.5 bg-gradient-to-r from-orange-400 to-orange-600 rounded-full"></div> */}
       </div>
       
-      <div className="overflow-x-auto h-[85px] w-full custom-scrollbar pb-2">
+      <div className="overflow-x-auto   w-full custom-scrollbar p-0">
         <div className="flex gap-4 min-w-max ">
           {[...friends].reverse().map((friend, index) => (
             <div 
@@ -71,7 +71,7 @@ return(
               >
                 {/* Avatar with status indicator */}
                 <div className="relative">
-                  <div className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold bg-gradient-to-br from-orange-400 via-orange-500 to-orange-600 overflow-hidden ring-2 ring-orange-500/20 group-hover:ring-orange-400/40 transition-all duration-300 shadow-lg">
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold bg-gradient-to-br from-orange-400 via-orange-500 to-orange-600 overflow-hidden ring-2 ring-orange-500/20 group-hover:ring-orange-400/40 transition-all duration-300 shadow-lg">
                     {friend.avatar ? (
                       <img
                         src={friend.avatar}

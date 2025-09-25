@@ -1,19 +1,25 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import React, { useState, useCallback, useRef, useEffect, useContext } from 'react';
 import { Send } from 'lucide-react';
 import { useTypingIndicator } from '../hooks/useTypingIndicator';
+import { AuthContext } from '../context/AuthContext';
 
 const MessageInput = ({ 
   onSendMessage, 
   disabled = false, 
   placeholder = "Type your message...",
   selectedChatId,
-  user,
+  isMobile,
+  // user,
   otherUser
 }) => {
   const [message, setMessage] = useState("");
   const textareaRef = useRef(null);
+  const {user} = useContext(AuthContext)
   const userId = user.id
   const otherUserId = otherUser._id
+
+  // console.log(otherUser);
+  
   
   // Typing indicator hook
   const { isTyping, otherUserTyping, startTyping, stopTyping } = useTypingIndicator(
@@ -69,22 +75,30 @@ const MessageInput = ({
 
   return (
     <div className="w-full">
-      {/* Typing Indicator with glassmorphism */}
+      {/* Typing Indicator with conditional glassmorphism */}
       {otherUserTyping && (
-        <div className="mb-3 px-4 py-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-lg">
+        <div className={`mb-3 px-4 py-2 ${
+          isMobile 
+            ? 'bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-lg' 
+            : 'bg-gray-100 rounded-lg border border-gray-200'
+        }`}>
           <div className="flex items-center space-x-2">
             <div className="flex space-x-1">
               <div className="w-2 h-2 bg-orange-400 rounded-full animate-bounce"></div>
               <div className="w-2 h-2 bg-orange-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
               <div className="w-2 h-2 bg-orange-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
             </div>
-            <span className="text-white/80 text-sm">Typing...</span>
+            <span className={`text-sm ${isMobile ? 'text-white/80' : 'text-gray-600'}`}>Typing...</span>
           </div>
         </div>
       )}
 
-      {/* Input Container with glassmorphism */}
-      <div className="bg-white/15 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl p-4">
+      {/* Input Container with conditional glassmorphism */}
+      <div className={`p-4 ${
+        isMobile 
+          ? 'bg-white/15 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl' 
+          : 'bg-gray-900 rounded-lg border border-gray-700 shadow-sm'
+      }`}>
         <div className="flex gap-3 items-end">
           {/* Message Input */}
           <div className="flex-1 relative">
@@ -95,7 +109,11 @@ const MessageInput = ({
               onKeyPress={handleKeyPress}
               onBlur={handleBlur}
               placeholder={placeholder}
-              className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-2xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-orange-400/50 focus:border-orange-400/50 transition-all duration-200 resize-none scrollbar-hidden backdrop-blur-md"
+              className={`w-full px-4 py-3 border transition-all duration-200 resize-none scrollbar-hidden ${
+                isMobile
+                  ? 'bg-white/10 border-white/20 rounded-2xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-orange-400/50 focus:border-orange-400/50 backdrop-blur-md'
+                  : 'bg-gray-900 border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400'
+              }`}
               disabled={disabled}
               rows="1"
               style={{ minHeight: '48px', maxHeight: '120px' }}
@@ -103,21 +121,30 @@ const MessageInput = ({
             
             {/* Character count */}
             {message.length > 400 && (
-              <div className="absolute -top-6 right-2 text-xs text-white/60 bg-white/10 backdrop-blur-md px-2 py-1 rounded-lg">
+              <div className={`absolute -top-6 right-2 text-xs px-2 py-1 rounded-lg ${
+                isMobile 
+                  ? 'text-white/60 bg-white/10 backdrop-blur-md' 
+                  : 'text-white bg-gray-100'
+              }`}>
                 {message.length}/500
               </div>
             )}
           </div>
 
-          {/* Send Button with glassmorphism */}
+          {/* Send Button with conditional glassmorphism */}
           <button
             onClick={handleSend}
             className={`
-              px-4 py-3 rounded-2xl flex items-center justify-center min-w-[48px] h-12
-              transition-all duration-200 transform backdrop-blur-md
+              px-4 py-3 flex items-center justify-center min-w-[48px] h-12
+              transition-all duration-200 transform
+              ${isMobile ? 'rounded-2xl backdrop-blur-md' : 'rounded-lg'}
               ${message.trim() && !disabled
-                ? 'bg-gradient-to-r from-orange-400/80 to-orange-500/80 hover:from-orange-500/90 hover:to-orange-600/90 hover:scale-110 shadow-lg hover:shadow-orange-500/25 border border-orange-300/30'
-                : 'bg-white/10 cursor-not-allowed opacity-50 border border-white/20'
+                ? isMobile
+                  ? 'bg-gradient-to-r from-orange-400/80 to-orange-500/80 hover:from-orange-500/90 hover:to-orange-600/90 hover:scale-110 shadow-lg hover:shadow-orange-500/25 border border-orange-300/30'
+                  : 'bg-orange-500 hover:bg-orange-600 shadow-md hover:shadow-lg border border-orange-500'
+                : isMobile
+                  ? 'bg-white/10 cursor-not-allowed opacity-50 border border-white/20'
+                  : 'bg-white cursor-not-allowed opacity-50 border border-gray-200'
               }
             `}
             disabled={!message.trim() || disabled}
@@ -125,16 +152,14 @@ const MessageInput = ({
           >
             <Send 
               size={18} 
-              className={`text-white ${message.trim() && !disabled ? 'animate-pulse' : ''}`}
+              className={`${
+                isMobile ? 'text-white' : 'text-white'
+              } ${message.trim() && !disabled ? 'animate-pulse' : ''}`}
             />
           </button>
         </div>
 
-        {/* Input hints with glassmorphism styling */}
-        <div className="flex justify-between items-center mt-3 text-xs text-white/50">
-          <span>Press Enter to send, Shift+Enter for new line</span>
-          {disabled && <span className="text-orange-300/80 bg-orange-500/20 px-2 py-1 rounded-lg backdrop-blur-sm">Chat not available</span>}
-        </div>
+    
       </div>
     </div>
   );

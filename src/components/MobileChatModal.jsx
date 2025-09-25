@@ -17,6 +17,8 @@ const MobileChatModal = ({
   onDeleteMessage,
   isMobile = true
 }) => {
+
+  
   // Lock/unlock body scroll when modal opens/closes
   useEffect(() => {
     if (isOpen) {
@@ -143,6 +145,7 @@ const MobileChatModal = ({
             selectedChatId={selectedChatId}
             user={user}
             otherUser={otherUser}
+            isMobile={isMobile}
           />
         </div>
       </div>

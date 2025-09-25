@@ -14,7 +14,6 @@ import ChatLayout from "./pages/ChatLayout";
 import GroupChats from "./pages/GroupChats";
 import Friends from "./pages/Friends";
 import Header from "./components/Header";
-import ChatModal from "./components/ChatModal";
 
 // Loading component with mobile-optimized styling
 function LoadingScreen() {
@@ -123,7 +122,6 @@ function AppContent() {
           path="/friends"
           element={user ? <Friends socket={socket} user={user} /> : <Navigate to="/login" />}
         />
-            <Route path="/modal" element={<ChatModal/>} />
       </Routes>
   
     </div>
