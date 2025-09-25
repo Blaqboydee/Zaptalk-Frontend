@@ -28,12 +28,12 @@ const MobileChatModal = ({
     <div className="fixed inset-0 z-50">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black bg-opacity-50"
+        className="absolute inset-0 max-h-[80vh] bg-opacity-50"
         onClick={onClose}
       />
       
       {/* Modal Content */}
-      <div className="absolute inset-0 bg-gray-800 flex flex-col">
+      <div className="absolute h-[80vh] inset-0 bg-red-800 flex flex-col">
         {/* Header */}
         <div className="h-[70px] border-b border-gray-700 flex items-center justify-between px-4 bg-gray-800">
           <div className="flex items-center gap-3">

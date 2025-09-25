@@ -27,7 +27,7 @@ const ChatLayout = ({ user }) => {
   }, [apiUrl]);
 
   return (
-    <div className="h-screen bg-gray-900">
+    <div className="h-[90vh] bg-gray-900">
       {/* Main Header */}
       <header className="sticky top-0 z-40 backdrop-blur-md border-b flex flex-col  border-gray-700/50">
         {/* <div className="max-w-7xl  flex flex-wrap justify-between items-end px-4 sm:px-6 lg:px-8 py-4">
