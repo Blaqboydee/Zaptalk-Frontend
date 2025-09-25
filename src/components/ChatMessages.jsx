@@ -146,7 +146,7 @@ const ChatMessages = ({
       {/* Messages Container */}
       <div
         className={`overflow-y-auto p-4 space-y-6 scrollbar-hidden ${
-          isMobile ? "h-[calc(100vh-120px)]" : "h-[calc(78vh-120px)]"
+          isMobile ? "h-[calc(70vh-120px)]" : "h-[calc(78vh-120px)]"
         }`}
       >
         {isLoadingMessages ? (
