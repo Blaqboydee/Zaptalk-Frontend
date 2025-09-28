@@ -156,7 +156,7 @@ export default function ChatsPage() {
   );
 
   return (
-    <div className="h-[85vh] bg-slate-900  overflow-hidden">
+    <div className="">
       {/* Mobile Layout */}
       {isMobile ? (
         <div className="flex-1 flex flex-col h-full">
@@ -214,11 +214,11 @@ export default function ChatsPage() {
         </div>
       ) : (
         /* Desktop Layout with Glassmorphism */
-        <div className="flex h-[85vh] bg-gray-900 w-full overflow-hidden">
+        <div className="flex h-[92vh] bg-gray-900 w-full overflow-hidden">
           {/* Left Sidebar - Chat List */}
           <div className="w-96 bg-white/5 backdrop-blur-xl border-r border-white/10 flex flex-col overflow-hidden">
             {/* Header with glassmorphism */}
-            <div className="p-6 border-b border-white/10  backdrop-blur-md">
+            <div className="p-6 border-b border-white/10 ">
               <div className="flex items-center justify-between mb-4">
                 <h1 className="text-2xl font-bold text-white">Chats</h1>
                 <button

@@ -35,7 +35,7 @@ const handleTouchCancel = () => {
 }
 
 return(
-    <div className="pl-2 pr-2 border-b border-gray-700 rounded-lg backdrop-blur-md bg-gradient-to-r from-gray-900/50 via-gray-800/30 to-gray-900/50">
+    <div className="pl-2 pr-2 border-b border-gray-700 rounded-lg bg-gray-900/50">
     <div className="max-w-7xl sm:px-4 ">
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-lg font-bold mt-3 text-transparent bg-clip-text bg-orange-400 ">

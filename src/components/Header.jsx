@@ -22,7 +22,7 @@ const Header = () => {
   };
 
   return (
-    <header className="sticky top-0 left-0 right-0 z-50 backdrop-blur-xl border-b border-gray-700/50 px-4 py-4">
+    <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl border-b border-gray-700/50 px-4 py-4">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between">
           {/* Left side - could add back button or menu */}

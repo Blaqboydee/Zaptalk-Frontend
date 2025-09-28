@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../context/AuthContext";
 import logo from "../assets/zaptalklogo.png"
+import { useNavigate } from "react-router-dom";
 import { FaUser, FaUserFriends, FaComments, FaUserPlus } from "react-icons/fa";
 import { MdAccountCircle, MdGroup, MdChat, MdPersonSearch, MdLogout } from "react-icons/md";
 
@@ -9,7 +10,7 @@ import { MdAccountCircle, MdGroup, MdChat, MdPersonSearch, MdLogout } from "reac
 export default function Navbar() {
   const { user, logout, profile } = useContext(AuthContext);
   // console.log(profile);
-  
+  const navigate = useNavigate()
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -221,7 +222,8 @@ export default function Navbar() {
                   <button
                     onClick={() => {
                       logout();
-                      closeSidebar();
+                       navigate("/login");
+                      // closeSidebar();
                     }}
                     className="flex items-center space-x-3 w-full px-4 py-3 rounded-xl bg-red-600 hover:bg-red-500 text-white transition-all duration-200 shadow-lg hover:shadow-xl group"
                   >

@@ -48,10 +48,6 @@ export default function Friends() {
 
   // Get direct access to Socket context for any additional functionality
   const { socket } = useGlobalSocket();
-  
-  // console.log("Friend Requests:", friendRequests);
-  // console.log("Friends:", friends);
-  // console.log("Sent Requests:", sentRequests);
 
   const { users } = useUsers();
   const { user } = useContext(AuthContext);
@@ -107,9 +103,6 @@ export default function Friends() {
 
   // Updated handler using initChat
   const handleMessageFriend = async (friend) => {
-    // console.log("FRIEND", friend);
-    // console.log(user);
-    
     // Add friend to initializing set
     setInitializingChats(prev => new Set([...prev, friend._id]));
     
@@ -184,294 +177,399 @@ export default function Friends() {
     }
   };
 
+  // Get tab info with labels
+  const getTabInfo = (key) => {
+    const tabMap = {
+      friends: { label: "Friends", icon: <FaUserFriends className="w-5 h-5" /> },
+      add: { label: "Add Friends", icon: <MdPersonAdd className="w-5 h-5" /> },
+      requests: { label: "Requests", icon: <FaInbox className="w-5 h-5" /> },
+      sent: { label: "Sent", icon: <FaPaperPlane className="w-5 h-5" /> }
+    };
+    return tabMap[key];
+  };
+
   return (
-    <div className="h-[90vh] bg-gray-900" >
+    <div className="h-screen bg-gray-900 flex flex-col overflow-hidden pt-12">
+      {/* Header Section */}
+      <div className="flex-shrink-0 bg-gray-900/80 backdrop-blur-sm border-b border-slate-700/50 p-4 sm:p-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex items-center justify-between mb-6">
+            
 
-      <div className="max-w-4xl mx-auto px-4 py-6">
-        {/* Sticky Tab Navigation */}
-        <div className="sticky top-16 z-10 bg-gray-900 rounded-lg shadow-sm mb-6" style={{ backgroundColor: 'var(--zap-dark-primary)' }}>
-          <div className="flex justify-between gap-2">
-            {[
-              { key: "friends", icon: <FaUserFriends /> },
-              { key: "add", icon: <MdPersonAdd /> },
-              { key: "requests", icon: <FaInbox /> },
-              { key: "sent", icon: <FaPaperPlane /> },
-            ].map((tab) => (
-              <button
-                key={tab.key}
-                onClick={() => setActiveTab(tab.key)}
-                className={`relative flex flex-col items-center justify-center flex-1 py-3 text-sm font-medium transition-colors border-b-2 ${
-                  activeTab === tab.key
-                    ? "border-orange-600 text-orange-400"
-                    : "border-transparent text-gray-300 hover:text-white hover:border-gray-600"
-                }`}
-                style={{
-                  color: activeTab === tab.key ? "#FB923C" : "var(--zap-gray-light)",
-                  borderBottomColor: activeTab === tab.key ? "#EA580C" : "transparent",
-                }}
-              >
-                {/* icon */}
-                <span className="text-xl">{tab.icon}</span>
+          </div>
 
-                {/* count bubble */}
-                {getTabCount(tab.key) > 0 && (
-                  <span className="absolute top-1 right-5 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-orange-600 rounded-full shadow-md">
-                    {getTabCount(tab.key)}
-                  </span>
-                )}
-              </button>
-            ))}
+          {/* Enhanced Tab Navigation */}
+          <div className="bg-gray-800/40 backdrop-blur-sm rounded-2xl p-2 border border-slate-700/50">
+            <div className="grid grid-cols-4 gap-1 sm:gap-2">
+              {["friends", "add", "requests", "sent"].map((tab) => {
+                const tabInfo = getTabInfo(tab);
+                const isActive = activeTab === tab;
+                const count = getTabCount(tab);
+                
+                return (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`relative flex flex-col sm:flex-row items-center justify-center gap-2 px-3 py-3 sm:py-4 rounded-xl font-semibold transition-all duration-300 transform ${
+                      isActive
+                        ? "bg-gradient-to-r from-orange-600 to-orange-500 text-white shadow-lg shadow-orange-500/25 scale-105"
+                        : "text-slate-400 hover:text-white hover:bg-gray-700/50 hover:scale-102"
+                    }`}
+                  >
+                    <span className={`transition-transform duration-300 ${isActive ? 'scale-110' : ''}`}>
+                      {tabInfo.icon}
+                    </span>
+                    <span className="text-xs sm:text-sm font-medium hidden sm:block">
+                      {tabInfo.label}
+                    </span>
+                    
+                    {/* Enhanced count badge */}
+                    {count > 0 && (
+                      <span className={`absolute -top-1 -right-1 sm:relative sm:top-0 sm:right-0 inline-flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 text-xs font-bold rounded-full transition-all duration-300 ${
+                        isActive 
+                          ? 'bg-white text-orange-600 shadow-lg' 
+                          : 'bg-orange-600 text-white'
+                      }`}>
+                        {count > 99 ? '99+' : count}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
+      </div>
 
-        {/* Tab Content */}
-        <div className="bg-gray-900 rounded-lg shadow-sm" style={{ backgroundColor: 'var(--zap-dark-primary)' }}>
-          {/* Friends Tab */}
-          {activeTab === "friends" && (
-            <div className="p-3 lg:p-6">
-              <div className="flex items-center justify-between lg:mb-4">
-                <h2 className="lg:text-lg font-semibold text-white" style={{ color: 'var(--zap-white)' }}>
-                  Your Friends ({friends.length})
-                </h2>
-              </div>
-              {friends?.length === 0 ? (
-                <div className="text-center py-12">
-                  <div className="text-6xl mb-4">👥</div>
-                  <p className="text-gray-400 mb-2">No friends yet</p>
-                  <p className="text-sm text-gray-500">Start by adding some friends!</p>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {friends?.map(f => (
-                    <div key={f?._id} className="flex items-center p-3 rounded-lg hover:bg-gray-800 transition-colors" style={{ backgroundColor: 'transparent' }}>
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold mr-3 ${
-                        f?.avatar ? '' : 'bg-orange-500'
-                      }`}>
-                        {f?.avatar ? (
-                          <img src={f.avatar} alt={f.name} className="w-10 h-10 rounded-full object-cover avatar" />
-                        ) : (
-                          f.name.charAt(0).toUpperCase() 
-                        )}
+      {/* Main Content Area - Scrollable */}
+      <div className="flex-1 overflow-hidden">
+        <div className="h-full overflow-y-auto">
+          <div className="max-w-6xl mx-auto p-4 sm:p-6">
+            <div className="bg-gray-900/60 backdrop-blur-sm rounded-2xl border border-slate-700/50 shadow-2xl min-h-[calc(100vh-16rem)]">
+              
+              {/* Friends Tab */}
+              {activeTab === "friends" && (
+                <div className="p-4 sm:p-8">
+                  <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-3">
+                      <div className="p-2 bg-orange-600/20 rounded-lg">
+                        <FaUserFriends className="w-5 h-5 text-orange-400" />
                       </div>
-                      <div className="flex-1">
-                        <h3 className="text-[14px] lg:text-base font-medium text-white" style={{ color: 'var(--zap-white)' }}>{f.name}</h3>
-                        <p className="text-[12px] lg:text-sm text-gray-400">Friend</p>
+                      Your Friends
+                      <span className="text-slate-400 text-lg">({friends.length})</span>
+                    </h2>
+                  </div>
+                  
+                  {friends?.length === 0 ? (
+                    <div className="text-center py-16">
+                      <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-orange-600/20 to-orange-500/20 rounded-full flex items-center justify-center">
+                        <FaUserFriends className="w-12 h-12 text-orange-400" />
                       </div>
+                      <h3 className="text-xl font-semibold text-white mb-2">No friends yet</h3>
+                      <p className="text-slate-400 mb-4">Start building your network by adding some friends!</p>
                       <button 
-                        onClick={() => handleMessageFriend(f)}
-                        disabled={initializingChats.has(f._id)}
-                        className={`mr-3 px-3 py-2 text-white text-sm font-medium rounded-lg transition-colors ${
-                          initializingChats.has(f._id)
-                            ? 'bg-orange-400 cursor-not-allowed' 
-                            : 'bg-orange-600 hover:bg-orange-500'
-                        }`}
+                        onClick={() => setActiveTab('add')}
+                        className="px-6 py-3 bg-gradient-to-r from-orange-600 to-orange-500 text-white font-medium rounded-xl hover:from-orange-500 hover:to-orange-400 transition-all duration-200 transform hover:scale-105"
                       >
-                        {initializingChats.has(f._id) ? (
-                          <div className="flex items-center space-x-2">
-                          
-                            <span>Opening...</span>
-                          </div>
-                        ) : (
-                          'Message'
-                        )}
-                      </button>
-                      <button 
-                        onClick={() => removeFriend(f._id)}
-                        className="mr-3 px-3 py-2 bg-red-700 hover:bg-red-600 text-white text-sm font-medium rounded-lg transition-colors"
-                      >
-                        Remove
+                        Add Friends
                       </button>
                     </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Add Friend Tab */}
-          {activeTab === "add" && (
-            <div className="p-3 lg:p-6">
-              <div className="flex items-center justify-between mb-2 lg:mb-4">
-                <h2 className="lg:text-lg font-semibold text-white" style={{ color: 'var(--zap-white)' }}>
-                  Add Friends
-                </h2>
-              </div>
-              {users.length === 0 ? (
-                <div className="text-center py-12">
-                  <div className="text-6xl mb-4">🔍</div>
-                  <p className="text-gray-400">No users found</p>
-                </div>
-              ) : (
-                <div className="lg:space-y-3">
-                  {users.map(u => {
-                    const isLoading = loadingRequests.has(u._id);
-                    const requestSent = isRequestSent(u._id);
-                    const isFriend = isAlreadyFriend(u._id);
-                    const pendingRequest = hasPendingRequest(u._id);
-                    
-                    // Determine button state
-                    let buttonConfig = {};
-                    
-                    if (isFriend) {
-                      buttonConfig = {
-                        text: "Already Friends",
-                        disabled: true,
-                        className: "px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg cursor-not-allowed opacity-60"
-                      };
-                    } else if (pendingRequest) {
-                      buttonConfig = {
-                        text: "Accept Request",
-                        disabled: false,
-                        className: "px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded-lg transition-colors",
-                        onClick: () => acceptFriendRequest(u._id, u.name)
-                      };
-                    } else if (requestSent) {
-                      buttonConfig = {
-                        text: "Request Sent",
-                        disabled: true,
-                        className: "px-4 py-2 bg-gray-600 text-gray-300 text-sm font-medium rounded-lg cursor-not-allowed opacity-60"
-                      };
-                    } else {
-                      buttonConfig = {
-                        text: isLoading ? "" : "Add Friend",
-                        disabled: isLoading,
-                        className: `px-4 py-2 ${isLoading ? 'bg-orange-400' : 'bg-orange-600 hover:bg-orange-500'} text-white text-sm font-medium rounded-lg transition-colors ${isLoading ? 'cursor-not-allowed' : ''}`,
-                        onClick: () => handleSendFriendRequest(u)
-                      };
-                    }
-
-                    return (
-                      <div key={u._id} className="flex items-center p-3 rounded-lg hover:bg-gray-800 transition-colors">
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold mr-3 ${
-                          u.avatar ? '' : 'bg-gray-500'
-                        }`}>
-                          {u.avatar ? (
-                            <img src={u.avatar} alt={u.name} className="w-10 h-10 rounded-full object-cover avatar" />
-                          ) : (
-                            u.name.charAt(0).toUpperCase()
-                          )}
-                        </div>
-                        <div className="flex-1">
-                          <h3 className=" text-[14px] lg:text-base font-medium text-white" style={{ color: 'var(--zap-white)' }}>{u.name}</h3>
-                          <p className="text-[12px] lg:text-sm text-gray-400">
-                            {isFriend ? "Friend" : pendingRequest ? "Wants to be your friend" : "User"}
-                          </p>
-                        </div>
-                        <button 
-                          onClick={buttonConfig.onClick}
-                          disabled={buttonConfig.disabled}
-                          className={buttonConfig.className}
-                        >
-                          {isLoading ? (
-                            <div className="flex items-center space-x-2">
-                              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                              <span>Sending...</span>
+                  ) : (
+                    <div className="grid gap-3 sm:gap-4">
+                      {friends?.map(f => (
+                        <div key={f?._id} className="group bg-gray-800/40 backdrop-blur-sm rounded-xl p-4 sm:p-6 border border-slate-700/50 hover:border-orange-500/30 hover:bg-gray-700/40 transition-all duration-300">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-4">
+                              <div className="relative">
+                                <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center text-white font-bold text-lg ${
+                                  f?.avatar ? '' : 'bg-gradient-to-br from-orange-600 to-orange-500'
+                                }`}>
+                                  {f?.avatar ? (
+                                    <img src={f.avatar} alt={f.name} className="w-full h-full rounded-full object-cover" />
+                                  ) : (
+                                    f.name.charAt(0).toUpperCase() 
+                                  )}
+                                </div>
+                                <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-gray-900"></div>
+                              </div>
+                              <div>
+                                <h3 className="text-base sm:text-lg font-semibold text-white group-hover:text-orange-400 transition-colors">
+                                  {f.name}
+                                </h3>
+                                <p className="text-sm text-slate-400">Friend</p>
+                              </div>
                             </div>
-                          ) : (
-                            buttonConfig.text
-                          )}
-                        </button>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Friend Requests Tab */}
-          {activeTab === "requests" && (
-            <div className="p-3 lg:p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="lg:text-lg font-semibold text-white" style={{ color: 'var(--zap-white)' }}>
-                  Friend Requests ({friendRequests.length})
-                </h2>
-              </div>
-              {friendRequests.length === 0 ? (
-                <div className="text-center py-12">
-                  <div className="text-6xl mb-4">📥</div>
-                  <p className="text-gray-400">No pending requests</p>
-                </div>
-              ) : (
-                <div className="lg:space-y-3">
-                  {friendRequests.map(r => (
-                    <div key={r._id} className="flex items-center lg:p-3 rounded-lg hover:bg-gray-800 transition-colors">
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold mr-3 ${
-                        r.from.avatar ? '' : 'bg-orange-500'
-                      }`}>
-                        {r.from.avatar ? (
-                          <img src={r.from.avatar} alt={r.from.name} className="w-10 h-10 rounded-full object-cover avatar" />
-                        ) : (
-                          r.from.name.charAt(0).toUpperCase()
-                        )}
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="text-[14px] lg:text-base font-medium text-white" style={{ color: 'var(--zap-white)' }}>{r.from.name}</h3>
-                        <p className="text-[12px] lg:text-sm text-gray-400">Wants to be friends</p>
-                      </div>
-                      <div className="flex space-x-2">
-                        <button 
-                          onClick={() => acceptFriendRequest(r.from._id, r.from.name)}
-                          className="px-4 py-2 bg-green-600 hover:bg-green-500 text-white text-sm font-medium rounded-lg transition-colors"
-                        >
-                          Accept
-                        </button>
-                        <button 
-                          onClick={() => rejectFriendRequest(r.from._id, r.from.name)}
-                          className="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white text-sm font-medium rounded-lg transition-colors"
-                        >
-                          Decline
-                        </button>
-                      </div>
+                            
+                            <div className="flex items-center space-x-2 sm:space-x-3">
+                              <button 
+                                onClick={() => handleMessageFriend(f)}
+                                disabled={initializingChats.has(f._id)}
+                                className={`px-4 py-2 sm:px-6 sm:py-2 text-sm font-medium rounded-lg transition-all duration-200 transform ${
+                                  initializingChats.has(f._id)
+                                    ? 'bg-orange-400 text-white cursor-not-allowed' 
+                                    : 'bg-gradient-to-r from-orange-600 to-orange-500 text-white hover:from-orange-500 hover:to-orange-400 hover:scale-105 shadow-lg shadow-orange-500/25'
+                                }`}
+                              >
+                                {initializingChats.has(f._id) ? (
+                                  <div className="flex items-center space-x-2">
+                                    <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                    <span className="hidden sm:inline">Opening...</span>
+                                  </div>
+                                ) : (
+                                  'Message'
+                                )}
+                              </button>
+                              <button 
+                                onClick={() => removeFriend(f._id)}
+                                className="px-4 py-2 sm:px-6 sm:py-2 bg-red-600/80 hover:bg-red-600 text-white text-sm font-medium rounded-lg transition-all duration-200 transform hover:scale-105"
+                              >
+                                Remove
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  ))}
+                  )}
                 </div>
               )}
-            </div>
-          )}
 
-          {/* Sent Requests Tab */}
-          {activeTab === "sent" && (
-            <div className="p-3 lg:p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="lg:text-lg font-semibold text-white" style={{ color: 'var(--zap-white)' }}>
-                  Sent Requests ({sentRequests.length})
-                </h2>
-              </div>
-              {sentRequests.length === 0 ? (
-                <div className="text-center py-12">
-                  <div className="text-6xl mb-4">📤</div>
-                  <p className="text-gray-400">No sent requests</p>
+              {/* Add Friend Tab */}
+              {activeTab === "add" && (
+                <div className="p-4 sm:p-8">
+                  <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-3">
+                      <div className="p-2 bg-blue-600/20 rounded-lg">
+                        <MdPersonAdd className="w-5 h-5 text-blue-400" />
+                      </div>
+                      Discover People
+                    </h2>
+                  </div>
+                  
+                  {users.length === 0 ? (
+                    <div className="text-center py-16">
+                      <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-blue-600/20 to-blue-500/20 rounded-full flex items-center justify-center">
+                        <MdPersonAdd className="w-12 h-12 text-blue-400" />
+                      </div>
+                      <h3 className="text-xl font-semibold text-white mb-2">No users found</h3>
+                      <p className="text-slate-400">Check back later for more people to connect with!</p>
+                    </div>
+                  ) : (
+                    <div className="grid gap-3 sm:gap-4">
+                      {users.map(u => {
+                        const isLoading = loadingRequests.has(u._id);
+                        const requestSent = isRequestSent(u._id);
+                        const isFriend = isAlreadyFriend(u._id);
+                        const pendingRequest = hasPendingRequest(u._id);
+                        
+                        // Determine button state
+                        let buttonConfig = {};
+                        
+                        if (isFriend) {
+                          buttonConfig = {
+                            text: "Friends",
+                            disabled: true,
+                            className: "px-4 py-2 sm:px-6 sm:py-2 bg-green-600/80 text-white text-sm font-medium rounded-lg cursor-not-allowed opacity-80"
+                          };
+                        } else if (pendingRequest) {
+                          buttonConfig = {
+                            text: "Accept",
+                            disabled: false,
+                            className: "px-4 py-2 sm:px-6 sm:py-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white text-sm font-medium rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg shadow-blue-500/25",
+                            onClick: () => acceptFriendRequest(u._id, u.name)
+                          };
+                        } else if (requestSent) {
+                          buttonConfig = {
+                            text: "Sent",
+                            disabled: true,
+                            className: "px-4 py-2 sm:px-6 sm:py-2 bg-gray-600/80 text-gray-300 text-sm font-medium rounded-lg cursor-not-allowed opacity-80"
+                          };
+                        } else {
+                          buttonConfig = {
+                            text: isLoading ? "" : "Add Friend",
+                            disabled: isLoading,
+                            className: `px-4 py-2 sm:px-6 sm:py-2 ${isLoading ? 'bg-orange-400' : 'bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-500 hover:to-orange-400 shadow-lg shadow-orange-500/25 hover:scale-105'} text-white text-sm font-medium rounded-lg transition-all duration-200 transform ${isLoading ? 'cursor-not-allowed' : ''}`,
+                            onClick: () => handleSendFriendRequest(u)
+                          };
+                        }
+
+                        return (
+                          <div key={u._id} className="group bg-gray-800/40 backdrop-blur-sm rounded-xl p-4 sm:p-6 border border-slate-700/50 hover:border-blue-500/30 hover:bg-gray-700/40 transition-all duration-300">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center space-x-4">
+                                <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center text-white font-bold text-lg ${
+                                  u.avatar ? '' : 'bg-gradient-to-br from-blue-600 to-blue-500'
+                                }`}>
+                                  {u.avatar ? (
+                                    <img src={u.avatar} alt={u.name} className="w-full h-full rounded-full object-cover" />
+                                  ) : (
+                                    u.name.charAt(0).toUpperCase()
+                                  )}
+                                </div>
+                                <div>
+                                  <h3 className="text-base sm:text-lg font-semibold text-white group-hover:text-blue-400 transition-colors">
+                                    {u.name}
+                                  </h3>
+                                  <p className="text-sm text-slate-400">
+                                    {isFriend ? "Friend" : pendingRequest ? "Wants to be your friend" : "User"}
+                                  </p>
+                                </div>
+                              </div>
+                              
+                              <button 
+                                onClick={buttonConfig.onClick}
+                                disabled={buttonConfig.disabled}
+                                className={buttonConfig.className}
+                              >
+                                {isLoading ? (
+                                  <div className="flex items-center space-x-2">
+                                    <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                    <span className="hidden sm:inline">Sending...</span>
+                                  </div>
+                                ) : (
+                                  buttonConfig.text
+                                )}
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
-              ) : (
-                <div className="lg:space-y-3">
-                  {sentRequests.map(r => (
-                    <div key={r._id} className="flex items-center p-3 rounded-lg hover:bg-gray-800 transition-colors">
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold mr-3 ${
-                        r.to.avatar ? '' : 'bg-purple-500'
-                      }`}>
-                        {r.to.avatar ? (
-                          <img src={r.to.avatar} alt={r.to.name} className="w-10 h-10 rounded-full object-cover avatar" />
-                        ) : (
-                          r.to.name.charAt(0).toUpperCase()
-                        )}
+              )}
+
+              {/* Friend Requests Tab */}
+              {activeTab === "requests" && (
+                <div className="p-4 sm:p-8">
+                  <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-3">
+                      <div className="p-2 bg-blue-600/20 rounded-lg">
+                        <FaInbox className="w-5 h-5 text-blue-400" />
                       </div>
-                      <div className="flex-1">
-                        <h3 className="text-[14px] lg:text-base font-medium text-white" style={{ color: 'var(--zap-white)' }}>{r.to.name}</h3>
-                        <p className="text-[12px] lg:text-sm text-gray-400">Request pending</p>
+                      Friend Requests
+                      <span className="text-slate-400 text-lg">({friendRequests.length})</span>
+                    </h2>
+                  </div>
+                  
+                  {friendRequests.length === 0 ? (
+                    <div className="text-center py-16">
+                      <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-blue-600/20 to-blue-500/20 rounded-full flex items-center justify-center">
+                        <FaInbox className="w-12 h-12 text-blue-400" />
                       </div>
+                      <h3 className="text-xl font-semibold text-white mb-2">No pending requests</h3>
+                      <p className="text-slate-400">You're all caught up! New friend requests will appear here.</p>
+                    </div>
+                  ) : (
+                    <div className="grid gap-3 sm:gap-4">
+                      {friendRequests.map(r => (
+                        <div key={r._id} className="group bg-gray-800/40 backdrop-blur-sm rounded-xl p-4 sm:p-6 border border-slate-700/50 hover:border-green-500/30 hover:bg-gray-700/40 transition-all duration-300">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-4">
+                              <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center text-white font-bold text-lg ${
+                                r.from.avatar ? '' : 'bg-gradient-to-br from-green-600 to-green-500'
+                              }`}>
+                                {r.from.avatar ? (
+                                  <img src={r.from.avatar} alt={r.from.name} className="w-full h-full rounded-full object-cover" />
+                                ) : (
+                                  r.from.name.charAt(0).toUpperCase()
+                                )}
+                              </div>
+                              <div>
+                                <h3 className="text-base sm:text-lg font-semibold text-white group-hover:text-green-400 transition-colors">
+                                  {r.from.name}
+                                </h3>
+                                <p className="text-sm text-slate-400">Wants to be friends</p>
+                              </div>
+                            </div>
+                            
+                            <div className="flex items-center space-x-2 sm:space-x-3">
+                              <button 
+                                onClick={() => acceptFriendRequest(r.from._id, r.from.name)}
+                                className="px-4 py-2 sm:px-6 sm:py-2 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white text-sm font-medium rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg shadow-green-500/25"
+                              >
+                                Accept
+                              </button>
+                              <button 
+                                onClick={() => rejectFriendRequest(r.from._id, r.from.name)}
+                                className="px-4 py-2 sm:px-6 sm:py-2 bg-gray-600/80 hover:bg-gray-600 text-white text-sm font-medium rounded-lg transition-all duration-200 transform hover:scale-105"
+                              >
+                                Decline
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Sent Requests Tab */}
+              {activeTab === "sent" && (
+                <div className="p-4 sm:p-8">
+                  <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-3">
+                      <div className="p-2 bg-purple-600/20 rounded-lg">
+                        <FaPaperPlane className="w-5 h-5 text-purple-400" />
+                      </div>
+                      Sent Requests
+                      <span className="text-slate-400 text-lg">({sentRequests.length})</span>
+                    </h2>
+                  </div>
+                  
+                  {sentRequests.length === 0 ? (
+                    <div className="text-center py-16">
+                      <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-purple-600/20 to-purple-500/20 rounded-full flex items-center justify-center">
+                        <FaPaperPlane className="w-12 h-12 text-purple-400" />
+                      </div>
+                      <h3 className="text-xl font-semibold text-white mb-2">No sent requests</h3>
+                      <p className="text-slate-400 mb-4">Start connecting with people by sending friend requests!</p>
                       <button 
-                        onClick={() => cancelFriendRequest(r.to._id)}
-                        className="px-4 py-2 bg-red-600 hover:bg-red-500 text-white text-sm font-medium rounded-lg transition-colors"
+                        onClick={() => setActiveTab('add')}
+                        className="px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-500 text-white font-medium rounded-xl hover:from-purple-500 hover:to-purple-400 transition-all duration-200 transform hover:scale-105"
                       >
-                        Cancel
+                        Find People
                       </button>
                     </div>
-                  ))}
+                  ) : (
+                    <div className="grid gap-3 sm:gap-4">
+                      {sentRequests.map(r => (
+                        <div key={r._id} className="group bg-gray-800/40 backdrop-blur-sm rounded-xl p-4 sm:p-6 border border-slate-700/50 hover:border-purple-500/30 hover:bg-gray-700/40 transition-all duration-300">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-4">
+                              <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center text-white font-bold text-lg ${
+                                r.to.avatar ? '' : 'bg-gradient-to-br from-purple-600 to-purple-500'
+                              }`}>
+                                {r.to.avatar ? (
+                                  <img src={r.to.avatar} alt={r.to.name} className="w-full h-full rounded-full object-cover" />
+                                ) : (
+                                  r.to.name.charAt(0).toUpperCase()
+                                )}
+                              </div>
+                              <div>
+                                <h3 className="text-base sm:text-lg font-semibold text-white group-hover:text-purple-400 transition-colors">
+                                  {r.to.name}
+                                </h3>
+                                <p className="text-sm text-slate-400">Request pending</p>
+                              </div>
+                            </div>
+                            
+                            <button 
+                              onClick={() => cancelFriendRequest(r.to._id)}
+                              className="px-4 py-2 sm:px-6 sm:py-2 bg-red-600/80 hover:bg-red-600 text-white text-sm font-medium rounded-lg transition-all duration-200 transform hover:scale-105"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
-          )}
+          </div>
         </div>
       </div>
 
