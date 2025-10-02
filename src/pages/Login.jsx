@@ -49,17 +49,17 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-gray-900 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gray-900 flex items-center justify-center">
       <div className="w-full max-w-lg">
         {/* Main Card */}
-        <div className="bg-gray-900/80 backdrop-blur-sm rounded-3xl shadow-2xl border border-slate-700/50 overflow-hidden">
+        <div className="bg-gray-900/80 backdrop-blur-sm shadow-2xl overflow-hidden">
           
           {/* Header Section */}
-          <div className="bg-gradient-to-r from-orange-600/10 to-red-600/10 p-4 text-center border-b border-slate-700/50">
+          <div className="p-4 text-center border-b border-slate-700/50">
             <div className="mb-6">
-              <img src={logo} alt="ZapTalk" className="mx-auto h-16 w-auto mb-4" />
-              <h1 className="text-3xl font-bold text-white mb-2">Welcome Back</h1>
-              <p className="text-slate-400">Sign in to continue your conversations</p>
+              <img src={logo} alt="ZapTalk" className="mx-auto h-14 w-auto mb-4" />
+              <h1 className="text-2xl font-bold text-white mb-2">Welcome Back</h1>
+              <p className="text-sm lg:text-base text-slate-400">Sign in to continue your conversations</p>
             </div>
           </div>
 
