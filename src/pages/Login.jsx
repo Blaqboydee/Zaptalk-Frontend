@@ -52,10 +52,10 @@ export default function Login() {
     <div className="min-h-screen bg-gray-900 flex items-center justify-center">
       <div className="w-full max-w-lg">
         {/* Main Card */}
-        <div className="bg-gray-900/80 backdrop-blur-sm shadow-2xl overflow-hidden">
+        <div className="bg-gray-900/80 backdrop-blur-sm overflow-hidden">
           
           {/* Header Section */}
-          <div className="p-4 text-center border-b border-slate-700/50">
+          <div className="p-4 text-center border-slate-700/50">
             <div className="mb-6">
               <img src={logo} alt="ZapTalk" className="mx-auto h-14 w-auto mb-4" />
               <h1 className="text-2xl font-bold text-white mb-2">Welcome Back</h1>
@@ -211,7 +211,7 @@ export default function Login() {
           </div>
 
           {/* Footer - Sign Up Link */}
-          <div className="bg-gray-800/40 p-6 text-center border-t border-slate-700/50">
+          <div className="bg-gray-900 py-2 text-center border-slate-700/50">
             <p className="text-slate-400 text-sm">
               Don't have an account?{' '}
               <Link 
