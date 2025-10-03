@@ -113,7 +113,7 @@ export default function Profile() {
   }
 
   return (
-    <div className="h-[90vh] flex-col relative overflow-hidden bg-gray-900">
+    <div className="h-[90vh] mt-14 flex-col relative overflow-hidden bg-gray-900">
       {/* Background Decorative Elements */}
       {/* Main */}
       <main className="relative z-10 flex-1 p-6 flex flex-col items-center">

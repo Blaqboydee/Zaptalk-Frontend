@@ -38,7 +38,7 @@ const ChatLayout = ({ user }) => {
         </div> */}
 
           {/* Navigation Tabs */}
-      <div className=" backdrop-blur-md border-b border-gray-700/50">
+      <div className=" backdrop-blur-md border-b border-gray-700/50 mt-14">
         <div className="max-w-7xl mx-auto px-4">
           <nav className="flex space-x-8 justify-center">
             <NavLink
