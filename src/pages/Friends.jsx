@@ -189,7 +189,7 @@ export default function Friends() {
   };
 
   return (
-    <div className="h-[100vh] bg-gray-900 flex flex-col overflow-hidden pt-12">
+    <div className="h-[90vh] bg-gray-900 flex flex-col overflow-hidden pt-12">
       {/* Header Section */}
       <div className="flex-shrink-0 bg-gray-900/80 backdrop-blur-sm border-b border-slate-700/50 p-4 sm:p-6">
         <div className="max-w-6xl mx-auto">
