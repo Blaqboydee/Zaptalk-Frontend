@@ -212,7 +212,7 @@ export default function Friends() {
                     onClick={() => setActiveTab(tab)}
                     className={`relative flex flex-col sm:flex-row items-center justify-center gap-2 px-3 py-3 sm:py-4 rounded-xl font-semibold transition-all duration-300 transform ${
                       isActive
-                        ? "bg-orange-600 text-white shadow-lg shadow-orange-500/25 scale-105"
+                        ? "bg-orange-600 text-white scale-105"
                         : "text-slate-400 hover:text-white hover:bg-gray-700/50 hover:scale-102"
                     }`}
                   >
@@ -388,7 +388,7 @@ export default function Friends() {
                           buttonConfig = {
                             text: isLoading ? "" : "Add",
                             disabled: isLoading,
-                            className: `px-4 py-2 sm:px-6 sm:py-2 ${isLoading ? 'bg-orange-400' : 'bg-orange-600 to-orange-500 hover:from-orange-500 hover:to-orange-400 shadow-lg shadow-orange-500/25 hover:scale-105'} text-white text-sm font-medium rounded-lg transition-all duration-200 transform ${isLoading ? 'cursor-not-allowed' : ''}`,
+                            className: `px-4 py-2 sm:px-6 sm:py-2 ${isLoading ? 'bg-orange-400' : 'bg-orange-600 to-orange-500 hover:from-orange-500 hover:to-orange-400  hover:scale-105'} text-white text-sm font-medium rounded-lg transition-all duration-200 transform ${isLoading ? 'cursor-not-allowed' : ''}`,
                             onClick: () => handleSendFriendRequest(u)
                           };
                         }
