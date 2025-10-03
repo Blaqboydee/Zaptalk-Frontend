@@ -189,7 +189,7 @@ export default function Friends() {
   };
 
   return (
-    <div className="h-screen bg-gray-900 flex flex-col overflow-hidden pt-12">
+    <div className="h-[100vh] bg-gray-900 flex flex-col overflow-hidden pt-12">
       {/* Header Section */}
       <div className="flex-shrink-0 bg-gray-900/80 backdrop-blur-sm border-b border-slate-700/50 p-4 sm:p-6">
         <div className="max-w-6xl mx-auto">
@@ -212,7 +212,7 @@ export default function Friends() {
                     onClick={() => setActiveTab(tab)}
                     className={`relative flex flex-col sm:flex-row items-center justify-center gap-2 px-3 py-3 sm:py-4 rounded-xl font-semibold transition-all duration-300 transform ${
                       isActive
-                        ? "bg-gradient-to-r from-orange-600 to-orange-500 text-white shadow-lg shadow-orange-500/25 scale-105"
+                        ? "bg-orange-600 text-white shadow-lg shadow-orange-500/25 scale-105"
                         : "text-slate-400 hover:text-white hover:bg-gray-700/50 hover:scale-102"
                     }`}
                   >
@@ -262,14 +262,14 @@ export default function Friends() {
                   
                   {friends?.length === 0 ? (
                     <div className="text-center py-16">
-                      <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-orange-600/20 to-orange-500/20 rounded-full flex items-center justify-center">
+                      <div className="w-24 h-24 mx-auto mb-6 bg-orange-600/20 rounded-full flex items-center justify-center">
                         <FaUserFriends className="w-12 h-12 text-orange-400" />
                       </div>
                       <h3 className="text-xl font-semibold text-white mb-2">No friends yet</h3>
                       <p className="text-slate-400 mb-4">Start building your network by adding some friends!</p>
                       <button 
                         onClick={() => setActiveTab('add')}
-                        className="px-6 py-3 bg-gradient-to-r from-orange-600 to-orange-500 text-white font-medium rounded-xl hover:from-orange-500 hover:to-orange-400 transition-all duration-200 transform hover:scale-105"
+                        className="px-6 py-3 bg-orange-600 text-white font-medium rounded-xl hover:from-orange-500 hover:to-orange-400 transition-all duration-200 transform hover:scale-105"
                       >
                         Add Friends
                       </button>
@@ -282,7 +282,7 @@ export default function Friends() {
                             <div className="flex items-center space-x-4">
                               <div className="relative">
                                 <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center text-white font-bold text-lg ${
-                                  f?.avatar ? '' : 'bg-gradient-to-br from-orange-600 to-orange-500'
+                                  f?.avatar ? '' : 'bg-orange-600'
                                 }`}>
                                   {f?.avatar ? (
                                     <img src={f.avatar} alt={f.name} className="w-full h-full rounded-full object-cover" />
@@ -307,7 +307,7 @@ export default function Friends() {
                                 className={`px-4 py-2 sm:px-6 sm:py-2 text-sm font-medium rounded-lg transition-all duration-200 transform ${
                                   initializingChats.has(f._id)
                                     ? 'bg-orange-400 text-white cursor-not-allowed' 
-                                    : 'bg-gradient-to-r from-orange-600 to-orange-500 text-white hover:from-orange-500 hover:to-orange-400 hover:scale-105 shadow-lg shadow-orange-500/25'
+                                    : 'bg-orange-600 text-white hover:from-orange-500 hover:to-orange-400 hover:scale-105 shadow-lg shadow-orange-500/25'
                                 }`}
                               >
                                 {initializingChats.has(f._id) ? (
@@ -348,7 +348,7 @@ export default function Friends() {
                   
                   {users.length === 0 ? (
                     <div className="text-center py-16">
-                      <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-blue-600/20 to-blue-500/20 rounded-full flex items-center justify-center">
+                      <div className="w-24 h-24 mx-auto mb-6 bg-blue-600/20 rounded-full flex items-center justify-center">
                         <MdPersonAdd className="w-12 h-12 text-blue-400" />
                       </div>
                       <h3 className="text-xl font-semibold text-white mb-2">No users found</h3>
@@ -375,7 +375,7 @@ export default function Friends() {
                           buttonConfig = {
                             text: "Accept",
                             disabled: false,
-                            className: "px-4 py-2 sm:px-6 sm:py-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white text-sm font-medium rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg shadow-blue-500/25",
+                            className: "px-4 py-2 sm:px-6 sm:py-2 bg-blue-600  hover:from-blue-500 hover:to-blue-400 text-white text-sm font-medium rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg shadow-blue-500/25",
                             onClick: () => acceptFriendRequest(u._id, u.name)
                           };
                         } else if (requestSent) {
@@ -386,9 +386,9 @@ export default function Friends() {
                           };
                         } else {
                           buttonConfig = {
-                            text: isLoading ? "" : "Add Friend",
+                            text: isLoading ? "" : "Add",
                             disabled: isLoading,
-                            className: `px-4 py-2 sm:px-6 sm:py-2 ${isLoading ? 'bg-orange-400' : 'bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-500 hover:to-orange-400 shadow-lg shadow-orange-500/25 hover:scale-105'} text-white text-sm font-medium rounded-lg transition-all duration-200 transform ${isLoading ? 'cursor-not-allowed' : ''}`,
+                            className: `px-4 py-2 sm:px-6 sm:py-2 ${isLoading ? 'bg-orange-400' : 'bg-orange-600 to-orange-500 hover:from-orange-500 hover:to-orange-400 shadow-lg shadow-orange-500/25 hover:scale-105'} text-white text-sm font-medium rounded-lg transition-all duration-200 transform ${isLoading ? 'cursor-not-allowed' : ''}`,
                             onClick: () => handleSendFriendRequest(u)
                           };
                         }
@@ -398,7 +398,7 @@ export default function Friends() {
                             <div className="flex items-center justify-between">
                               <div className="flex items-center space-x-4">
                                 <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center text-white font-bold text-lg ${
-                                  u.avatar ? '' : 'bg-gradient-to-br from-blue-600 to-blue-500'
+                                  u.avatar ? '' : 'bg-blue-600'
                                 }`}>
                                   {u.avatar ? (
                                     <img src={u.avatar} alt={u.name} className="w-full h-full rounded-full object-cover" />
@@ -454,7 +454,7 @@ export default function Friends() {
                   
                   {friendRequests.length === 0 ? (
                     <div className="text-center py-16">
-                      <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-blue-600/20 to-blue-500/20 rounded-full flex items-center justify-center">
+                      <div className="w-24 h-24 mx-auto mb-6 bg-blue-600/20 rounded-full flex items-center justify-center">
                         <FaInbox className="w-12 h-12 text-blue-400" />
                       </div>
                       <h3 className="text-xl font-semibold text-white mb-2">No pending requests</h3>
@@ -467,7 +467,7 @@ export default function Friends() {
                           <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-4">
                               <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center text-white font-bold text-lg ${
-                                r.from.avatar ? '' : 'bg-gradient-to-br from-green-600 to-green-500'
+                                r.from.avatar ? '' : 'bg-green-600'
                               }`}>
                                 {r.from.avatar ? (
                                   <img src={r.from.avatar} alt={r.from.name} className="w-full h-full rounded-full object-cover" />
@@ -486,7 +486,7 @@ export default function Friends() {
                             <div className="flex items-center space-x-2 sm:space-x-3">
                               <button 
                                 onClick={() => acceptFriendRequest(r.from._id, r.from.name)}
-                                className="px-4 py-2 sm:px-6 sm:py-2 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white text-sm font-medium rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg shadow-green-500/25"
+                                className="px-4 py-2 sm:px-6 sm:py-2 bg-green-600 hover:from-green-500 hover:to-green-400 text-white text-sm font-medium rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg shadow-green-500/25"
                               >
                                 Accept
                               </button>
@@ -520,14 +520,14 @@ export default function Friends() {
                   
                   {sentRequests.length === 0 ? (
                     <div className="text-center py-16">
-                      <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-purple-600/20 to-purple-500/20 rounded-full flex items-center justify-center">
+                      <div className="w-24 h-24 mx-auto mb-6 bg-purple-600/20 rounded-full flex items-center justify-center">
                         <FaPaperPlane className="w-12 h-12 text-purple-400" />
                       </div>
                       <h3 className="text-xl font-semibold text-white mb-2">No sent requests</h3>
                       <p className="text-slate-400 mb-4">Start connecting with people by sending friend requests!</p>
                       <button 
                         onClick={() => setActiveTab('add')}
-                        className="px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-500 text-white font-medium rounded-xl hover:from-purple-500 hover:to-purple-400 transition-all duration-200 transform hover:scale-105"
+                        className="px-6 py-3 bg-purple-600 text-white font-medium rounded-xl hover:from-purple-500 hover:to-purple-400 transition-all duration-200 transform hover:scale-105"
                       >
                         Find People
                       </button>
@@ -539,7 +539,7 @@ export default function Friends() {
                           <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-4">
                               <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center text-white font-bold text-lg ${
-                                r.to.avatar ? '' : 'bg-gradient-to-br from-purple-600 to-purple-500'
+                                r.to.avatar ? '' : 'bg-purple-600 to-purple-500'
                               }`}>
                                 {r.to.avatar ? (
                                   <img src={r.to.avatar} alt={r.to.name} className="w-full h-full rounded-full object-cover" />
