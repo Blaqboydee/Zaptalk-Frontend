@@ -86,55 +86,70 @@ export default function SignUp() {
       return;
     }
 
-    setIsLoading(true);
-    try {
-      await api.post("/auth/register", { name, email, password });
-      setSuccess("Verification link sent to your email. Please check your inbox.");
-      setHasTriedSignup(true);
-      setLastResendTime(Date.now());
-      setName("");
-      setPassword("");
-      setConfirmPassword("");
-    } catch (err) {
-      setError(err.response?.data?.message || "Error creating account. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
+ setIsLoading(true);
+try {
+  const response = await api.post("/auth/register", { name, email, password });
+  
+  // Log the backend response
+  console.log("Registration response:", response.data);
+  
+  // Set success message
+  setSuccess("Your account has been created! Routing to login...");
+  
+  // Clear form fields
+  setName("");
+  setEmail("");
+  setPassword("");
+  setConfirmPassword("");
+  
+  // Route to login after a short delay (so user can see the success message)
+  setTimeout(() => {
+    navigate("/login");
+  }, 2000); // 2 second delay
+  
+} catch (err) {
+  // Log the error response
+  console.error("Registration error:", err.response?.data);
+  
+  setError(err.response?.data?.message || "Error creating account. Please try again.");
+} finally {
+  setIsLoading(false);
+}
   };
 
-  const handleResend = async () => {
-    if (!hasTriedSignup || resendCooldown > 0 || isResending) return;
+  // const handleResend = async () => {
+  //   if (!hasTriedSignup || resendCooldown > 0 || isResending) return;
 
-    setIsResending(true);
-    setError("");
-    setSuccess("");
+  //   setIsResending(true);
+  //   setError("");
+  //   setSuccess("");
 
-    try {
-      await api.post(`/auth/resend-verification`, { email });
-      setSuccess(`Verification email resent successfully! Check your inbox.`);
-      setResendAttempts(prev => prev + 1);
-      setLastResendTime(Date.now());
+  //   try {
+  //     await api.post(`/auth/resend-verification`, { email });
+  //     setSuccess(`Verification email resent successfully! Check your inbox.`);
+  //     setResendAttempts(prev => prev + 1);
+  //     setLastResendTime(Date.now());
       
-      const cooldownTimes = [30, 60, 120, 300];
-      const cooldownIndex = Math.min(resendAttempts, cooldownTimes.length - 1);
-      setResendCooldown(cooldownTimes[cooldownIndex]);
+  //     const cooldownTimes = [30, 60, 120, 300];
+  //     const cooldownIndex = Math.min(resendAttempts, cooldownTimes.length - 1);
+  //     setResendCooldown(cooldownTimes[cooldownIndex]);
 
-    } catch (err) {
-      setError(err.response?.data?.message || "Failed to resend verification email. Please try again.");
-    } finally {
-      setIsResending(false);
-    }
-  };
+  //   } catch (err) {
+  //     setError(err.response?.data?.message || "Failed to resend verification email. Please try again.");
+  //   } finally {
+  //     setIsResending(false);
+  //   }
+  // };
 
-  const isResendDisabled = !hasTriedSignup || resendCooldown > 0 || isResending || !email.trim();
+  // const isResendDisabled = !hasTriedSignup || resendCooldown > 0 || isResending || !email.trim();
 
-  const getResendButtonText = () => {
-    if (!hasTriedSignup) return "Complete signup first";
-    if (isResending) return "Sending...";
-    if (resendCooldown > 0) return `Resend in ${resendCooldown}s`;
-    if (resendAttempts === 0) return "Didn't get email? Resend verification";
-    return `Resend verification email`;
-  };
+  // const getResendButtonText = () => {
+  //   if (!hasTriedSignup) return "Complete signup first";
+  //   if (isResending) return "Sending...";
+  //   if (resendCooldown > 0) return `Resend in ${resendCooldown}s`;
+  //   if (resendAttempts === 0) return "Didn't get email? Resend verification";
+  //   return `Resend verification email`;
+  // };
 
   return (
     <div className="h-auto bg-gray-900 flex items-center justify-center pt-9">
@@ -455,7 +470,7 @@ export default function SignUp() {
                 </button>
 
                 {/* Enhanced Resend Verification Button */}
-                <button 
+                {/* <button 
                   type="button"
                   onClick={handleResend}
                   disabled={isResendDisabled}
@@ -479,8 +494,8 @@ export default function SignUp() {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                           </svg>
                         </div>
-                        <span>{getResendButtonText()}</span>
-                      </>
+                        {/* <span>{getResendButtonText()}</span> */}
+                      {/* </>
                     ) : !hasTriedSignup ? (
                       <>
                         <div className="p-1 rounded-full bg-slate-600/30">
@@ -501,10 +516,10 @@ export default function SignUp() {
                       </>
                     )}
                   </div>
-                </button>
+                // </button> */} 
 
                 {/* Resend Status Info */}
-                {hasTriedSignup && (
+                {/* {hasTriedSignup && (
                   <div className="p-4 bg-gray-800/30 rounded-xl border border-slate-700/30 text-center">
                     <div className="space-y-2">
                       <p className="text-xs text-slate-400">
@@ -520,7 +535,7 @@ export default function SignUp() {
                       )}
                     </div>
                   </div>
-                )}
+                )} */}
               </form>
             )}
           </div>

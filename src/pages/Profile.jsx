@@ -73,12 +73,13 @@ export default function Profile() {
   // Delete avatar
   const handleDeleteAvatar = async () => {
     try {
-      const response = await api.delete("/users/delete-avatar", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setProfile(response.data.user);
-      setAvatarPreview(null);
-      setAvatarFile(null);
+      // const response = await api.delete("/users/delete-avatar", {
+      //   headers: { Authorization: `Bearer ${token}` },
+      // });
+      // setProfile(response.data.user);
+      // setAvatarPreview(null);
+      // setAvatarFile(null);
+      alert("Avatar deletion is currently disabled.");
     } catch (err) {
       console.error("Error deleting avatar:", err);
     }
@@ -113,7 +114,7 @@ export default function Profile() {
   }
 
   return (
-    <div className="h-[90vh] mt-14 flex-col relative overflow-hidden bg-gray-900">
+    <div className="h-auto pt-11 flex-col relative overflow-hidden">
       {/* Background Decorative Elements */}
       {/* Main */}
       <main className="relative z-10 flex-1 p-6 flex flex-col items-center">
@@ -212,11 +213,12 @@ export default function Profile() {
                   )}
 
                   {/* Delete Avatar Button */}
-                  {/* {(avatarPreview || profile.avatar) && (
+                  {(avatarPreview || profile.avatar) && (
                     <button
                       onClick={handleDeleteAvatar}
                       className="px-6 py-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 rounded-xl text-white font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-red-500/25"
-                    >
+                      
+                     >
                       <span className="flex items-center space-x-2">
                         <svg
                           className="w-4 h-4"
@@ -234,7 +236,7 @@ export default function Profile() {
                         <span>Delete Avatar</span>
                       </span>
                     </button>
-                  )} */}
+                  )}
                 </div>
 
                 {/* Edit / Profile Form */}
