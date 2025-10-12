@@ -8,7 +8,7 @@ import { useResponsive } from "../hooks/useResponsive";
 import { useSocket } from "../hooks/useSocket";
 import { useMessages } from "../hooks/useMessages";
 import { useChats } from "../hooks/useChats";
-import MobileChatModal from "../components/MobileChatModal";
+import MobileChatModal from "../components/DirectChatsComponents/MobileChatModal.jsx";
 import { useToast } from "../context/ToastContainer";
 import { useGlobalSocket } from "../context/SocketContext.jsx";
 import { FaUserFriends } from "react-icons/fa";
@@ -45,6 +45,9 @@ export default function Friends() {
     loading, 
     error 
   } = useFriends();
+
+  console.log(friends);
+  
 
   // Get direct access to Socket context for any additional functionality
   const { socket } = useGlobalSocket();
@@ -290,7 +293,7 @@ export default function Friends() {
                                     f.name.charAt(0).toUpperCase() 
                                   )}
                                 </div>
-                                <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-gray-900"></div>
+                                <div className={`absolute -bottom-1 -right-1 w-4 h-4 ${f.status?.state === 'online' ?  'bg-green-500' :  'bg-gray-500' } rounded-full border-2 border-gray-900`}></div>
                               </div>
                               <div>
                                 <h3 className="text-base sm:text-lg font-semibold text-white group-hover:text-orange-400 transition-colors">
@@ -585,6 +588,7 @@ export default function Friends() {
         messagesEndRef={messagesEndRef}
         onSendMessage={sendMessage}
         isMobile={isMobile}
+        friends={friends}
       />
     </div>
   );

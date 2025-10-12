@@ -2,20 +2,23 @@
 import React, { useState } from 'react';
 import { useOutletContext } from "react-router-dom";
 import { MessageCircle, Users, UserMinus, X } from 'lucide-react';
-
+import { useFriends } from '../hooks/useFriends';
 import { useGroupChats } from '../hooks/useGroupChats';
 import { useGroupMessages } from '../hooks/useGroupMessages';
 import { useResponsiveLayout } from '../hooks/useResponsiveLayout';
-import { useUsers } from "../context/UsersContext";
 
-import GroupChatsList from '../components/GroupChatsList';
-import ChatMessagesArea from '../components/ChatMessagesArea';
-import GroupMessageInput from '../components/GroupMessageInput';
-import CreateGroupModal from '../components/CreateGroupModal';
+
+import GroupChatsList from '../components/GroupComponents/GroupChatsList';
+import ChatMessagesArea from '../components/DirectChatsComponents/ChatMessagesArea';
+import GroupMessageInput from '../components/GroupComponents/GroupMessageInput';
+import CreateGroupModal from '../components/GroupComponents/CreateGroupModal';
 
 const GroupChats = () => {
   const { user, allMessages } = useOutletContext();
-  const { users } = useUsers();
+
+  const {friends} = useFriends();
+  console.log(friends);
+  
   
   // State
   const [selectedGroup, setSelectedGroup] = useState(null);
@@ -30,7 +33,7 @@ const GroupChats = () => {
     setError: setGroupError,
     createGroup, 
     leaveGroup,
-    updateChatWithMessage 
+    // updateChatWithMessage 
   } = useGroupChats(user?.id);
   
   const { 
@@ -114,7 +117,7 @@ const GroupChats = () => {
               </div>
             )}
 
-            <div className="flex gap-5 h-[75vh]">
+            <div className="flex">
               {/* Groups List */}
               <GroupChatsList
                 groupChats={groupChats}
@@ -252,7 +255,7 @@ const GroupChats = () => {
         {/* Create Group Modal */}
         {showCreateModal && (
           <CreateGroupModal
-            users={users.filter(u => u._id !== user.id)}
+            friends={friends}
             onClose={() => setShowCreateModal(false)}
             onSubmit={handleCreateGroupSubmit}
           />

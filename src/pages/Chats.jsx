@@ -8,32 +8,36 @@ import {
   Phone,
   Video,
 } from "lucide-react";
-import { useUsers } from "../context/UsersContext";
+
+import ping from '../assets/ping.wav';
+
+// import { useUsers } from "../context/UsersContext";
 
 // Import custom hooks
 import { useSocket } from "../hooks/useSocket";
 import { useChats } from "../hooks/useChats";
 import { useMessages } from "../hooks/useMessages";
-import { useFriends } from "../hooks/useFriends.js";
+// import { useFriends } from "../hooks/useFriends.js";
 import { useChatInitialization } from "../hooks/useChatInitialization";
 import { useResponsive } from "../hooks/useResponsive";
-import { useSound } from "../hooks/useSound";
+// import { useSound } from "../hooks/useSound";
 import { useGlobalSocket } from "../context/SocketContext";
+import useSound from 'use-sound';
 
 // Import components
-import ChatListItem from "../components/ChatListItems";
-import ChatMessages from "../components/ChatMessages";
+import ChatListItem from "../components/DirectChatsComponents/ChatListItems";
+import ChatMessages from "../components/DirectChatsComponents/ChatMessages";
 import FriendsList from "../components/FriendsList";
-import MessageInput from "../components/MessageInput";
-import MobileChatModal from "../components/MobileChatModal";
+import MessageInput from "../components/DirectChatsComponents/MessageInput";
+import MobileChatModal from "../components/DirectChatsComponents/MobileChatModal";
 
 export default function ChatsPage() {
   const { user, allMessages } = useOutletContext();
   const navigate = useNavigate();
-  const {socket, isChatOpen, setIsChatOpen, newMessage, registerChatUpdateCallback } =
+  const {socket, setIsChatOpen, newMessage, registerChatUpdateCallback } =
     useGlobalSocket();
-  const { users, loading } = useUsers();
-
+  // const { users, loading } = useUsers();
+   const [playPing] = useSound(ping);
   // State
   const [selectedChatId, setSelectedChatId] = useState(null);
   const [otherUser, setOtherUser] = useState(null);
@@ -61,17 +65,18 @@ export default function ChatsPage() {
     deleteMessage,
   } = useMessages(selectedChatId, user?.id);
   
-  const { friends } = useFriends();
-
-  // Socket message handler - FIXED: Now properly adds messages to state
+  
   const handleMessageReceived = useCallback(
-    (message) => {
-      console.log("Socket received message:", message);
-      // Add message to current messages state
-      addMessage(message);
-    },
-    [addMessage]
-  );
+  (message) => {
+    console.log("Socket received message:", message);
+    if (message.senderId._id !== user.id) {
+      playPing();
+    }
+    addMessage(message);
+  },
+  [addMessage, playPing, user.id]
+);
+
 
   // Socket hook
   const { sendMessage: socketSendMessage, messageData } = useSocket(

@@ -3,6 +3,7 @@ import { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../context/AuthContext";
 import logo from "../assets/zaptalklogo.png"
 import { useNavigate } from "react-router-dom";
+import { useGlobalSocket } from "../context/SocketContext";
 import { FaUser, FaUserFriends, FaComments, FaUserPlus } from "react-icons/fa";
 import { MdAccountCircle, MdGroup, MdChat, MdPersonSearch, MdLogout } from "react-icons/md";
 
@@ -13,6 +14,7 @@ export default function Navbar() {
   const navigate = useNavigate()
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const { socket } = useGlobalSocket();
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -163,7 +165,7 @@ export default function Navbar() {
                     <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold ${
                       profile?.avatar ? '' : 'bg-orange-600'
                     }`}>
-                      {profile ? (
+                      {profile?.avatar ? (
                         <img src={profile?.avatar} alt={user.name} className="w-10 h-10 rounded-full object-cover avatar" />
                       ) : (
                         user.name?.charAt(0)?.toUpperCase() || "U"
@@ -221,8 +223,10 @@ export default function Navbar() {
                 <div className="mt-auto pt-4 border-t border-slate-700/50">
                   <button
                     onClick={() => {
+                      socket?.emit("user-offline", profile._id);
                       logout();
                        navigate("/login");
+                       
                       // closeSidebar();
                     }}
                     className="flex items-center space-x-3 w-full px-4 py-3 rounded-xl bg-red-600 hover:bg-red-500 text-white transition-all duration-200 shadow-lg hover:shadow-xl group"

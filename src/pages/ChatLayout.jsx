@@ -7,7 +7,7 @@ const ChatLayout = ({ user }) => {
  
 
   const [allMessages, setAllMessages] = useState([]);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  // const [isSearchOpen, setIsSearchOpen] = useState(false);
   const apiUrl = import.meta.env.VITE_API_URL;
  
 

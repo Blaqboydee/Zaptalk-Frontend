@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { formatTime } from "../utils/formatTime";
+import { formatTime } from "../../utils/formatTime";
 
 const ChatMessages = ({
   messages,
@@ -146,7 +146,7 @@ const ChatMessages = ({
       {/* Messages Container */}
       <div
         className={`overflow-y-auto p-4 space-y-6 scrollbar-hidden ${
-          isMobile ? "h-[calc(70vh-120px)]" : "h-[calc(78vh-120px)]"
+          isMobile ? "h-[calc(95vh-120px)]" : "h-[calc(78vh-120px)]"
         }`}
       >
         {isLoadingMessages ? (

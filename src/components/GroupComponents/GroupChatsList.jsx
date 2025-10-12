@@ -1,5 +1,5 @@
 import React from 'react';
-import { Users, Plus } from 'lucide-react';
+import { Users} from 'lucide-react';
 import GroupChatItem from './GroupChatItem';
 
 const GroupChatsList = ({ 
@@ -23,7 +23,6 @@ const GroupChatsList = ({
             onClick={onCreateGroup}
             className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-all duration-200 hover:scale-105 shadow-lg"
           >
-            <Plus size={18} />
             <span>Create Group</span>
           </button>
         </div>

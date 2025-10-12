@@ -85,9 +85,9 @@ export default function Profile() {
   };
 
   // Logout
-  const handleLogout = () => {
-    logout();
-  };
+  // const handleLogout = () => {
+  //   logout();
+  // };
 
   if (!profile) {
     return (

@@ -1,12 +1,12 @@
 import { useState, useEffect, useContext } from "react";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import { useUsers } from "../context/UsersContext";
 import { AuthContext } from "../context/AuthContext";
 import { useFriends } from "../hooks/useFriends.js";
 // import { MdGroup, FaUserPlus } from "react-icons/md";
-import { FaUser, FaUserFriends, FaComments, FaUserPlus } from "react-icons/fa";
 
-import { useToast } from "../context/ToastContainer.jsx";
+
+
 
 
 const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
@@ -14,7 +14,7 @@ const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
 export default function UsersList() {
  
   const { users, loading } = useUsers();
-  const {toast} = useToast();
+  // const {toast} = useToast();
   const { user } = useContext(AuthContext);
   
   const [searchTerm, setSearchTerm] = useState("");

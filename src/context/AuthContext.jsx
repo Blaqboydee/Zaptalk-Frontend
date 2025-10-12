@@ -17,13 +17,13 @@ export const AuthProvider = ({ children }) => {
   const token = localStorage.getItem("token");
   // const navigate = useNavigate();
   // const navigate = useNavigate()
-  // 🔥 Enhanced login function that returns userId for socket emission
+  //Enhanced login function that returns userId for socket emission
   const login = (token) => {
     localStorage.setItem("token", token);
     const decodedUser = jwtDecode(token);
     setUser(decodedUser);
 
-    // 🔥 Extract userId for socket operations
+    // Extract userId for socket operations
     const userId = decodedUser?.id || decodedUser?.userId || decodedUser?._id;
 
     // Return userId so components can use it immediately
@@ -32,16 +32,15 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     localStorage.removeItem("token");
-    // navigate("/login");
     setUser(null);
   };
 
-  // 🔥 Helper function to get userId from current user
+  // Helper function to get userId from current user
   const getUserId = () => {
     return user?.id || user?.userId || user?._id || null;
   };
 
-  // 🔥 Helper function to check if token is expired
+  // Helper function to check if token is expired
   const isTokenExpired = (token) => {
     try {
       const decoded = jwtDecode(token);
@@ -56,7 +55,7 @@ export const AuthProvider = ({ children }) => {
     const token = localStorage.getItem("token");
     if (token) {
       try {
-        // 🔥 Check if token is expired before using it
+        // Check if token is expired before using it
         if (isTokenExpired(token)) {
           // console.log("Token expired, removing...");
           localStorage.removeItem("token");

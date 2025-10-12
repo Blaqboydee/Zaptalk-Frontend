@@ -2,7 +2,6 @@ import React from 'react';
 
 const GroupChatItem = ({ group, isSelected, onSelect, allMessages, formatTime }) => {
   console.log(group);
-  
   const getLastMessage = () => {
     const groupMessages = allMessages?.filter((message) => message.chatId === group._id) || [];
     return groupMessages.length > 0 
@@ -23,7 +22,7 @@ const GroupChatItem = ({ group, isSelected, onSelect, allMessages, formatTime })
         <h3 className={`font-semibold text-sm transition-colors ${
           isSelected ? 'text-orange-300' : 'text-white group-hover:text-orange-300'
         }`}>
-          {group.name}
+          {group.name || 'Unnamed Group'}
         </h3>
       </div>
         <p className="text-[13px] text-gray-400 truncate mb-3">

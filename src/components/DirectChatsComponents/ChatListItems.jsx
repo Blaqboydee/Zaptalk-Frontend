@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { formatTime } from "../utils/formatTime";
-import { useGlobalSocket } from "../context/SocketContext";
-import { useSocket } from "../hooks/useSocket";
-import { useFriends } from "../hooks/useFriends.js";
+import { formatTime } from "../../utils/formatTime.js";
+import { useGlobalSocket } from "../../context/SocketContext.jsx";
+import { useSocket } from "../../hooks/useSocket.js";
+import { useFriends } from "../../hooks/useFriends.js";
 
 const ChatListItem = ({
   chats,

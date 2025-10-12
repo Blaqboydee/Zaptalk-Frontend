@@ -10,31 +10,34 @@ export const useChats = (userId) => {
   const [searchTerm, setSearchTerm] = useState("");
   const { friends } = useFriends();
   
-  useEffect(() => {
-    const fetchChats = async () => {
-      if (!userId) return;
+useEffect(() => {
+  if (!userId) return;
 
-      setIsLoading(true);
-      try {
-        const res = await fetch(`${apiUrl}/chats?userId=${userId}`);
-        if (res.ok) {
-          const data = await res.json();
-          const sortedChats = data.sort((a, b) => {
-            const aTime = a.lastMessage?.createdAt || a.createdAt || 0;
-            const bTime = b.lastMessage?.createdAt || b.createdAt || 0;
-            return new Date(bTime) - new Date(aTime);
-          });
-          setChats(sortedChats);
-        }
-      } catch (err) {
-        console.error("Error fetching chats:", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  const cached = localStorage.getItem(`chats_${userId}`);
+  if (cached) setChats(JSON.parse(cached));
 
-    fetchChats();
-  }, [userId]);
+  const fetchChats = async () => {
+    try {
+      const res = await fetch(`${apiUrl}/chats?userId=${userId}`);
+      if (!res.ok) return;
+      const data = await res.json();
+      const sortedChats = data.sort((a, b) => {
+        const aTime = a.lastMessage?.createdAt || a.createdAt || 0;
+        const bTime = b.lastMessage?.createdAt || b.createdAt || 0;
+        return new Date(bTime) - new Date(aTime);
+      });
+
+      setChats(sortedChats);
+      localStorage.setItem(`chats_${userId}`, JSON.stringify(sortedChats));
+    } catch (err) {
+      console.error("Error fetching chats:", err);
+    }
+  };
+
+  fetchChats();
+}, [userId]);
+
+
 
   // Filter chats to only include those with friends (when no search term)
   useEffect(() => {

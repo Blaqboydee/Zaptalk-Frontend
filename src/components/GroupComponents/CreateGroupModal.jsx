@@ -2,13 +2,15 @@
 import React, { useState } from 'react';
 import { X, Check } from 'lucide-react';
 
-const CreateGroupModal = ({ users, onClose, onSubmit }) => {
+const CreateGroupModal = ({ friends, onClose, onSubmit }) => {
+  console.log(friends);
+  
   const [groupName, setGroupName] = useState('');
   const [selectedUsers, setSelectedUsers] = useState([]);
 
   const toggleUserSelection = (user) => {
     setSelectedUsers((prev) =>
-      prev.find((u) => u._id === user._id)
+      prev.find((friend) => friend._id === user._id)
         ? prev.filter((u) => u._id !== user._id)
         : [...prev, user]
     );
@@ -53,19 +55,26 @@ const CreateGroupModal = ({ users, onClose, onSubmit }) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
-              Add Users ({selectedUsers.length} selected)
+              Add Friends ({selectedUsers.length} selected)
             </label>
             <div className="max-h-48 overflow-y-auto border border-gray-600 rounded-lg bg-gray-800 custom-scrollbar">
-              {users.map((userItem) => (
+              {friends.map((userItem) => (
                 <div 
                   key={userItem._id}
                   onClick={() => toggleUserSelection(userItem)}
                   className="flex items-center gap-3 p-3 hover:bg-gray-700 cursor-pointer border-b border-gray-700 last:border-b-0 transition-colors"
                 >
                   <div className="relative">
-                    <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white bg-gradient-to-br from-orange-400 to-orange-600">
-                      {userItem.name?.[0] || userItem._id?.[0] || '?'}
-                    </div>
+                    {userItem.avatar?(
+                      <img
+                        src={userItem.avatar}
+                        alt={userItem.name || userItem._id || 'User Avatar'}
+                        className="w-8 h-8 rounded-full object-cover"
+                      />
+                    ): <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white bg-gradient-to-br from-orange-400 to-orange-600">
+                      {userItem.name?.[0]}
+                    </div>}
+                   
                     {selectedUsers.find((u) => u._id === userItem._id) && (
                       <div className="absolute -top-1 -right-1 bg-green-500 rounded-full p-1">
                         <Check size={10} className="text-white" />
@@ -75,9 +84,9 @@ const CreateGroupModal = ({ users, onClose, onSubmit }) => {
                   <div className="flex-1">
                     <p className="font-medium text-white">{userItem.name || userItem._id || 'Unknown'}</p>
                     <div className="flex items-center gap-1">
-                      <div className={`w-2 h-2 rounded-full ${userItem.online ? 'bg-green-500' : 'bg-gray-500'}`}></div>
+                      <div className={`w-2 h-2 rounded-full ${userItem.status.state == 'online' ? 'bg-green-500' : 'bg-gray-500'}`}></div>
                       <span className="text-xs text-gray-400">
-                        {userItem.online ? 'Online' : 'Offline'}
+                        {userItem.status.state == 'online'  ? 'Online' : 'Offline'}
                       </span>
                     </div>
                   </div>
