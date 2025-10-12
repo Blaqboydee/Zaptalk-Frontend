@@ -82,7 +82,7 @@ export default function Login() {
   const showPasswordStep = !isMobile || step === 2;
 
   return (
-    <div className="min-h-screen bg-gray-900 flex items-center justify-center px-4">
+    <div className="h-screen bg-red-900 flex items-center justify-center px-4">
       <div className="w-full max-w-lg">
         {/* Main Card */}
         <div className="bg-gray-900/80 backdrop-blur-sm overflow-hidden">
