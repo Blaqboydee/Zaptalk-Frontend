@@ -219,9 +219,9 @@ export default function ChatsPage() {
         </div>
       ) : (
         /* Desktop Layout with Glassmorphism */
-        <div className="flex h-[92vh] bg-gray-900 w-full overflow-hidden">
+        <div className="flex h-[85vh] w-full overflow-hidden">
           {/* Left Sidebar - Chat List */}
-          <div className="w-96 bg-white/5 backdrop-blur-xl border-r border-white/10 flex flex-col overflow-hidden">
+          <div className="w-96 border-r border-white/10 flex flex-col overflow-hidden">
             {/* Header with glassmorphism */}
             <div className="p-6 border-b border-white/10 ">
               <div className="flex items-center justify-between mb-4">
@@ -283,7 +283,7 @@ export default function ChatsPage() {
                 <ChatHeader otherUser={otherUser} />
 
                 {/* Chat Messages */}
-                <div className="flex-1 overflow-hidden bg-gradient-to-b from-white/5 to-transparent">
+                <div className="flex-1 overflow-hidden">
                   <ChatMessages
                     messages={messages}
                     selectedChatId={selectedChatId}
@@ -342,7 +342,7 @@ const LoadingState = () => (
 );
 
 const EmptyChatsState = ({ navigate }) => (
-  <div className="flex flex-col items-center justify-center text-center py-16 px-4">
+  <div className="flex  flex-col items-center justify-center text-center py-16 px-4">
     <div className="mb-8 relative">
       <div className="w-24 h-24 rounded-2xl flex items-center justify-center shadow-2xl bg-gradient-to-br from-orange-400/80 to-orange-600/80 backdrop-blur-md border border-orange-300/30">
         <MessageCircle className="h-12 w-12 text-white" />
@@ -420,7 +420,7 @@ const ChatHeader = ({ otherUser }) => (
 );
 
 const WelcomeScreen = ({ navigate }) => (
-  <div className="flex-1 flex flex-col items-center justify-center text-center p-8 bg-gradient-to-br from-white/5 to-transparent backdrop-blur-sm">
+  <div className="flex-1 flex flex-col items-center justify-center text-center p-8">
     <div className="mb-8 relative">
       <div className="w-32 h-32 rounded-3xl flex items-center justify-center shadow-2xl bg-gradient-to-br from-orange-400/80 to-orange-600/80 backdrop-blur-md border border-orange-300/30 animate-pulse">
         <MessageCircle className="h-16 w-16 text-white" />

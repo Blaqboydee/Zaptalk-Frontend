@@ -15,7 +15,7 @@ const GroupChatsList = ({
   if (isMobile && isOffcanvasOpen) return null;
 
   return (
-    <div className={`${isMobile ? "w-full" : "w-[40%]"}`}>
+    <div className={`${isMobile ? "w-full" : "w-[30%]"} h-[80vh]`}>
       <div className="rounded-lg shadow-lg h-full flex flex-col">
         <div className="p-4 border-b border-gray-700 flex justify-between items-center">
           <h2 className="font-semibold text-white">Your Groups</h2>

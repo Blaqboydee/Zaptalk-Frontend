@@ -13,7 +13,6 @@ import UsersList from "./pages/UsersList";
 import ChatLayout from "./pages/ChatLayout";
 import GroupChats from "./pages/GroupChats";
 import Friends from "./pages/Friends";
-import Header from "./components/Header";
 import Ping from "./components/ping";
 
 // Loading component with mobile-optimized styling
@@ -89,12 +88,10 @@ function AppContent() {
   }
 
   const hideNavbar = location.pathname === "/login" || location.pathname === "/signup";
-  const hideHeader = location.pathname === "/login" || location.pathname === "/signup"
   return (
     <div className="zap-app-container">
       <Toaster position="top-right" />
      
-      {!hideHeader && <Header/>}
       {!hideNavbar && <Navbar />}
       <Routes>
         <Route path="/" element={<Navigate to="/login" />} />

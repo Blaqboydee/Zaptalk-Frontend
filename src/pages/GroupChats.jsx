@@ -110,7 +110,7 @@ const GroupChats = () => {
     <div className="flex h-[80vh] overflow-auto">
       <div className="flex-1 flex flex-col">
         <main className="flex-1 sm:px-6 lg:px-8">
-          <div className="max-w-6xl mx-auto">
+          <div className="">
             {error && (
               <div className="mb-4 p-3 bg-red-900 text-white rounded-lg">
                 {error}
@@ -132,7 +132,7 @@ const GroupChats = () => {
 
               {/* Desktop Chat Area */}
               {!isMobile && (
-                <div className="w-[60%] bg-gray-800 rounded-lg shadow-lg border border-gray-700 flex flex-col">
+                <div className="w-[70%] flex flex-col">
                   {selectedGroup ? (
                     <>
                       {/* Chat Header */}
@@ -214,7 +214,7 @@ const GroupChats = () => {
                     </>
                   ) : (
                     // Welcome Screen
-                    <div className="flex-1 flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-center p-8">
+                    <div className="flex-1 flex flex-col items-center justify-center text-center p-8">
                       <div className="mb-8 relative">
                         <div className="w-32 h-32 rounded-full flex items-center justify-center shadow-2xl bg-gradient-to-br from-orange-400 via-orange-500 to-orange-600 animate-pulse">
                           <MessageCircle className="h-16 w-16 text-white" />

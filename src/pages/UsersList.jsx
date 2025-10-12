@@ -1,38 +1,29 @@
 import { useState, useEffect, useContext } from "react";
-// import { useNavigate } from "react-router-dom";
 import { useUsers } from "../context/UsersContext";
 import { AuthContext } from "../context/AuthContext";
 import { useFriends } from "../hooks/useFriends.js";
-// import { MdGroup, FaUserPlus } from "react-icons/md";
-
-
-
-
 
 const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 export default function UsersList() {
- 
   const { users, loading } = useUsers();
-  // const {toast} = useToast();
   const { user } = useContext(AuthContext);
   
   const [searchTerm, setSearchTerm] = useState("");
   const [addingFriendId, setAddingFriendId] = useState(null);
   const [cancelingFriendId, setCancelingFriendId] = useState(null);
   const [recentlyAdded, setRecentlyAdded] = useState(new Set());
-   const { 
-  friends, 
-  requests, 
-  sentRequests, 
-  addFriend,
-  acceptFriendRequest, 
-  rejectFriendRequest, 
-  cancelFriendRequest,
-  refetchAll,
-  // loading, 
-  error 
-} = useFriends();
+  const { 
+    friends, 
+    requests, 
+    sentRequests, 
+    addFriend,
+    acceptFriendRequest, 
+    rejectFriendRequest, 
+    cancelFriendRequest,
+    refetchAll,
+    error 
+  } = useFriends();
 
   // Filter users based on search term and exclude current user
   const filteredUsers = users.filter(
@@ -44,10 +35,6 @@ export default function UsersList() {
 
   // Handle adding friend
   const handleAddFriend = async (targetUser) => {
-    // console.log(targetUser._id);
-    // console.log(user);
-    
-    
     setAddingFriendId(targetUser._id);
     try {
       await addFriend(targetUser, user.id);
@@ -64,7 +51,6 @@ export default function UsersList() {
     setCancelingFriendId(friendId);
     try {
       await cancelFriendRequest(friendId);
-      // Instant UI update - refetch to get latest data
       await refetchAll();
     } catch (error) {
       console.error('Failed to cancel friend request:', error);
@@ -86,16 +72,23 @@ export default function UsersList() {
   }
 
   return (
-    <div className="h-screen pt-14  bg-gray-900 relative overflow-hidden">
-      {/* Animated background elements */}
+    <div className="min-h-screen">
+      {/* Fixed Header with Search */}
+      <div className="fixed top-0 left-0 right-0 z-40 bg-gray-900/95 backdrop-blur-md border-b border-gray-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          {/* Header Info */}
+          <div className="mb-4">
+            <h1 className="text-2xl font-bold text-white text-center">Discover People</h1>
+            <p className="text-gray-400 text-sm mt-1 text-center">
+              {filteredUsers.length} {filteredUsers.length === 1 ? 'person' : 'people'} available
+            </p>
+          </div>
 
-      {/* Search Bar */}
-      <div className="relative z-10 p-6">
-        <div className="max-w-2xl mx-auto">
+          {/* Search Bar */}
           <div className="relative group">
-            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
               <svg
-                className="w-5 h-5 text-gray-400 group-focus-within:text-orange-500 transition-colors duration-300"
+                className="w-5 h-5 text-gray-400 group-focus-within:text-orange-500 transition-colors"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -113,37 +106,38 @@ export default function UsersList() {
               placeholder="Search by name or email..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-12 py-2 lg:py-4 rounded-lg border border-gray-600/50 bg-gray-800/80 backdrop-blur-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500/50 transition-all duration-300 shadow-lg focus:shadow-orange-500/20 text-base lg:text-lg"
+              className="w-full pl-12 pr-12 py-3.5 rounded-lg border border-gray-700 bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
             />
             {searchTerm && (
               <button
                 onClick={() => setSearchTerm("")}
-                className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-orange-500 transition-all duration-300 transform hover:scale-110"
+                className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-white transition-colors"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             )}
-            {/* Search glow effect */}
-            <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-orange-500/0 via-orange-500/5 to-orange-500/0 opacity-0 group-focus-within:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
           </div>
         </div>
       </div>
 
-      {/* Users Grid */}
-      <div className="px-6 pb-12 h-[70vh] overflow-auto relative z-10">
-        <div className="max-w-6xl mx-auto">
+      {/* Content Area with Custom Scrollbar */}
+      <div className="w-full h-screen overflow-auto">
+ <div className="pt-44 px-4 sm:px-6 lg:px-8 pb-8">
+        <div className="max-w-7xl mx-auto">
           {filteredUsers.length === 0 ? (
-            <div className="text-center py-20">
-              <div className="w-24 h-24 mx-auto mb-6 rounded-full bg--gray-700 flex items-center justify-center">
-                <span className="text-4xl">🔍</span>
+            <div className="flex flex-col items-center justify-center py-20">
+              <div className="w-24 h-24 rounded-full bg-gray-800 flex items-center justify-center mb-6">
+                <svg className="w-12 h-12 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
               </div>
-              <h3 className="text-xl text-gray-300 mb-2">No users found</h3>
-              <p className="text-gray-500">Try adjusting your search terms</p>
+              <h3 className="text-xl font-semibold text-white mb-2">No users found</h3>
+              <p className="text-gray-400">Try adjusting your search terms</p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 lg:gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {filteredUsers.map((u, index) => {
                 const isFriend = friends?.some((f) => f._id === u._id);
                 const hasSentRequest = sentRequests?.some((r) => r.to._id === u._id);
@@ -154,129 +148,103 @@ export default function UsersList() {
                 return (
                   <div
                     key={u._id}
-                    className="group relative rounded-2xl shadow-xl cursor-pointer transition-all duration-500 hover:scale-105 hover:shadow-2xl bg-gray-700/80 to-gray-800/90 border border-gray-600/30 hover:border-orange-500/50 backdrop-blur-sm overflow-hidden"
-                    style={{
-                      animation: `slideUp 0.4s ease-out ${index * 0.05}s both`
-                    }}
+                    className="group bg-gray-800 rounded-xl border border-gray-700 hover:border-gray-600 transition-all duration-300 overflow-hidden"
                   >
-            
-
-                    {/* Action Button */}
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        if (hasSentRequest && !isCanceling) {
-                          handleCancelRequest(u._id);
-                        } else if (!isFriend && !isAdding && !hasSentRequest) {
-                          handleAddFriend(u);
-                        }
-                      }}
-                      disabled={isFriend || isAdding || isCanceling}
-                      className={`absolute top-1 right-1 w-8 h-8 rounded-full flex justify-center items-center z-50 shadow-lg transition-all duration-500 transform border-2 border-gray-800 ${
-                        isFriend || wasRecentlyAdded
-                          ? "bg-gradient-to-r from-green-500 to-green-600 cursor-not-allowed scale-100"
-                          : hasSentRequest
-                          ? isCanceling 
-                            ? "bg-gradient-to-r from-gray-400 to-gray-500 animate-pulse cursor-not-allowed scale-110"
-                            : "bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 hover:scale-110 cursor-pointer"
-                          : isAdding
-                          ? "bg-gradient-to-r from-orange-400 to-orange-500 animate-pulse cursor-not-allowed scale-110"
-                          : "bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 hover:scale-110 cursor-pointer"
-                      }`}
-                    >
-                      {isFriend || wasRecentlyAdded ? (
-                        <svg className="w-4 h-4 text-white animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                        </svg>
-                      ) : hasSentRequest ? (
-                        isCanceling ? (
-                          <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                        ) : (
-                          <svg
-                            className="w-4 h-4 text-white font-bold transition-transform duration-300"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                            strokeWidth={3}
-                          >
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M20 12H4" />
-                          </svg>
-                        )
-                      ) : isAdding ? (
-                        <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      ) : (
-                        <svg
-                          className="w-4 h-4 text-white font-bold group-hover:rotate-90 transition-transform duration-300"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                          strokeWidth={3}
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-                        </svg>
-                      )}
-                    </button>
-
-                    {/* Card Content */}
-                    <div className="p-4 flex flex-col items-center justify-center h-full">
-                      <div className="relative mb-4">
-                        <div className="w-16 h-16 sm:w-18 sm:h-18 rounded-full flex items-center justify-center text-white font-bold text-xl bg-gradient-to-br from-orange-400 via-orange-500 to-orange-600 overflow-hidden shadow-lg ring-2 ring-orange-500/20 group-hover:ring-orange-400/40 transition-all duration-300">
+                    {/* Card Header - Avatar & Status Badge */}
+                    <div className="relative bg-gray-900/50 p-6 flex items-center justify-center">
+                      <div className="relative">
+                        <div className="w-20 h-20 rounded-full bg-orange-500 flex items-center justify-center text-white font-bold text-2xl overflow-hidden ring-4 ring-gray-800">
                           {u.avatar ? (
                             <img src={u.avatar} alt={u.name} className="w-full h-full object-cover" />
                           ) : (
-                            <span className="text-2xl">
-                              {u.name.charAt(0).toUpperCase()}
-                            </span>
+                            <span>{u.name.charAt(0).toUpperCase()}</span>
                           )}
                         </div>
-                        {/* Avatar glow */}
-                        <div className="absolute inset-0 rounded-full bg-gradient-to-br from-orange-400/20 to-orange-600/20 opacity-0 group-hover:opacity-100 transition-all duration-500 animate-pulse"></div>
-                      </div>
-                      
-                      <div className="text-center">
-                        <p className="font-bold text-sm sm:text-base text-white mb-1 group-hover:text-orange-300 transition-colors duration-300 truncate max-w-[120px]">
-                          {u.name}
-                        </p>
-                        <p className="text-xs text-gray-400 truncate max-w-[120px]">
-                          {u.email}
-                        </p>
+                        
+                        {/* Status Badge */}
+                        {(isFriend || hasSentRequest) && (
+                          <div className={`absolute -top-1 -right-1 w-7 h-7 rounded-full flex items-center justify-center text-white ${
+                            isFriend ? 'bg-green-500' : 'bg-yellow-500'
+                          }`}>
+                            {isFriend ? (
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                              </svg>
+                            ) : (
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                            )}
+                          </div>
+                        )}
                       </div>
                     </div>
 
-          
+                    {/* Card Body - User Info */}
+                    <div className="p-4">
+                      <h3 className="text-white font-semibold text-lg mb-1 truncate">
+                        {u.name}
+                      </h3>
+                      <p className="text-gray-400 text-sm truncate mb-4">
+                        {u.email}
+                      </p>
 
-                    {/* Friend added overlay */}
-                    {(isFriend || wasRecentlyAdded) && (
-                      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center bg-gradient-to-br from-green-500/90 via-green-600/90 to-green-700/90 rounded-2xl">
-                        <div className="text-white text-center">
-                          <div className="text-3xl mb-2">✓</div>
-                          <p className="font-semibold text-sm">Friends</p>
+                      {/* Action Button */}
+                      {isFriend ? (
+                        <div className="flex items-center justify-center space-x-2 py-2.5 bg-green-500/10 border border-green-500/50 rounded-lg text-green-400 font-medium text-sm">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          </svg>
+                          <span>Friends</span>
                         </div>
-                      </div>
-                    )}
-
-                    {/* Sent request overlay */}
-                    {hasSentRequest && (
-                      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center bg-gradient-to-br from-yellow-500/90 via-yellow-600/90 to-yellow-700/90 rounded-2xl">
-                        <div className="text-white text-center">
-                          <div className="text-3xl mb-2">⏳</div>
-                          <p className="font-semibold text-sm">Request Sent</p>
-                          <p className="text-xs opacity-80">Click to cancel</p>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Accent Border */}
-                    <div className={`absolute bottom-0 left-0 right-0 h-1 transform transition-all duration-500 ${
-                      isFriend || wasRecentlyAdded 
-                        ? 'scale-x-100 bg-green-500' 
-                        : hasSentRequest
-                        ? 'scale-x-100 bg-yellow-500'
-                        : 'scale-x-0 group-hover:scale-x-100 bg-gradient-to-r from-orange-500 to-orange-600'
-                    }`}></div>
-
-                    {/* Shimmer effect */}
-                    <div className="absolute inset-0 -z-10 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 transform translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                      ) : hasSentRequest ? (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleCancelRequest(u._id);
+                          }}
+                          disabled={isCanceling}
+                          className="w-full flex items-center justify-center space-x-2 py-2.5 bg-yellow-500/10 hover:bg-yellow-500/20 border border-yellow-500/50 hover:border-yellow-500 rounded-lg text-yellow-400 hover:text-yellow-300 font-medium text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {isCanceling ? (
+                            <>
+                              <div className="w-4 h-4 border-2 border-yellow-400 border-t-transparent rounded-full animate-spin"></div>
+                              <span>Canceling...</span>
+                            </>
+                          ) : (
+                            <>
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                              <span>Cancel Request</span>
+                            </>
+                          )}
+                        </button>
+                      ) : (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleAddFriend(u);
+                          }}
+                          disabled={isAdding}
+                          className="w-full flex items-center justify-center space-x-2 py-2.5 bg-orange-500 hover:bg-orange-600 rounded-lg text-white font-medium text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {isAdding ? (
+                            <>
+                              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                              <span>Adding...</span>
+                            </>
+                          ) : (
+                            <>
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                              </svg>
+                              <span>Add Friend</span>
+                            </>
+                          )}
+                        </button>
+                      )}
+                    </div>
                   </div>
                 );
               })}
@@ -284,30 +252,39 @@ export default function UsersList() {
           )}
         </div>
       </div>
+      </div>
+     
 
+      {/* Custom Scrollbar Styles */}
       <style jsx>{`
-        @keyframes slideUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px) scale(0.95);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-          }
+        /* Custom Scrollbar for Webkit browsers */
+        ::-webkit-scrollbar {
+          width: 12px;
         }
 
-        @keyframes float {
-          0%, 100% {
-            transform: translateY(0px);
-          }
-          50% {
-            transform: translateY(-10px);
-          }
+        ::-webkit-scrollbar-track {
+          background: #1f2937;
+          border-radius: 10px;
         }
 
-        .float-animation {
-          animation: float 6s ease-in-out infinite;
+        ::-webkit-scrollbar-thumb {
+          background: #374151;
+          border-radius: 10px;
+          border: 2px solid #1f2937;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+          background: #4b5563;
+        }
+
+        ::-webkit-scrollbar-thumb:active {
+          background: #f97316;
+        }
+
+        /* Firefox */
+        * {
+          scrollbar-width: thin;
+          scrollbar-color: #374151 #1f2937;
         }
       `}</style>
     </div>

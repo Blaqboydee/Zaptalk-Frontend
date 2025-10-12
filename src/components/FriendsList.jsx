@@ -35,21 +35,20 @@ const handleTouchCancel = () => {
 }
 
 return(
-    <div className="pl-2 pr-2 border-b border-gray-700 rounded-lg bg-gray-900/50">
-    <div className="max-w-7xl sm:px-4 ">
+    <div className="border-b border-gray-700 rounded-lg">
+    <div className="max-w-7xl">
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-lg font-bold mt-3 text-transparent bg-clip-text bg-orange-400 ">
+        <p className="text-base font-bold mt-3 text-transparent bg-clip-text bg-orange-400 ">
           Friends ({friends.length})
-        </h3>
-        {/* <div className="mt-3 w-8 h-0.5 bg-gradient-to-r from-orange-400 to-orange-600 rounded-full"></div> */}
+        </p>
       </div>
       
-      <div className="overflow-x-auto   w-full custom-scrollbar p-0">
+      <div className="overflow-x-auto w-full custom-scrollbar p-0">
         <div className="flex gap-4 min-w-max ">
           {[...friends].reverse().map((friend, index) => (
             <div 
               key={friend._id}
-              className={`group relative flex-shrink-0 bg-gradient-to-br from-gray-800/80 via-gray-900/90 to-gray-800/80 rounded-2xl border transition-all duration-500 backdrop-blur-sm ${
+              className={`group relative flex-shrink-0 rounded-2xl border transition-all duration-500 backdrop-blur-sm ${
                 longPressedId === friend._id 
                   ? 'border-red-500/60 shadow-2xl shadow-red-500/20 scale-105' 
                   : 'border-gray-600/30 hover:border-orange-500/60 hover:shadow-2xl hover:shadow-orange-500/20'
@@ -60,7 +59,7 @@ return(
             >
               {/* Main Friend Button */}
               <button
-                className="relative flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-gradient-to-r hover:from-orange-500/10 hover:to-orange-600/5 transition-all duration-300 group-hover:scale-[1.02] transform select-none"
+                className="relative flex items-center gap-3 px-3 py-2 rounded-2xl hover:bg-gradient-to-r hover:from-orange-500/10 hover:to-orange-600/5 transition-all duration-300 group-hover:scale-[1.02] transform select-none"
                 onClick={() => longPressedId !== friend._id && initChat(friend)}
                 onTouchStart={() => handleTouchStart(friend._id)}
                 onTouchEnd={handleTouchEnd}
