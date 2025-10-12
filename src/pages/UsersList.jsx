@@ -123,8 +123,8 @@ export default function UsersList() {
       </div>
 
       {/* Content Area with Custom Scrollbar */}
-      <div className="w-full h-screen overflow-auto">
- <div className="pt-44 px-4 sm:px-6 lg:px-8 pb-8">
+      <div className="w-full bg-red-500 pt-48 h-screen overflow-auto">
+ <div className="px-4 sm:px-6 lg:px-8 pb-8">
         <div className="max-w-7xl mx-auto">
           {filteredUsers.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20">
