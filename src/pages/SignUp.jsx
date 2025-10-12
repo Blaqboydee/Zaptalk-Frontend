@@ -137,7 +137,7 @@ export default function SignUp() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+    <div className="h-auto bg-gray-900 flex items-center justify-center pt-9">
       <div className="w-full max-w-lg">
         {/* Main Card */}
         <div className="bg-gray-900/80 backdrop-blur-sm  border-slate-700/50 overflow-hidden">
