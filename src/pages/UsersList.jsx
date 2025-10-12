@@ -123,7 +123,7 @@ export default function UsersList() {
       </div>
 
       {/* Content Area with Custom Scrollbar */}
-      <div className="w-full bg-red-500 pt-48 h-[90vh] overflow-auto">
+      <div className="w-full pt-48 h-screen overflow-auto">
  <div className="px-4 sm:px-6 lg:px-8 pb-8">
         <div className="max-w-7xl mx-auto">
           {filteredUsers.length === 0 ? (
