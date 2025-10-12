@@ -26,7 +26,7 @@ const ChatLayout = ({ user }) => {
       <header className="fixed top-0 left-0 right-0 z-40 bg-gray-900/95 backdrop-blur-md border-b border-gray-800">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Title Section */}
-          <div className="py-4 border-b border-gray-800">
+          <div className="py-4 border-b border-gray-800 text-center">
             <h1 className="text-2xl sm:text-3xl font-bold text-white">Chats</h1>
             <p className="text-gray-400 text-sm mt-1">Stay connected with your conversations</p>
           </div>
