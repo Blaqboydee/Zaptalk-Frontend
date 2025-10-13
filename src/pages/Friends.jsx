@@ -239,7 +239,7 @@ export default function Friends() {
       <div className="w-full h-screen overflow-auto">
         <div className="pt-44 px-4 sm:px-6 lg:px-8 pb-8">
           <div className="max-w-6xl mx-auto">
-            <div className="bg-gray-800 rounded-xl border border-gray-700 min-h-[500px]">
+            <div className="min-h-[500px]">
               {/* Friends Tab */}
               {activeTab === "friends" && (
                 <div className="p-4 lg:p-6">
@@ -272,7 +272,7 @@ export default function Friends() {
                       {friends?.map((f) => (
                         <div
                           key={f?._id}
-                          className="bg-gray-900/50 rounded-lg p-4 border border-gray-700 hover:border-gray-600 transition-colors"
+                          className="p-2 border-b border-gray-700 hover:border-gray-600 transition-colors"
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-4 flex-1 min-w-0">
@@ -427,7 +427,7 @@ export default function Friends() {
                         return (
                           <div
                             key={u._id}
-                            className="bg-gray-900/50 rounded-lg p-4 border border-gray-700 hover:border-gray-600 transition-colors"
+                            className="bg-gray-900/50 rounded p-2 border-b border-gray-700 hover:border-gray-600 transition-colors"
                           >
                             <div className="flex items-center justify-between">
                               <div className="flex items-center space-x-4 flex-1 min-w-0">
@@ -512,7 +512,7 @@ export default function Friends() {
                       {friendRequests.map((r) => (
                         <div
                           key={r._id}
-                          className="bg-gray-900/50 rounded-lg p-4 border border-gray-700 hover:border-gray-600 transition-colors"
+                          className="bg-gray-900/50 rounded p-2 border-b border-gray-700 hover:border-gray-600 transition-colors"
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-4 flex-1 min-w-0">
@@ -596,7 +596,7 @@ export default function Friends() {
                       {sentRequests.map((r) => (
                         <div
                           key={r._id}
-                          className="bg-gray-900/50 rounded-lg p-4 border border-gray-700 hover:border-gray-600 transition-colors"
+                          className="bg-gray-900/50 p-2 border-b border-gray-700 hover:border-gray-600 transition-colors"
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-4 flex-1 min-w-0">

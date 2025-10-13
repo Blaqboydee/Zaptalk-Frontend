@@ -219,7 +219,7 @@ export default function ChatsPage() {
         </div>
       ) : (
         /* Desktop Layout with Glassmorphism */
-        <div className="flex h-[85vh] w-full overflow-hidden">
+        <div className="flex h-[80vh] w-full overflow-hidden">
           {/* Left Sidebar - Chat List */}
           <div className="w-96 border-r border-white/10 flex flex-col overflow-hidden">
             {/* Header with glassmorphism */}

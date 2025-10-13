@@ -32,7 +32,7 @@ const ChatLayout = ({ user }) => {
           </div>
 
           {/* Navigation Tabs */}
-          <nav className="flex -mb-px">
+          <nav className="flex -mb-px  lg:items-center lg:justify-center">
             <NavLink
               to="/allchats/directmessages"
               className={({ isActive }) =>

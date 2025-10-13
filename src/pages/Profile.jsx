@@ -5,6 +5,8 @@ import api from "../api/api";
 import { FaUser, FaUserFriends, FaComments, FaUserPlus } from "react-icons/fa";
 
 export default function Profile() {
+  const navigate = useNavigate();
+
   const {
     logout,
     setProfile,
@@ -92,13 +94,96 @@ export default function Profile() {
   return (
     <div className="min-h-screen bg-gray-900 pt-16 pb-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto">
-        {/* Header Section */}
-        <div className="mb-8">
-          <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">Profile</h1>
-          <p className="text-gray-400">Manage your account settings and preferences</p>
-        </div>
+        {/* ---------- IMPROVED HEADER ---------- */}
+        <div className="fixed top-0 left-0 right-0 z-40">
+          <div className="bg-gradient-to-r from-gray-900/95 via-gray-900/80 to-gray-900/95 backdrop-blur-md border-b border-gray-800 shadow-sm">
+            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="flex items-center justify-between h-16 sm:h-20">
+                {/* left: back */}
+                {/* <button
+                  onClick={() => navigate(-1)}
+                  className="flex items-center space-x-2 text-gray-300 hover:text-white focus:outline-none"
+                  aria-label="Go back"
+                >
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+                  </svg>
+                  <span className="hidden sm:inline text-sm">Back</span>
+                </button> */}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* center: title */}
+                <div className="flex-1 text-center">
+                  <h1 className="text-lg sm:text-2xl font-semibold text-white leading-tight">Profile</h1>
+                  <p className="text-xs sm:text-sm text-gray-400 mt-0.5">Manage your account settings and preferences</p>
+                </div>
+
+                {/* right: small avatar + quick actions */}
+                <div className="flex items-center space-x-3">
+                  {/* <div className="relative">
+                    <div className="w-9 h-9 rounded-full overflow-hidden ring-2 ring-gray-800 bg-orange-500 flex items-center justify-center text-white text-sm font-semibold">
+                      {avatarPreview || profile.avatar ? (
+                        <img src={avatarPreview || profile.avatar} alt="You" className="w-full h-full object-cover" />
+                      ) : (
+                        <span>{profile.name?.charAt(0).toUpperCase() || "U"}</span>
+                      )}
+                    </div> */}
+                    {/* online dot */}
+                    {/* <span
+                      className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full ring-2 ring-gray-900 ${
+                        profile.status?.state === "online" ? "bg-green-400" : "bg-red-400"
+                      }`}
+                      title={profile.status?.state === "online" ? "Online" : "Offline"}
+                    />
+                  </div> */}
+
+                  {/* <button
+                    onClick={() => {
+                      // toggle edit mode quickly from header
+                      if (!isEditing) {
+                        setIsEditing(true);
+                        setEditForm({
+                          name: profile.name,
+                          email: profile.email,
+                          bioStatus: profile.bioStatus,
+                        });
+                        // scroll to form area on small screens
+                        setTimeout(() => window.scrollTo({ top: 180, behavior: "smooth" }), 80);
+                      } else {
+                        setIsEditing(false);
+                      }
+                    }}
+                    className="hidden sm:inline-flex items-center px-3 py-1.5 bg-gray-800/60 border border-gray-700 rounded-lg text-sm text-white hover:bg-gray-800 transition-colors"
+                  >
+                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18.5 2.5a2.121 2.121 0 113 3L12 15l-4 1 1-4 9.5-9.5z" />
+                    </svg>
+                    {isEditing ? "Editing" : "Edit"}
+                  </button> */}
+
+                  <button
+                    onClick={() => {
+                      logout?.();
+                      navigate("/login");
+                    }}
+                    className="px-3 py-1.5 bg-red-600/10 hover:bg-red-600/20 border border-red-600/40 rounded-lg text-sm text-red-300 hidden sm:inline-flex items-center transition-colors"
+                    title="Logout"
+                  >
+                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* thin accent gradient line */}
+            <div className="h-px bg-gradient-to-r from-transparent via-orange-500/30 to-transparent" />
+          </div>
+        </div>
+        {/* ---------- END HEADER ---------- */}
+
+        <div className="pt-4 lg:pt-44 grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column - Avatar & Quick Actions */}
           <div className="lg:col-span-1 space-y-6">
             {/* Avatar Card */}
