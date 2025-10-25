@@ -7,20 +7,17 @@ import {
   MoreVertical,
   Phone,
   Video,
+  Zap,
 } from "lucide-react";
 
 import ping from '../assets/ping.wav';
-
-// import { useUsers } from "../context/UsersContext";
 
 // Import custom hooks
 import { useSocket } from "../hooks/useSocket";
 import { useChats } from "../hooks/useChats";
 import { useMessages } from "../hooks/useMessages";
-// import { useFriends } from "../hooks/useFriends.js";
 import { useChatInitialization } from "../hooks/useChatInitialization";
 import { useResponsive } from "../hooks/useResponsive";
-// import { useSound } from "../hooks/useSound";
 import { useGlobalSocket } from "../context/SocketContext";
 import useSound from 'use-sound';
 
@@ -34,10 +31,9 @@ import MobileChatModal from "../components/DirectChatsComponents/MobileChatModal
 export default function ChatsPage() {
   const { user, allMessages } = useOutletContext();
   const navigate = useNavigate();
-  const {socket, setIsChatOpen, newMessage, registerChatUpdateCallback } =
-    useGlobalSocket();
-  // const { users, loading } = useUsers();
-   const [playPing] = useSound(ping);
+  const { socket, setIsChatOpen, newMessage, registerChatUpdateCallback } = useGlobalSocket();
+  const [playPing] = useSound(ping);
+
   // State
   const [selectedChatId, setSelectedChatId] = useState(null);
   const [otherUser, setOtherUser] = useState(null);
@@ -64,19 +60,17 @@ export default function ChatsPage() {
     editMessage,
     deleteMessage,
   } = useMessages(selectedChatId, user?.id);
-  
-  
-  const handleMessageReceived = useCallback(
-  (message) => {
-    console.log("Socket received message:", message);
-    if (message.senderId._id !== user.id) {
-      playPing();
-    }
-    addMessage(message);
-  },
-  [addMessage, playPing, user.id]
-);
 
+  const handleMessageReceived = useCallback(
+    (message) => {
+      console.log("Socket received message:", message);
+      if (message.senderId._id !== user.id) {
+        playPing();
+      }
+      addMessage(message);
+    },
+    [addMessage, playPing, user.id]
+  );
 
   // Socket hook
   const { sendMessage: socketSendMessage, messageData } = useSocket(
@@ -104,24 +98,22 @@ export default function ChatsPage() {
     setIsOffcanvasOpen
   );
 
-  // Message sending handler - FIXED: Now properly handles message sending
+  // Message sending handler
   const sendMessage = useCallback(
     (messageContent) => {
       if (!messageContent.trim() || !selectedChatId || !user?.id) return;
 
       const tempMessage = {
-        _id: `temp-${Date.now()}-${Math.random()}`, // Unique temporary ID
+        _id: `temp-${Date.now()}-${Math.random()}`,
         content: messageContent,
-        senderId: user.id, // Make sure this matches the format the server returns
+        senderId: user.id,
         chatId: selectedChatId,
         createdAt: new Date().toISOString(),
-        pending: true, // Mark as pending
+        pending: true,
       };
 
-      // Add optimistic message immediately
       addMessage(tempMessage);
 
-      // Send to server via socket
       socketSendMessage({
         content: messageContent,
         senderId: user.id,
@@ -137,10 +129,10 @@ export default function ChatsPage() {
       const secondUser = chat.users?.find((u) => u._id !== user.id);
       if (!secondUser) return;
 
-       if (socket) {
-         console.log('Joining chat room:', chat._id);
-      socket.emit("join_chat", chat._id);
-    }
+      if (socket) {
+        console.log('Joining chat room:', chat._id);
+        socket.emit("join_chat", chat._id);
+      }
 
       setOtherUser(secondUser);
       setSelectedChatId(chat._id);
@@ -155,26 +147,31 @@ export default function ChatsPage() {
     setIsOffcanvasOpen(false);
   }, [setIsChatOpen]);
 
-  // Find chat that needs updating
-  const chatToUpdate = chats.find(
-    (theChat) => theChat._id === newMessage?.chatId
-  );
+  const chatToUpdate = chats.find((theChat) => theChat._id === newMessage?.chatId);
 
   return (
-    <div className="">
+    <div style={{ backgroundColor: '#0F0F1A' }}>
       {/* Mobile Layout */}
       {isMobile ? (
         <div className="flex-1 flex flex-col h-full">
           <main className="flex-1 p-4 overflow-hidden">
-            {/* Search Bar with glassmorphism */}
-            <div className="relative mb-4">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60 w-4 h-4" />
+            {/* Search Bar */}
+            <div className="relative mb-4 animate-fade-in">
+              <Search 
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4" 
+                style={{ color: '#A1A1AA' }}
+              />
               <input
                 type="text"
                 placeholder="Search conversations..."
                 value={searchTerm}
                 onChange={handleSearch}
-                className="w-full bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl pl-10 pr-4 py-3 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-orange-400/50 focus:border-orange-400/50 transition-all duration-200"
+                className="w-full rounded-xl pl-10 pr-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-all duration-200"
+                style={{
+                  backgroundColor: '#1A1625',
+                  border: '1px solid #2D2640',
+                  focusRingColor: '#8B5CF6'
+                }}
               />
             </div>
 
@@ -201,7 +198,7 @@ export default function ChatsPage() {
             )}
           </main>
 
-          {/* Mobile Chat Modal - UNCHANGED */}
+          {/* Mobile Chat Modal */}
           <MobileChatModal
             isOpen={isOffcanvasOpen}
             onClose={closeOffcanvas}
@@ -218,42 +215,69 @@ export default function ChatsPage() {
           />
         </div>
       ) : (
-        /* Desktop Layout with Glassmorphism */
+        /* Desktop Layout */
         <div className="flex h-[80vh] w-full overflow-hidden">
           {/* Left Sidebar - Chat List */}
-          <div className="w-96 border-r border-white/10 flex flex-col overflow-hidden">
-            {/* Header with glassmorphism */}
-            <div className="p-6 border-b border-white/10 ">
+          <div 
+            className="w-96 flex flex-col overflow-hidden"
+            style={{ borderRight: '1px solid #2D2640' }}
+          >
+            {/* Header */}
+            <div 
+              className="p-6"
+              style={{ borderBottom: '1px solid #2D2640' }}
+            >
               <div className="flex items-center justify-between mb-4">
-                <h1 className="text-2xl font-bold text-white">Chats</h1>
+                <h1 className="text-2xl font-bold text-white">Messages</h1>
                 <button
                   onClick={() => navigate("/users")}
-                  className="w-12 h-12 rounded-2xl bg-gradient-to-r from-orange-400/80 to-orange-500/80 hover:from-orange-500/90 hover:to-orange-600/90 transition-all duration-200 hover:scale-105 flex items-center justify-center shadow-lg backdrop-blur-md border border-orange-300/30"
+                  className="w-11 h-11 rounded-xl flex items-center justify-center shadow-lg transition-all duration-200 hover:scale-105 group"
+                  style={{ backgroundColor: '#8B5CF6' }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#7C3AED'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#8B5CF6'}
                 >
-                  <Plus className="w-5 h-5 text-white" />
+                  <Plus className="w-5 h-5 text-white group-hover:rotate-90 transition-transform duration-200" />
                 </button>
               </div>
 
-              {/* Search Bar with glassmorphism */}
+              {/* Search Bar */}
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60 w-4 h-4" />
+                <Search 
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 transition-colors" 
+                  style={{ color: '#71717A' }}
+                />
                 <input
                   type="text"
                   placeholder="Search conversations..."
                   value={searchTerm}
                   onChange={handleSearch}
-                  className="w-full bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl pl-10 pr-4 py-3 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-orange-400/50 focus:border-orange-400/50 transition-all duration-200"
+                  className="w-full rounded-xl pl-10 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 transition-all duration-200"
+                  style={{
+                    backgroundColor: '#1A1625',
+                    border: '1px solid #2D2640'
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = '#8B5CF6';
+                    e.target.style.boxShadow = '0 0 0 2px rgba(139, 92, 246, 0.1)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = '#2D2640';
+                    e.target.style.boxShadow = 'none';
+                  }}
                 />
               </div>
             </div>
 
-            {/* Friends List with glassmorphism */}
-            <div className="px-6 py-4 border-b border-white/10">
+            {/* Friends List */}
+            <div 
+              className="px-6 py-4"
+              style={{ borderBottom: '1px solid #2D2640' }}
+            >
               <FriendsList initChat={initChat} />
             </div>
 
             {/* Chat List */}
-            <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
+            <div className="flex-1 overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
               {filteredChats.length > 0 ? (
                 <div className="p-4 space-y-2">
                   {filteredChats.map((chat) => (
@@ -275,11 +299,14 @@ export default function ChatsPage() {
             </div>
           </div>
 
-          {/* Right Side - Chat Area with glassmorphism */}
-          <div className="flex-1 flex flex-col overflow-hidden ">
+          {/* Right Side - Chat Area */}
+          <div 
+            className="flex-1 flex flex-col overflow-hidden"
+            style={{ backgroundColor: '#0F0F1A' }}
+          >
             {selectedChatId && otherUser ? (
               <>
-                {/* Chat Header with glassmorphism */}
+                {/* Chat Header */}
                 <ChatHeader otherUser={otherUser} />
 
                 {/* Chat Messages */}
@@ -296,8 +323,14 @@ export default function ChatsPage() {
                   />
                 </div>
 
-                {/* Message Input - FIXED props */}
-                <div className="z-50  border-t border-white/10 bg-white/5">
+                {/* Message Input */}
+                <div 
+                  className="z-50"
+                  style={{ 
+                    borderTop: '1px solid #2D2640',
+                    backgroundColor: '#1A1625'
+                  }}
+                >
                   <MessageInput 
                     onSendMessage={sendMessage}
                     selectedChatId={selectedChatId}
@@ -316,61 +349,94 @@ export default function ChatsPage() {
   );
 }
 
-// Extracted components with glassmorphism styling
+// Loading State Component
 const LoadingState = () => (
-  <div className="flex flex-col items-center justify-center text-center py-16">
+  <div className="flex flex-col items-center justify-center text-center py-16 animate-fade-in">
     <div className="relative mb-8">
-      <div className="animate-spin w-16 h-16 border-4 border-orange-400/60 border-t-transparent rounded-full backdrop-blur-md"></div>
-      <div className="absolute inset-0 w-16 h-16 border-4 border-orange-200/20 rounded-full"></div>
+      <div 
+        className="w-16 h-16 rounded-full animate-spin"
+        style={{ 
+          border: '3px solid #2D2640',
+          borderTopColor: '#8B5CF6'
+        }}
+      />
+      <Zap 
+        size={20} 
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+        style={{ color: '#22D3EE' }}
+      />
     </div>
     <div className="flex items-center space-x-2 mb-4">
-      <div className="w-2 h-2 bg-orange-400 rounded-full animate-pulse"></div>
-      <div
-        className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"
-        style={{ animationDelay: "0.2s" }}
-      ></div>
-      <div
-        className="w-2 h-2 bg-orange-600 rounded-full animate-pulse"
-        style={{ animationDelay: "0.4s" }}
-      ></div>
+      <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: '#8B5CF6' }} />
+      <div 
+        className="w-2 h-2 rounded-full animate-pulse" 
+        style={{ backgroundColor: '#8B5CF6', animationDelay: '0.2s' }}
+      />
+      <div 
+        className="w-2 h-2 rounded-full animate-pulse" 
+        style={{ backgroundColor: '#8B5CF6', animationDelay: '0.4s' }}
+      />
     </div>
     <h2 className="text-lg font-semibold text-white mb-2">Loading chats...</h2>
-    <p className="text-white/70 text-sm">
+    <p className="text-sm" style={{ color: '#A1A1AA' }}>
       Please wait while we fetch your conversations
     </p>
   </div>
 );
 
+// Empty Chats State Component
 const EmptyChatsState = ({ navigate }) => (
-  <div className="flex  flex-col items-center justify-center text-center py-16 px-4">
+  <div className="flex flex-col items-center justify-center text-center py-16 px-4 animate-fade-in">
     <div className="mb-8 relative">
-      <div className="w-24 h-24 rounded-2xl flex items-center justify-center shadow-2xl bg-gradient-to-br from-orange-400/80 to-orange-600/80 backdrop-blur-md border border-orange-300/30">
+      <div 
+        className="w-24 h-24 rounded-2xl flex items-center justify-center shadow-2xl"
+        style={{ backgroundColor: '#8B5CF6' }}
+      >
         <MessageCircle className="h-12 w-12 text-white" />
       </div>
-      <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full animate-pulse bg-orange-300/80 backdrop-blur-sm"></div>
-      <div
-        className="absolute -bottom-1 -left-2 w-4 h-4 rounded-full animate-pulse bg-orange-400/80 backdrop-blur-sm"
-        style={{ animationDelay: "300ms" }}
-      ></div>
+      <div 
+        className="absolute -top-2 -right-2 w-6 h-6 rounded-full animate-pulse"
+        style={{ backgroundColor: '#22D3EE' }}
+      />
+      <div 
+        className="absolute -bottom-1 -left-2 w-4 h-4 rounded-full animate-pulse"
+        style={{ backgroundColor: '#8B5CF6', animationDelay: '300ms' }}
+      />
     </div>
-    <h2 className="text-md font-bold mb-3 text-white">No chats yet</h2>
-    <p className="text-md mb-8 max-w-md text-white/70">
+    <h2 className="text-xl font-bold mb-3 text-white">No chats yet</h2>
+    <p className="text-sm mb-8 max-w-md" style={{ color: '#A1A1AA' }}>
       Start your first conversation by connecting with other users on ZapTalk!
     </p>
     <button
       onClick={() => navigate("/users")}
-      className="bg-gradient-to-r from-orange-400/80 to-orange-500/80 hover:from-orange-500/90 hover:to-orange-600/90 text-white px-8 py-4 rounded-2xl shadow-2xl backdrop-blur-md border border-orange-300/30 transition-all duration-200 hover:scale-105 font-semibold text-md"
+      className="text-white px-8 py-4 rounded-xl shadow-xl transition-all duration-200 hover:scale-105 font-semibold text-sm"
+      style={{ backgroundColor: '#8B5CF6' }}
+      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#7C3AED'}
+      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#8B5CF6'}
     >
       Find Users
     </button>
   </div>
 );
 
+// Chat Header Component
 const ChatHeader = ({ otherUser }) => (
-  <div className="h-16 bg-white/5 backdrop-blur-md border-b border-white/10 flex items-center justify-between px-6">
+  <div 
+    className="h-16 flex items-center justify-between px-6"
+    style={{ 
+      backgroundColor: '#1A1625',
+      borderBottom: '1px solid #2D2640'
+    }}
+  >
     <div className="flex items-center space-x-4">
       <div className="relative">
-        <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold bg-gradient-to-br from-orange-400 to-orange-600 overflow-hidden border-2 border-white/20">
+        <div 
+          className="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold overflow-hidden"
+          style={{ 
+            backgroundColor: '#8B5CF6',
+            border: '2px solid #2D2640'
+          }}
+        >
           {otherUser?.avatar ? (
             <img
               src={otherUser.avatar}
@@ -382,23 +448,20 @@ const ChatHeader = ({ otherUser }) => (
           )}
         </div>
         <div
-          className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 ${
-            otherUser?.status?.state === "online"
-              ? "bg-green-400"
-              : "bg-gray-400"
-          } border-2 border-white/30 rounded-full shadow-lg`}
-        ></div>
+          className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full shadow-lg"
+          style={{
+            backgroundColor: otherUser?.status?.state === "online" ? '#10B981' : '#71717A',
+            border: '2px solid #1A1625'
+          }}
+        />
       </div>
-      <div className="">
+      <div>
         <h2 className="font-semibold text-white">
           {otherUser.name || "Chat"}
         </h2>
         <p
-          className={`text-xs ${
-            otherUser?.status?.state === "online"
-              ? "text-green-300"
-              : "text-white/60"
-          }`}
+          className="text-xs"
+          style={{ color: otherUser?.status?.state === "online" ? '#22D3EE' : '#71717A' }}
         >
           {otherUser?.status?.state}
         </p>
@@ -406,68 +469,99 @@ const ChatHeader = ({ otherUser }) => (
     </div>
 
     <div className="flex items-center space-x-2">
-      <button className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 transition-all duration-200 hover:scale-105 flex items-center justify-center backdrop-blur-md border border-white/20">
-        <Phone className="w-4 h-4 text-white/80" />
+      <button 
+        className="w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-200 hover:scale-105"
+        style={{ backgroundColor: '#252032' }}
+        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#2D2640'}
+        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#252032'}
+      >
+        <Phone className="w-4 h-4" style={{ color: '#A1A1AA' }} />
       </button>
-      <button className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 transition-all duration-200 hover:scale-105 flex items-center justify-center backdrop-blur-md border border-white/20">
-        <Video className="w-4 h-4 text-white/80" />
+      <button 
+        className="w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-200 hover:scale-105"
+        style={{ backgroundColor: '#252032' }}
+        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#2D2640'}
+        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#252032'}
+      >
+        <Video className="w-4 h-4" style={{ color: '#A1A1AA' }} />
       </button>
-      <button className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 transition-all duration-200 hover:scale-105 flex items-center justify-center backdrop-blur-md border border-white/20">
-        <MoreVertical className="w-4 h-4 text-white/80" />
+      <button 
+        className="w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-200 hover:scale-105"
+        style={{ backgroundColor: '#252032' }}
+        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#2D2640'}
+        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#252032'}
+      >
+        <MoreVertical className="w-4 h-4" style={{ color: '#A1A1AA' }} />
       </button>
     </div>
   </div>
 );
 
+// Welcome Screen Component
 const WelcomeScreen = ({ navigate }) => (
-  <div className="flex-1 flex flex-col items-center justify-center text-center p-8">
+  <div className="flex-1 flex flex-col items-center justify-center text-center p-8 animate-fade-in">
     <div className="mb-8 relative">
-      <div className="w-32 h-32 rounded-3xl flex items-center justify-center shadow-2xl bg-gradient-to-br from-orange-400/80 to-orange-600/80 backdrop-blur-md border border-orange-300/30 animate-pulse">
+      <div 
+        className="w-32 h-32 rounded-3xl flex items-center justify-center shadow-2xl animate-pulse"
+        style={{ backgroundColor: '#8B5CF6' }}
+      >
         <MessageCircle className="h-16 w-16 text-white" />
       </div>
       <div
-        className="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-gradient-to-r from-orange-300/80 to-orange-400/80 animate-bounce backdrop-blur-sm border border-orange-200/30"
-        style={{ animationDelay: "200ms" }}
-      ></div>
+        className="absolute -top-3 -right-3 w-8 h-8 rounded-full animate-bounce"
+        style={{ 
+          backgroundColor: '#22D3EE',
+          animationDelay: '200ms'
+        }}
+      />
       <div
-        className="absolute -bottom-2 -left-3 w-6 h-6 rounded-full bg-gradient-to-r from-orange-400/80 to-orange-500/80 animate-bounce backdrop-blur-sm border border-orange-300/30"
-        style={{ animationDelay: "600ms" }}
-      ></div>
+        className="absolute -bottom-2 -left-3 w-6 h-6 rounded-full animate-bounce"
+        style={{ 
+          backgroundColor: '#8B5CF6',
+          animationDelay: '600ms'
+        }}
+      />
       <div
-        className="absolute top-8 -left-8 w-4 h-4 rounded-full bg-gradient-to-r from-orange-500/80 to-orange-600/80 animate-pulse backdrop-blur-sm border border-orange-400/30"
-        style={{ animationDelay: "1000ms" }}
-      ></div>
+        className="absolute top-8 -left-8 w-4 h-4 rounded-full animate-pulse"
+        style={{ 
+          backgroundColor: '#7C3AED',
+          animationDelay: '1000ms'
+        }}
+      />
     </div>
 
-    <p className="text-xl mb-8 max-w-md text-white/80 leading-relaxed">
+    <p className="text-xl mb-8 max-w-md leading-relaxed" style={{ color: '#A1A1AA' }}>
       Select a conversation from the sidebar to start chatting, or create a new one!
     </p>
 
     <div className="flex flex-col space-y-4 items-center">
       <button
         onClick={() => navigate("/users")}
-        className="bg-gradient-to-r from-orange-400/80 to-orange-500/80 hover:from-orange-500/90 hover:to-orange-600/90 text-white px-8 py-4 rounded-2xl shadow-2xl backdrop-blur-md border border-orange-300/30 transition-all duration-300 hover:scale-105 font-semibold text-lg transform hover:-translate-y-1"
+        className="text-white px-8 py-4 rounded-xl shadow-2xl transition-all duration-300 hover:scale-105 font-semibold text-lg transform hover:-translate-y-1"
+        style={{ backgroundColor: '#8B5CF6' }}
+        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#7C3AED'}
+        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#8B5CF6'}
       >
         Start New Chat
       </button>
 
-      <div className="flex items-center space-x-6 text-white/60 text-sm mt-8">
+      <div className="flex items-center space-x-6 text-sm mt-8" style={{ color: '#71717A' }}>
         <div className="flex items-center space-x-2">
-          <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+          <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: '#10B981' }} />
           <span>Secure</span>
         </div>
         <div className="flex items-center space-x-2">
-          <div
-            className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"
-            style={{ animationDelay: "500ms" }}
-          ></div>
+          <div 
+            className="w-2 h-2 rounded-full animate-pulse" 
+            style={{ backgroundColor: '#22D3EE', animationDelay: '500ms' }}
+          />
           <span>Real-time</span>
         </div>
         <div className="flex items-center space-x-2">
-          <div
-            className="w-2 h-2 bg-purple-400 rounded-full animate-pulse"
-            style={{ animationDelay: "1000ms" }}
-          ></div>
+          <div 
+            className="w-2 h-2 rounded-full animate-pulse" 
+            style={{ backgroundColor: '#8B5CF6', animationDelay: '1000ms' }}
+          />
           <span>Lightning Fast</span>
         </div>
       </div>

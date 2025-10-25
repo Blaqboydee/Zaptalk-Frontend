@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { formatTime } from "../../utils/formatTime";
+import { Edit2, Trash2, Check, X } from "lucide-react";
 
 const ChatMessages = ({
   messages,
@@ -138,7 +139,11 @@ const ChatMessages = ({
 
   // Early return if user is not available
   if (!user) {
-    return <div className="text-gray-400 text-center">Loading...</div>;
+    return (
+      <div className="text-center py-8" style={{ color: '#A1A1AA' }}>
+        Loading...
+      </div>
+    );
   }
 
   return (
@@ -148,11 +153,16 @@ const ChatMessages = ({
         className={`overflow-y-auto p-4 space-y-6 scrollbar-hidden ${
           isMobile ? "h-[calc(95vh-120px)]" : "h-[calc(78vh-120px)]"
         }`}
+        style={{ backgroundColor: '#0F0F1A' }}
       >
         {isLoadingMessages ? (
-          <div className="text-gray-400 text-center">Loading messages...</div>
+          <div className="text-center py-8" style={{ color: '#A1A1AA' }}>
+            Loading messages...
+          </div>
         ) : !messages || messages.length === 0 ? (
-          <div className="text-gray-400 text-center">No messages yet</div>
+          <div className="text-center py-8" style={{ color: '#A1A1AA' }}>
+            No messages yet
+          </div>
         ) : (
           messages.map((message) => {
             if (!message?._id) return null;
@@ -162,7 +172,7 @@ const ChatMessages = ({
             return (
               <div
                 key={message._id}
-                className={`flex gap-3 ${isOwnMessage ? "flex-row-reverse" : ""}`}
+                className={`flex gap-3 animate-fade-in ${isOwnMessage ? "flex-row-reverse" : ""}`}
               >
                 <div className={`flex-1 w-[85%] ${isOwnMessage ? "text-right" : ""}`}>
                   <div className={`relative inline-block max-w-[75%] min-w-[120px] ${isOwnMessage ? "ml-auto" : "mr-auto"}`}>
@@ -175,44 +185,64 @@ const ChatMessages = ({
                       onTouchEnd={handleLongPressEnd}
                       onTouchCancel={handleLongPressEnd}
                       className={`
-                        px-5 py-2 relative select-none cursor-pointer
-                        ${isOwnMessage
-                          ? "bg-gradient-to-br from-orange-400 via-orange-500 to-orange-600"
-                          : "bg-gradient-to-br from-gray-600 via-gray-700 to-gray-800"
-                        }
-                        shadow-xl transform transition-all duration-200 hover:scale-[1.01]
-                        ${isOwnMessage ? "hover:shadow-orange-500/25" : "hover:shadow-gray-500/25"}
+                        px-5 py-3 relative select-none cursor-pointer
+                        shadow-lg transform transition-all duration-200 hover:scale-[1.01]
                         ${message.pending ? "opacity-70" : ""}
                       `}
                       style={{
-                        borderRadius: isOwnMessage ? "25px 25px 8px 25px" : "25px 25px 25px 8px",
+                        backgroundColor: isOwnMessage ? '#8B5CF6' : '#252032',
+                        borderRadius: isOwnMessage ? "20px 20px 4px 20px" : "20px 20px 20px 4px",
                         wordWrap: "break-word",
                         overflowWrap: "break-word",
-                        filter: "drop-shadow(0 8px 16px rgba(0,0,0,0.3))",
+                        border: `1px solid ${isOwnMessage ? '#7C3AED' : '#2D2640'}`,
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.boxShadow = isOwnMessage 
+                          ? '0 4px 12px rgba(139, 92, 246, 0.3)' 
+                          : '0 4px 12px rgba(0, 0, 0, 0.2)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.boxShadow = '';
                       }}
                     >
-                      {/* Highlight effect */}
+                      {/* Subtle highlight effect */}
                       <div
-                        className="absolute top-2 left-3 w-6 h-6 bg-white opacity-20 rounded-full blur-sm pointer-events-none"
+                        className="absolute top-2 left-3 w-6 h-6 rounded-full blur-sm pointer-events-none"
                         style={{
-                          background: "radial-gradient(circle, rgba(255,255,255,0.4) 0%, transparent 70%)",
+                          background: "radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%)",
                         }}
                       />
 
                       {/* Message content */}
-                      <p className="text-white text-[13px] leading-relaxed whitespace-pre-wrap mb-1 relative z-10">
+                      <p 
+                        className="text-white text-[13px] leading-relaxed whitespace-pre-wrap mb-1 relative z-10"
+                        style={{ color: isOwnMessage ? '#FFFFFF' : '#FFFFFF' }}
+                      >
                         {message.content || ""}
                         {message.edited && (
-                          <span className="text-[10px] opacity-60 ml-2">(edited)</span>
+                          <span 
+                            className="text-[10px] opacity-60 ml-2"
+                            style={{ color: isOwnMessage ? '#E9D5FF' : '#A1A1AA' }}
+                          >
+                            (edited)
+                          </span>
                         )}
                         {message.pending && (
-                          <span className="text-[10px] opacity-60 ml-2">(sending...)</span>
+                          <span 
+                            className="text-[10px] opacity-60 ml-2"
+                            style={{ color: isOwnMessage ? '#E9D5FF' : '#A1A1AA' }}
+                          >
+                            (sending...)
+                          </span>
                         )}
                       </p>
 
                       {/* Timestamp */}
-                      <div className={`flex ${isOwnMessage ? "justify-end" : "justify-start"} mt-2`}>
-                        <span className="text-[10px] text-white opacity-70 relative z-10">
+                      <div className={`flex ${isOwnMessage ? "justify-end" : "justify-start"} mt-1`}>
+                        <span 
+                          className="text-[10px] opacity-70 relative z-10"
+                          style={{ color: isOwnMessage ? '#E9D5FF' : '#A1A1AA' }}
+                        >
                           {message.createdAt ? formatTime(message.createdAt) : ""}
                         </span>
                       </div>
@@ -230,13 +260,15 @@ const ChatMessages = ({
       {selectedMessage && (
         <div
           ref={modalRef}
-          className="fixed z-50 bg-gray-800 rounded-xl shadow-2xl border border-gray-600 backdrop-blur-md"
+          className="fixed z-50 rounded-xl shadow-2xl backdrop-blur-md animate-fade-in"
           style={{
             left: modalPosition.x,
             top: modalPosition.y,
             transform: "translateY(-50%)",
             minWidth: isEditing ? "300px" : "150px",
             maxWidth: "90vw",
+            backgroundColor: '#1A1625',
+            border: '1px solid #2D2640',
           }}
         >
           {isEditing ? (
@@ -271,9 +303,7 @@ const EditMessageForm = ({
 }) => (
   <div className="p-4 space-y-3">
     <div className="flex items-center space-x-2 mb-3">
-      <svg className="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-      </svg>
+      <Edit2 size={16} style={{ color: '#8B5CF6' }} />
       <span className="text-white text-sm font-medium">Edit Message</span>
     </div>
 
@@ -282,26 +312,52 @@ const EditMessageForm = ({
       value={editText}
       onChange={(e) => setEditText(e.target.value)}
       onKeyDown={onKeyDown}
-      className="w-full p-3 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-orange-500 focus:outline-none resize-none text-sm"
+      className="w-full p-3 text-white rounded-lg focus:outline-none resize-none text-sm transition-all duration-200"
+      style={{
+        backgroundColor: '#252032',
+        border: '1px solid #2D2640'
+      }}
+      onFocus={(e) => {
+        e.target.style.borderColor = '#8B5CF6';
+        e.target.style.boxShadow = '0 0 0 2px rgba(139, 92, 246, 0.1)';
+      }}
+      onBlur={(e) => {
+        e.target.style.borderColor = '#2D2640';
+        e.target.style.boxShadow = 'none';
+      }}
       rows="3"
       maxLength="500"
       placeholder="Enter your message..."
     />
 
-    <div className="text-xs text-gray-400 text-right">{editText.length}/500</div>
+    <div className="text-xs text-right" style={{ color: '#71717A' }}>
+      {editText.length}/500
+    </div>
 
     <div className="flex space-x-2">
       <button
         onClick={onSave}
         disabled={!editText.trim()}
-        className="flex-1 px-3 py-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 disabled:from-gray-500 disabled:to-gray-600 disabled:cursor-not-allowed text-white rounded-lg text-xs font-medium transition-all duration-200 transform hover:scale-105 disabled:hover:scale-100"
+        className="flex-1 px-3 py-2 text-white rounded-lg text-xs font-medium transition-all duration-200 transform hover:scale-105 disabled:hover:scale-100 flex items-center justify-center gap-2"
+        style={{
+          backgroundColor: !editText.trim() ? '#6D28D9' : '#8B5CF6',
+          opacity: !editText.trim() ? 0.7 : 1,
+          cursor: !editText.trim() ? 'not-allowed' : 'pointer'
+        }}
+        onMouseEnter={(e) => !editText.trim() ? null : e.currentTarget.style.backgroundColor = '#7C3AED'}
+        onMouseLeave={(e) => !editText.trim() ? null : e.currentTarget.style.backgroundColor = '#8B5CF6'}
       >
+        <Check size={14} />
         Save
       </button>
       <button
         onClick={onCancel}
-        className="flex-1 px-3 py-2 bg-gray-600 hover:bg-gray-500 text-white rounded-lg text-xs font-medium transition-all duration-200"
+        className="flex-1 px-3 py-2 text-white rounded-lg text-xs font-medium transition-all duration-200 flex items-center justify-center gap-2"
+        style={{ backgroundColor: '#252032' }}
+        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#2D2640'}
+        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#252032'}
       >
+        <X size={14} />
         Cancel
       </button>
     </div>
@@ -313,26 +369,31 @@ const MessageOptions = ({ onEdit, onDelete }) => (
   <div className="py-2">
     <button
       onClick={onEdit}
-      className="w-full px-4 py-3 text-left text-white hover:bg-gray-700 transition-colors duration-200 flex items-center space-x-3"
+      className="w-full px-4 py-3 text-left text-white transition-all duration-200 flex items-center space-x-3 hover:scale-[1.02]"
+      style={{ backgroundColor: 'transparent' }}
+      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#252032'}
+      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
     >
-      <svg className="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-      </svg>
+      <Edit2 size={16} style={{ color: '#8B5CF6' }} />
       <span className="text-sm">Edit</span>
     </button>
 
-    <div className="border-t border-gray-600"></div>
+    <div style={{ borderTop: '1px solid #2D2640' }} />
 
     <button
       onClick={onDelete}
-      className="w-full px-4 py-3 text-left text-red-400 hover:bg-red-900/20 transition-colors duration-200 flex items-center space-x-3"
+      className="w-full px-4 py-3 text-left transition-all duration-200 flex items-center space-x-3 hover:scale-[1.02]"
+      style={{ 
+        backgroundColor: 'transparent',
+        color: '#EF4444'
+      }}
+      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.1)'}
+      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
     >
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-      </svg>
+      <Trash2 size={16} />
       <span className="text-sm">Delete</span>
     </button>
   </div>
 );
 
-export default ChatMessages
+export default ChatMessages;

@@ -19,7 +19,7 @@ const GroupMessageInput = ({ onSendMessage, disabled = false }) => {
   };
 
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-3">
       <input
         type="text"
         value={message}
@@ -27,14 +27,39 @@ const GroupMessageInput = ({ onSendMessage, disabled = false }) => {
         onKeyPress={handleKeyPress}
         placeholder="Type your message..."
         disabled={disabled}
-        className="flex-1 px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 disabled:opacity-50"
+        className="flex-1 px-4 py-3 rounded-xl text-white placeholder-gray-500 focus:outline-none transition-all duration-200 disabled:opacity-50"
+        style={{
+          backgroundColor: '#252032',
+          border: '1px solid #2D2640'
+        }}
+        onFocus={(e) => {
+          e.target.style.borderColor = '#8B5CF6';
+          e.target.style.boxShadow = '0 0 0 2px rgba(139, 92, 246, 0.1)';
+        }}
+        onBlur={(e) => {
+          e.target.style.borderColor = '#2D2640';
+          e.target.style.boxShadow = 'none';
+        }}
       />
       <button 
         onClick={handleSubmit}
-        className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="text-white px-4 py-3 rounded-xl flex items-center gap-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 disabled:hover:scale-100"
+        style={{
+          backgroundColor: !message.trim() || disabled ? '#6D28D9' : '#8B5CF6'
+        }}
+        onMouseEnter={(e) => {
+          if (message.trim() && !disabled) {
+            e.currentTarget.style.backgroundColor = '#7C3AED';
+          }
+        }}
+        onMouseLeave={(e) => {
+          if (message.trim() && !disabled) {
+            e.currentTarget.style.backgroundColor = '#8B5CF6';
+          }
+        }}
         disabled={!message.trim() || disabled}
       >
-        <Send size={18} />
+        <Send size={18} className={message.trim() && !disabled ? 'animate-pulse' : ''} />
       </button>
     </div>
   );

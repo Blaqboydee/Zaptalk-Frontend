@@ -24,15 +24,102 @@ body {
   }
 }
 
-/* ✅ ZapTalk Theme Variables */
 :root {
-  --zap-dark-primary: #1F2937;  /* gray-900 */
-  --zap-dark-secondary: #374151; /* gray-800 */
-  --zap-dark-accent: #4B5563;   /* gray-700 */
-  --zap-light: #F9FAFB;         /* gray-50 */
-  --zap-white: #FFFFFF;
-  --zap-gray-light: #D1D5DB;    /* gray-300 */
-  --zap-gray: #9CA3AF;          /* gray-400 */
-  --zap-accent: #6B7280;        /* gray-500 */
-  --zap-dark: #111827;          /* gray-950 */
+  /* Primary Colors */
+  --color-primary: #8B5CF6;
+  --color-primary-hover: #7C3AED;
+  --color-primary-dark: #6D28D9;
+  --color-accent: #22D3EE;
+  --color-accent-hover: #06B6D4;
+  --color-accent-dark: #0891B2;
+  
+  /* Background Colors */
+  --bg-primary: #0F0F1A;
+  --bg-secondary: #1A1625;
+  --bg-tertiary: #252032;
+  --bg-hover: #2D2640;
+  
+  /* Text Colors */
+  --text-primary: #FFFFFF;
+  --text-secondary: #A1A1AA;
+  --text-tertiary: #71717A;
+  --text-muted: #52525B;
+  
+  /* Border & Dividers */
+  --border-color: #2D2640;
+  --border-light: #3F3851;
+  
+  /* Status Colors */
+  --success: #10B981;
+  --error: #EF4444;
+  --warning: #F59E0B;
+  --info: #3B82F6;
+}
+
+/* Smooth transitions globally */
+* {
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bg-tertiary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--bg-hover);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+.animate-pulse {
+  animation: pulse 2s ease-in-out infinite;
 }

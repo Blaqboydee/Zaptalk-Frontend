@@ -12,8 +12,17 @@ import { useChats } from "../hooks/useChats";
 import MobileChatModal from "../components/DirectChatsComponents/MobileChatModal.jsx";
 import { useToast } from "../context/ToastContainer";
 import { useGlobalSocket } from "../context/SocketContext.jsx";
-import { FaUserFriends, FaInbox, FaPaperPlane, FaTrash } from "react-icons/fa";
-import { MdPersonAdd, MdMessage } from "react-icons/md";
+import { 
+  Users, 
+  Inbox, 
+  Send, 
+  Trash2, 
+  UserPlus, 
+  MessageCircle,
+  Zap,
+  Check,
+  X
+} from "lucide-react";
 
 const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -27,9 +36,8 @@ export default function Friends() {
   const [otherUser, setOtherUser] = useState(null);
   const [isOffcanvasOpen, setIsOffcanvasOpen] = useState(false);
 
-  // Loading state for friend requests
+  // Loading states
   const [loadingRequests, setLoadingRequests] = useState(new Set());
-  // Loading state for message buttons
   const [initializingChats, setInitializingChats] = useState(new Set());
 
   const {
@@ -93,15 +101,12 @@ export default function Friends() {
     [socketSendMessage, selectedChatId, user.id]
   );
 
-  // Handle message friend - Desktop routes to /chats, Mobile opens modal
   const handleMessageFriend = async (friend) => {
     if (!isMobile) {
-      // Desktop: Navigate to chats page
       navigate("/allchats");
       return;
     }
 
-    // Mobile: Open modal
     setInitializingChats((prev) => new Set([...prev, friend._id]));
 
     try {
@@ -173,29 +178,54 @@ export default function Friends() {
     const tabMap = {
       friends: {
         label: "Friends",
-        icon: <FaUserFriends className="w-5 h-5" />,
+        icon: <Users className="w-5 h-5" />,
       },
-      add: { label: "Add Friends", icon: <MdPersonAdd className="w-5 h-5" /> },
-      requests: { label: "Requests", icon: <FaInbox className="w-5 h-5" /> },
-      sent: { label: "Sent", icon: <FaPaperPlane className="w-5 h-5" /> },
+      add: { 
+        label: "Add Friends", 
+        icon: <UserPlus className="w-5 h-5" /> 
+      },
+      requests: { 
+        label: "Requests", 
+        icon: <Inbox className="w-5 h-5" /> 
+      },
+      sent: { 
+        label: "Sent", 
+        icon: <Send className="w-5 h-5" /> 
+      },
     };
     return tabMap[key];
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen" style={{ backgroundColor: '#0F0F1A' }}>
       {/* Fixed Header Section */}
-      <div className="fixed top-0 left-0 right-0 z-40 bg-gray-900/95 flex  backdrop-blur-md border-b border-gray-800">
+      <div 
+        className="fixed top-0 left-0 right-0 z-40 backdrop-blur-xl"
+        style={{ 
+          backgroundColor: 'rgba(15, 15, 26, 0.95)',
+          borderBottom: '1px solid #2D2640'
+        }}
+      >
         <div className="w-full lg:max-w-6xl flex items-center justify-center flex-col mx-auto px-4 sm:px-6 lg:px-8 py-4">
           {/* Header */}
-          <div className="mb-4 text-center">
-            <h1 className="text-xl lg:text-3xl font-bold text-white mb-2">Connections</h1>
-            <p className="text-sm lg:text-base text-gray-400">Manage your friends and requests</p>
+          <div className="mb-4 text-center animate-fade-in">
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <Users className="w-6 h-6" style={{ color: '#22D3EE' }} />
+              <h1 className="text-xl lg:text-3xl font-bold text-white">
+                Connections
+              </h1>
+            </div>
+            <p className="text-sm lg:text-base" style={{ color: '#A1A1AA' }}>
+              Manage your friends and requests
+            </p>
           </div>
 
           {/* Tab Navigation */}
           <div className="w-full flex justify-center">
-            <div className="bg-gray-800 rounded-xl p-1 flex justify-between w-full lg:w-[60%] sm:w-full overflow-x-auto">
+            <div 
+              className="rounded-xl p-1 flex justify-between w-full lg:w-[60%] sm:w-full overflow-x-auto"
+              style={{ backgroundColor: '#1A1625' }}
+            >
               {["friends", "add", "requests", "sent"].map((tab) => {
                 const tabInfo = getTabInfo(tab);
                 const isActive = activeTab === tab;
@@ -205,11 +235,23 @@ export default function Friends() {
                   <button
                     key={tab}
                     onClick={() => setActiveTab(tab)}
-                    className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all whitespace-nowrap ${
-                      isActive
-                        ? "bg-orange-500 text-white"
-                        : "text-gray-400 hover:text-white hover:bg-gray-700"
-                    }`}
+                    className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all whitespace-nowrap"
+                    style={{
+                      backgroundColor: isActive ? '#8B5CF6' : 'transparent',
+                      color: isActive ? '#FFFFFF' : '#A1A1AA'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isActive) {
+                        e.currentTarget.style.backgroundColor = '#252032';
+                        e.currentTarget.style.color = '#FFFFFF';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isActive) {
+                        e.currentTarget.style.backgroundColor = 'transparent';
+                        e.currentTarget.style.color = '#A1A1AA';
+                      }
+                    }}
                   >
                     <span>{tabInfo.icon}</span>
                     <span className="text-sm hidden sm:inline">
@@ -218,11 +260,11 @@ export default function Friends() {
 
                     {count > 0 && (
                       <span
-                        className={`inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-xs font-bold rounded-full ${
-                          isActive
-                            ? "bg-white text-orange-500"
-                            : "bg-orange-500 text-white"
-                        }`}
+                        className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-xs font-bold rounded-full"
+                        style={{
+                          backgroundColor: isActive ? '#FFFFFF' : '#8B5CF6',
+                          color: isActive ? '#8B5CF6' : '#FFFFFF'
+                        }}
                       >
                         {count > 99 ? "99+" : count}
                       </span>
@@ -242,45 +284,43 @@ export default function Friends() {
             <div className="min-h-[500px]">
               {/* Friends Tab */}
               {activeTab === "friends" && (
-                <div className="p-4 lg:p-6">
-                  <div className="mb-2 lg:mb-6">
+                <div className="p-4 lg:p-6 animate-fade-in">
+                  <div className="mb-4 lg:mb-6">
                     <h2 className="text-sm lg:text-xl font-semibold text-white">
                       Your Friends ({friends.length})
                     </h2>
                   </div>
 
                   {friends?.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-16">
-                      <div className="w-20 h-20 rounded-full bg-gray-700 flex items-center justify-center mb-4">
-                        <FaUserFriends className="w-10 h-10 text-gray-500" />
-                      </div>
-                      <h3 className="text-lg font-semibold text-white mb-2">
-                        No friends yet
-                      </h3>
-                      <p className="text-gray-400 mb-6 text-center max-w-sm">
-                        Start building your network by adding some friends!
-                      </p>
-                      <button
-                        onClick={() => setActiveTab("add")}
-                        className="px-6 py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-lg transition-colors"
-                      >
-                        Add Friends
-                      </button>
-                    </div>
+                    <EmptyState
+                      icon={<Users className="w-10 h-10" style={{ color: '#71717A' }} />}
+                      title="No friends yet"
+                      description="Start building your network by adding some friends!"
+                      buttonText="Add Friends"
+                      onClick={() => setActiveTab("add")}
+                    />
                   ) : (
                     <div className="space-y-3">
-                      {friends?.map((f) => (
+                      {friends?.map((f, index) => (
                         <div
                           key={f?._id}
-                          className="p-2 border-b border-gray-700 hover:border-gray-600 transition-colors"
+                          className="p-4 rounded-xl transition-all duration-200 hover:scale-[1.01]"
+                          style={{ 
+                            backgroundColor: '#1A1625',
+                            border: '1px solid #2D2640',
+                            animationDelay: `${index * 50}ms`
+                          }}
+                          onMouseEnter={(e) => e.currentTarget.style.borderColor = '#8B5CF6'}
+                          onMouseLeave={(e) => e.currentTarget.style.borderColor = '#2D2640'}
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-4 flex-1 min-w-0">
                               <div className="relative flex-shrink-0">
                                 <div
-                                  className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold ${
-                                    f?.avatar ? "" : "bg-orange-500"
-                                  }`}
+                                  className="w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold"
+                                  style={{ 
+                                    backgroundColor: f?.avatar ? 'transparent' : '#8B5CF6' 
+                                  }}
                                 >
                                   {f?.avatar ? (
                                     <img
@@ -293,21 +333,24 @@ export default function Friends() {
                                   )}
                                 </div>
                                 <div
-                                  className={`absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 ${
-                                    f.status?.state === "online"
-                                      ? "bg-green-500"
-                                      : "bg-gray-500"
-                                  } rounded-full border-2 border-gray-900`}
-                                ></div>
+                                  className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full"
+                                  style={{
+                                    backgroundColor: f.status?.state === "online" ? '#10B981' : '#71717A',
+                                    border: '2px solid #1A1625'
+                                  }}
+                                />
                               </div>
                               <div className="min-w-0 flex-1">
                                 <h3 className="text-sm lg:text-base font-semibold text-white truncate">
                                   {f.name}
                                 </h3>
-                                <p className="text-sm text-gray-400">
-                                  {f.status?.state === "online"
-                                    ? "Online"
-                                    : "Offline"}
+                                <p 
+                                  className="text-sm"
+                                  style={{ 
+                                    color: f.status?.state === "online" ? '#22D3EE' : '#71717A' 
+                                  }}
+                                >
+                                  {f.status?.state === "online" ? "Online" : "Offline"}
                                 </p>
                               </div>
                             </div>
@@ -316,23 +359,30 @@ export default function Friends() {
                               <button
                                 onClick={() => handleMessageFriend(f)}
                                 disabled={initializingChats.has(f._id)}
-                                className={`flex items-center justify-center space-x-2 px-4 py-2 rounded-lg font-medium transition-colors ${
-                                  initializingChats.has(f._id)
-                                    ? "bg-orange-400 text-white cursor-not-allowed"
-                                    : "bg-orange-500 hover:bg-orange-600 text-white"
-                                }`}
+                                className="flex items-center justify-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:scale-105"
+                                style={{
+                                  backgroundColor: initializingChats.has(f._id) ? '#7C3AED' : '#8B5CF6',
+                                  color: '#FFFFFF',
+                                  cursor: initializingChats.has(f._id) ? 'not-allowed' : 'pointer'
+                                }}
                                 title="Message"
                               >
                                 {initializingChats.has(f._id) ? (
                                   <>
-                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                    <div 
+                                      className="w-4 h-4 rounded-full animate-spin"
+                                      style={{ 
+                                        border: '2px solid #FFFFFF',
+                                        borderTopColor: 'transparent'
+                                      }}
+                                    />
                                     <span className="hidden sm:inline text-sm">
                                       Opening...
                                     </span>
                                   </>
                                 ) : (
                                   <>
-                                    <MdMessage className="w-4 h-4 sm:hidden" />
+                                    <MessageCircle className="w-4 h-4 sm:hidden" />
                                     <span className="hidden sm:inline text-sm">
                                       Message
                                     </span>
@@ -341,10 +391,23 @@ export default function Friends() {
                               </button>
                               <button
                                 onClick={() => removeFriend(f._id)}
-                                className="flex items-center justify-center px-4 py-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/50 hover:border-red-500 rounded-lg text-red-400 hover:text-red-300 font-medium transition-colors"
+                                className="flex items-center justify-center px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:scale-105"
+                                style={{
+                                  backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                                  border: '1px solid rgba(239, 68, 68, 0.5)',
+                                  color: '#EF4444'
+                                }}
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.2)';
+                                  e.currentTarget.style.borderColor = '#EF4444';
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
+                                  e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.5)';
+                                }}
                                 title="Remove friend"
                               >
-                                <FaTrash className="w-4 h-4 sm:hidden" />
+                                <Trash2 className="w-4 h-4 sm:hidden" />
                                 <span className="hidden sm:inline text-sm">
                                   Remove
                                 </span>
@@ -360,124 +423,39 @@ export default function Friends() {
 
               {/* Add Friend Tab */}
               {activeTab === "add" && (
-               <div className="p-4 lg:p-6">
-                  <div className="mb-2 lg:mb-6">
+                <div className="p-4 lg:p-6 animate-fade-in">
+                  <div className="mb-4 lg:mb-6">
                     <h2 className="text-sm lg:text-xl font-semibold text-white">
                       Discover People
                     </h2>
                   </div>
 
                   {users.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-16 ">
-                      <div className="w-20 h-20 rounded-full bg-gray-700 flex items-center justify-center mb-4">
-                        <MdPersonAdd className="w-10 h-10 text-gray-500" />
-                      </div>
-                      <h3 className="text-lg font-semibold text-white mb-2">
-                        No users found
-                      </h3>
-                      <p className="text-gray-400">
-                        Check back later for more people to connect with!
-                      </p>
-                    </div>
+                    <EmptyState
+                      icon={<UserPlus className="w-10 h-10" style={{ color: '#71717A' }} />}
+                      title="No users found"
+                      description="Check back later for more people to connect with!"
+                    />
                   ) : (
                     <div className="space-y-3">
-                      {users.map((u) => {
+                      {users.map((u, index) => {
                         const isLoading = loadingRequests.has(u._id);
                         const requestSent = isRequestSent(u._id);
                         const isFriend = isAlreadyFriend(u._id);
                         const pendingRequest = hasPendingRequest(u._id);
 
-                        let buttonConfig = {};
-
-                        if (isFriend) {
-                          buttonConfig = {
-                            text: "Friends",
-                            disabled: true,
-                            className:
-                              "px-4 py-2 bg-green-500/10 border border-green-500/50 text-green-400 rounded-lg cursor-not-allowed text-sm font-medium",
-                          };
-                        } else if (pendingRequest) {
-                          buttonConfig = {
-                            text: "Accept",
-                            disabled: false,
-                            className:
-                              "px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors text-sm font-medium",
-                            onClick: () => acceptFriendRequest(u._id, u.name),
-                          };
-                        } else if (requestSent) {
-                          buttonConfig = {
-                            text: "Sent",
-                            disabled: true,
-                            className:
-                              "px-4 py-2 bg-gray-700 text-gray-400 rounded-lg cursor-not-allowed text-sm font-medium",
-                          };
-                        } else {
-                          buttonConfig = {
-                            text: isLoading ? "" : "Add",
-                            disabled: isLoading,
-                            className: `px-4 py-2 ${
-                              isLoading
-                                ? "bg-orange-400 cursor-not-allowed"
-                                : "bg-orange-500 hover:bg-orange-600"
-                            } text-white rounded-lg transition-colors text-sm font-medium`,
-                            onClick: () => handleSendFriendRequest(u),
-                          };
-                        }
-
                         return (
-                          <div
+                          <UserCard
                             key={u._id}
-                            className="bg-gray-900/50 rounded p-2 border-b border-gray-700 hover:border-gray-600 transition-colors"
-                          >
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center space-x-4 flex-1 min-w-0">
-                                <div
-                                  className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0 ${
-                                    u.avatar ? "" : "bg-blue-500"
-                                  }`}
-                                >
-                                  {u.avatar ? (
-                                    <img
-                                      src={u.avatar}
-                                      alt={u.name}
-                                      className="w-full h-full rounded-full object-cover"
-                                    />
-                                  ) : (
-                                    u.name.charAt(0).toUpperCase()
-                                  )}
-                                </div>
-                                <div className="min-w-0 flex-1">
-                                  <h3 className="text-sm lg:text-base font-semibold text-white truncate">
-                                    {u.name}
-                                  </h3>
-                                  <p className="text-xs lg:text-sm text-gray-400 truncate">
-                                    {isFriend
-                                      ? "Friend"
-                                      : pendingRequest
-                                      ? "Wants to be your friend"
-                                      : u.email}
-                                  </p>
-                                </div>
-                              </div>
-
-                              <button
-                                onClick={buttonConfig.onClick}
-                                disabled={buttonConfig.disabled}
-                                className={buttonConfig.className}
-                              >
-                                {isLoading ? (
-                                  <div className="flex items-center space-x-2">
-                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                    <span className="hidden sm:inline">
-                                      Sending...
-                                    </span>
-                                  </div>
-                                ) : (
-                                  buttonConfig.text
-                                )}
-                              </button>
-                            </div>
-                          </div>
+                            user={u}
+                            isLoading={isLoading}
+                            isFriend={isFriend}
+                            pendingRequest={pendingRequest}
+                            requestSent={requestSent}
+                            onAddFriend={() => handleSendFriendRequest(u)}
+                            onAccept={() => acceptFriendRequest(u._id, u.name)}
+                            index={index}
+                          />
                         );
                       })}
                     </div>
@@ -487,77 +465,30 @@ export default function Friends() {
 
               {/* Friend Requests Tab */}
               {activeTab === "requests" && (
-               <div className="p-4 lg:p-6">
-                  <div className="mb-2 lg:mb-6">
+                <div className="p-4 lg:p-6 animate-fade-in">
+                  <div className="mb-4 lg:mb-6">
                     <h2 className="text-sm lg:text-xl font-semibold text-white">
                       Friend Requests ({friendRequests.length})
                     </h2>
                   </div>
 
                   {friendRequests.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-16">
-                      <div className="w-20 h-20 rounded-full bg-gray-700 flex items-center justify-center mb-4">
-                        <FaInbox className="w-10 h-10 text-gray-500" />
-                      </div>
-                      <h3 className="text-lg font-semibold text-white mb-2">
-                        No pending requests
-                      </h3>
-                      <p className="text-gray-400">
-                        You're all caught up! New friend requests will appear
-                        here.
-                      </p>
-                    </div>
+                    <EmptyState
+                      icon={<Inbox className="w-10 h-10" style={{ color: '#71717A' }} />}
+                      title="No pending requests"
+                      description="You're all caught up! New friend requests will appear here."
+                    />
                   ) : (
                     <div className="space-y-3">
-                      {friendRequests.map((r) => (
-                        <div
+                      {friendRequests.map((r, index) => (
+                        <RequestCard
                           key={r._id}
-                          className="bg-gray-900/50 rounded p-2 border-b border-gray-700 hover:border-gray-600 transition-colors"
-                        >
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-4 flex-1 min-w-0">
-                              <div
-                                className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0 ${
-                                  r.from.avatar ? "" : "bg-green-500"
-                                }`}
-                              >
-                                {r.from.avatar ? (
-                                  <img
-                                    src={r.from.avatar}
-                                    alt={r.from.name}
-                                    className="w-full h-full rounded-full object-cover"
-                                  />
-                                ) : (
-                                  r.from.name.charAt(0).toUpperCase()
-                                )}
-                              </div>
-                              <div className="min-w-0 flex-1">
-                                <h3 className="text-sm lg:text-base font-semibold text-white truncate">
-                                  {r.from.name}
-                                </h3>
-                              </div>
-                            </div>
-
-                            <div className="flex items-center space-x-2 flex-shrink-0 ml-4">
-                              <button
-                                onClick={() =>
-                                  acceptFriendRequest(r.from._id, r.from.name)
-                                }
-                                className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors text-sm font-medium"
-                              >
-                                Accept
-                              </button>
-                              <button
-                                onClick={() =>
-                                  rejectFriendRequest(r.from._id, r.from.name)
-                                }
-                                className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors text-sm font-medium"
-                              >
-                                Decline
-                              </button>
-                            </div>
-                          </div>
-                        </div>
+                          request={r}
+                          onAccept={() => acceptFriendRequest(r.from._id, r.from.name)}
+                          onReject={() => rejectFriendRequest(r.from._id, r.from.name)}
+                          index={index}
+                          type="received"
+                        />
                       ))}
                     </div>
                   )}
@@ -566,73 +497,31 @@ export default function Friends() {
 
               {/* Sent Requests Tab */}
               {activeTab === "sent" && (
-                     <div className="p-4 lg:p-6">
-                  <div className="mb-2 lg:mb-6">
+                <div className="p-4 lg:p-6 animate-fade-in">
+                  <div className="mb-4 lg:mb-6">
                     <h2 className="text-sm lg:text-xl font-semibold text-white">
                       Sent Requests ({sentRequests.length})
                     </h2>
                   </div>
 
                   {sentRequests.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-16">
-                      <div className="w-20 h-20 rounded-full bg-gray-700 flex items-center justify-center mb-4">
-                        <FaPaperPlane className="w-10 h-10 text-gray-500" />
-                      </div>
-                      <h3 className="text-lg font-semibold text-white mb-2">
-                        No sent requests
-                      </h3>
-                      <p className="text-gray-400 mb-6">
-                        Start connecting with people by sending friend requests!
-                      </p>
-                      <button
-                        onClick={() => setActiveTab("add")}
-                        className="px-6 py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-lg transition-colors"
-                      >
-                        Find People
-                      </button>
-                    </div>
+                    <EmptyState
+                      icon={<Send className="w-10 h-10" style={{ color: '#71717A' }} />}
+                      title="No sent requests"
+                      description="Start connecting with people by sending friend requests!"
+                      buttonText="Find People"
+                      onClick={() => setActiveTab("add")}
+                    />
                   ) : (
                     <div className="space-y-3">
-                      {sentRequests.map((r) => (
-                        <div
+                      {sentRequests.map((r, index) => (
+                        <RequestCard
                           key={r._id}
-                          className="bg-gray-900/50 p-2 border-b border-gray-700 hover:border-gray-600 transition-colors"
-                        >
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-4 flex-1 min-w-0">
-                              <div
-                                className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0 ${
-                                  r.to.avatar ? "" : "bg-purple-500"
-                                }`}
-                              >
-                                {r.to.avatar ? (
-                                  <img
-                                    src={r.to.avatar}
-                                    alt={r.to.name}
-                                    className="w-full h-full rounded-full object-cover"
-                                  />
-                                ) : (
-                                  r.to.name.charAt(0).toUpperCase()
-                                )}
-                              </div>
-                              <div className="min-w-0 flex-1">
-                                <h3 className="text-sm lg:text-base font-semibold text-white truncate">
-                                  {r.to.name}
-                                </h3>
-                                <p className="text-xs lg:text-sm text-gray-400">
-                                  Request pending
-                                </p>
-                              </div>
-                            </div>
-
-                            <button
-                              onClick={() => cancelFriendRequest(r.to._id)}
-                              className="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/50 hover:border-red-500 rounded-lg text-red-400 hover:text-red-300 transition-colors text-sm font-medium"
-                            >
-                              Cancel
-                            </button>
-                          </div>
-                        </div>
+                          request={r}
+                          onCancel={() => cancelFriendRequest(r.to._id)}
+                          index={index}
+                          type="sent"
+                        />
                       ))}
                     </div>
                   )}
@@ -656,40 +545,246 @@ export default function Friends() {
         isMobile={isMobile}
         friends={friends}
       />
-
-
-         {/* Custom Scrollbar Styles */}
-      <style jsx>{`
-        /* Custom Scrollbar for Webkit browsers */
-        ::-webkit-scrollbar {
-          width: 12px;
-        }
-
-        ::-webkit-scrollbar-track {
-          background: #1f2937;
-          border-radius: 10px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-          background: #374151;
-          border-radius: 10px;
-          border: 2px solid #1f2937;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-          background: #4b5563;
-        }
-
-        ::-webkit-scrollbar-thumb:active {
-          background: #f97316;
-        }
-
-        /* Firefox */
-        * {
-          scrollbar-width: thin;
-          scrollbar-color: #374151 #1f2937;
-        }
-      `}</style>
     </div>
   );
 }
+
+// Empty State Component
+const EmptyState = ({ icon, title, description, buttonText, onClick }) => (
+  <div className="flex flex-col items-center justify-center py-16 animate-fade-in">
+    <div 
+      className="w-20 h-20 rounded-2xl flex items-center justify-center mb-4"
+      style={{ backgroundColor: '#1A1625' }}
+    >
+      {icon}
+    </div>
+    <h3 className="text-lg font-semibold text-white mb-2">{title}</h3>
+    <p className="text-center max-w-sm mb-6" style={{ color: '#A1A1AA' }}>
+      {description}
+    </p>
+    {buttonText && onClick && (
+      <button
+        onClick={onClick}
+        className="px-6 py-2.5 font-medium rounded-xl transition-all duration-200 hover:scale-105"
+        style={{ backgroundColor: '#8B5CF6', color: '#FFFFFF' }}
+        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#7C3AED'}
+        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#8B5CF6'}
+      >
+        {buttonText}
+      </button>
+    )}
+  </div>
+);
+
+// User Card Component
+const UserCard = ({ user, isLoading, isFriend, pendingRequest, requestSent, onAddFriend, onAccept, index }) => {
+  let buttonConfig = {};
+
+  if (isFriend) {
+    buttonConfig = {
+      text: "Friends",
+      disabled: true,
+      style: {
+        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+        border: '1px solid rgba(16, 185, 129, 0.5)',
+        color: '#10B981',
+        cursor: 'not-allowed'
+      },
+      icon: <Check className="w-4 h-4" />
+    };
+  } else if (pendingRequest) {
+    buttonConfig = {
+      text: "Accept",
+      disabled: false,
+      style: {
+        backgroundColor: '#22D3EE',
+        color: '#FFFFFF'
+      },
+      onClick: onAccept,
+      icon: <Check className="w-4 h-4" />
+    };
+  } else if (requestSent) {
+    buttonConfig = {
+      text: "Sent",
+      disabled: true,
+      style: {
+        backgroundColor: '#252032',
+        color: '#A1A1AA',
+        cursor: 'not-allowed'
+      },
+      icon: <Check className="w-4 h-4" />
+    };
+  } else {
+    buttonConfig = {
+      text: isLoading ? "" : "Add",
+      disabled: isLoading,
+      style: {
+        backgroundColor: isLoading ? '#7C3AED' : '#8B5CF6',
+        color: '#FFFFFF',
+        cursor: isLoading ? 'not-allowed' : 'pointer'
+      },
+      onClick: onAddFriend,
+      icon: <UserPlus className="w-4 h-4" />
+    };
+  }
+
+  return (
+    <div
+      className="p-4 rounded-xl transition-all duration-200 hover:scale-[1.01]"
+      style={{ 
+        backgroundColor: '#1A1625',
+        border: '1px solid #2D2640',
+        animationDelay: `${index * 50}ms`
+      }}
+      onMouseEnter={(e) => e.currentTarget.style.borderColor = '#8B5CF6'}
+      onMouseLeave={(e) => e.currentTarget.style.borderColor = '#2D2640'}
+    >
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-4 flex-1 min-w-0">
+          <div
+            className="w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0"
+            style={{ backgroundColor: user.avatar ? 'transparent' : '#8B5CF6' }}
+          >
+            {user.avatar ? (
+              <img
+                src={user.avatar}
+                alt={user.name}
+                className="w-full h-full rounded-full object-cover"
+              />
+            ) : (
+              user.name.charAt(0).toUpperCase()
+            )}
+          </div>
+          <div className="min-w-0 flex-1">
+            <h3 className="text-sm lg:text-base font-semibold text-white truncate">
+              {user.name}
+            </h3>
+            <p className="text-xs lg:text-sm truncate" style={{ color: '#A1A1AA' }}>
+              {isFriend ? "Friend" : pendingRequest ? "Wants to be your friend" : user.email}
+            </p>
+          </div>
+        </div>
+
+        <button
+          onClick={buttonConfig.onClick}
+          disabled={buttonConfig.disabled}
+          className="flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:scale-105"
+          style={buttonConfig.style}
+        >
+          {isLoading ? (
+            <div className="flex items-center space-x-2">
+              <div 
+                className="w-4 h-4 rounded-full animate-spin"
+                style={{ 
+                  border: '2px solid #FFFFFF',
+                  borderTopColor: 'transparent'
+                }}
+              />
+              <span className="hidden sm:inline text-sm">Sending...</span>
+            </div>
+          ) : (
+            <>
+              <span className="hidden sm:inline text-sm">{buttonConfig.text}</span>
+              {buttonConfig.icon}
+            </>
+          )}
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// Request Card Component
+const RequestCard = ({ request, onAccept, onReject, onCancel, index, type }) => {
+  const userData = type === "sent" ? request.to : request.from;
+
+  return (
+    <div
+      className="p-4 rounded-xl transition-all duration-200 hover:scale-[1.01]"
+      style={{ 
+        backgroundColor: '#1A1625',
+        border: '1px solid #2D2640',
+        animationDelay: `${index * 50}ms`
+      }}
+      onMouseEnter={(e) => e.currentTarget.style.borderColor = '#8B5CF6'}
+      onMouseLeave={(e) => e.currentTarget.style.borderColor = '#2D2640'}
+    >
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-4 flex-1 min-w-0">
+          <div
+            className="w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0"
+            style={{ backgroundColor: userData.avatar ? 'transparent' : '#8B5CF6' }}
+          >
+            {userData.avatar ? (
+              <img
+                src={userData.avatar}
+                alt={userData.name}
+                className="w-full h-full rounded-full object-cover"
+              />
+            ) : (
+              userData.name.charAt(0).toUpperCase()
+            )}
+          </div>
+          <div className="min-w-0 flex-1">
+            <h3 className="text-sm lg:text-base font-semibold text-white truncate">
+              {userData.name}
+            </h3>
+            {type === "sent" && (
+              <p className="text-xs lg:text-sm" style={{ color: '#A1A1AA' }}>
+                Request pending
+              </p>
+            )}
+          </div>
+        </div>
+
+        <div className="flex items-center space-x-2 flex-shrink-0 ml-4">
+          {type === "received" ? (
+            <>
+              <button
+                onClick={onAccept}
+                className="px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:scale-105 flex items-center gap-2"
+                style={{ backgroundColor: '#10B981', color: '#FFFFFF' }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#059669'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#10B981'}
+              >
+                <Check className="w-4 h-4" />
+                <span className="hidden sm:inline text-sm">Accept</span>
+              </button>
+              <button
+                onClick={onReject}
+                className="px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:scale-105 flex items-center gap-2"
+                style={{ backgroundColor: '#252032', color: '#FFFFFF' }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#2D2640'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#252032'}
+              >
+                <X className="w-4 h-4" />
+                <span className="hidden sm:inline text-sm">Decline</span>
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={onCancel}
+              className="px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:scale-105 flex items-center gap-2"
+              style={{
+                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                border: '1px solid rgba(239, 68, 68, 0.5)',
+                color: '#EF4444'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.2)';
+                e.currentTarget.style.borderColor = '#EF4444';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
+                e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.5)';
+              }}
+            >
+              <X className="w-4 h-4" />
+              <span className="hidden sm:inline text-sm">Cancel</span>
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};

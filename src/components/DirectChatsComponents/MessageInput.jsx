@@ -12,14 +12,14 @@ const MessageInput = ({
 }) => {
   const [message, setMessage] = useState("");
   const textareaRef = useRef(null);
-  const userId = user.id
-  const otherUserId = otherUser._id
+  const userId = user.id;
+  const otherUserId = otherUser._id;
   
   // Typing indicator hook
   const { isTyping, otherUserTyping, startTyping, stopTyping } = useTypingIndicator(
     selectedChatId, 
-   userId,
-   otherUserId
+    userId,
+    otherUserId
   );
 
   // Auto-resize textarea based on content
@@ -51,7 +51,6 @@ const MessageInput = ({
 
   const handleChange = useCallback((e) => {
     const newValue = e.target.value;
-    // console.log(newValue);
     
     setMessage(newValue);
     
@@ -69,17 +68,45 @@ const MessageInput = ({
   }, [stopTyping]);
 
   return (
-    <div className="border-t border-gray-600 sticky w-full bottom-0 z-50 bg-gray-800">
+    <div 
+      className="sticky w-full bottom-0 z-50"
+      style={{
+        borderTop: '1px solid #2D2640',
+        backgroundColor: '#1A1625'
+      }}
+    >
       {/* Typing Indicator */}
       {otherUserTyping && (
-        <div className="px-4 py-2 text-sm text-gray-400 bg-gray-750 border-b border-gray-600">
+        <div 
+          className="px-4 py-2 text-sm animate-fade-in"
+          style={{ 
+            backgroundColor: '#252032',
+            borderBottom: '1px solid #2D2640',
+            color: '#A1A1AA'
+          }}
+        >
           <div className="flex items-center space-x-2">
             <div className="flex space-x-1">
-              <div className="w-2 h-2 bg-orange-500 rounded-full animate-bounce"></div>
-              <div className="w-2 h-2 bg-orange-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-              <div className="w-2 h-2 bg-orange-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+              <div 
+                className="w-2 h-2 rounded-full animate-bounce"
+                style={{ backgroundColor: '#8B5CF6' }}
+              />
+              <div 
+                className="w-2 h-2 rounded-full animate-bounce"
+                style={{ 
+                  backgroundColor: '#8B5CF6',
+                  animationDelay: '0.1s'
+                }}
+              />
+              <div 
+                className="w-2 h-2 rounded-full animate-bounce"
+                style={{ 
+                  backgroundColor: '#8B5CF6',
+                  animationDelay: '0.2s'
+                }}
+              />
             </div>
-            <span>Typing...</span>
+            <span>{otherUser?.name || 'User'} is typing...</span>
           </div>
         </div>
       )}
@@ -95,15 +122,32 @@ const MessageInput = ({
               onKeyPress={handleKeyPress}
               onBlur={handleBlur}
               placeholder={placeholder}
-              className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 resize-none scrollbar-hidden"
+              className="w-full px-4 py-3 rounded-xl text-white placeholder-gray-500 focus:outline-none transition-all duration-200 resize-none scrollbar-hidden"
+              style={{
+                backgroundColor: '#252032',
+                border: '1px solid #2D2640',
+                minHeight: '48px',
+                maxHeight: '120px'
+              }}
+              onFocus={(e) => {
+                e.target.style.borderColor = '#8B5CF6';
+                e.target.style.boxShadow = '0 0 0 2px rgba(139, 92, 246, 0.1)';
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = '#2D2640';
+                e.target.style.boxShadow = 'none';
+                handleBlur();
+              }}
               disabled={disabled}
               rows="1"
-              style={{ minHeight: '48px', maxHeight: '120px' }}
             />
             
-            {/* Character count (optional) */}
+            {/* Character count */}
             {message.length > 400 && (
-              <div className="absolute -top-6 right-2 text-xs text-gray-400">
+              <div 
+                className="absolute -top-6 right-2 text-xs animate-fade-in"
+                style={{ color: message.length > 480 ? '#EF4444' : '#71717A' }}
+              >
                 {message.length}/500
               </div>
             )}
@@ -116,10 +160,25 @@ const MessageInput = ({
               px-4 py-3 rounded-xl flex items-center justify-center min-w-[48px] h-12
               transition-all duration-200 transform
               ${message.trim() && !disabled
-                ? 'bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 hover:scale-105 shadow-lg hover:shadow-orange-500/25'
-                : 'bg-gray-600 cursor-not-allowed opacity-50'
+                ? 'shadow-lg hover:scale-105'
+                : 'cursor-not-allowed opacity-50'
               }
             `}
+            style={{
+              backgroundColor: message.trim() && !disabled ? '#8B5CF6' : '#6D28D9'
+            }}
+            onMouseEnter={(e) => {
+              if (message.trim() && !disabled) {
+                e.currentTarget.style.backgroundColor = '#7C3AED';
+                e.currentTarget.style.boxShadow = '0 4px 12px rgba(139, 92, 246, 0.4)';
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (message.trim() && !disabled) {
+                e.currentTarget.style.backgroundColor = '#8B5CF6';
+                e.currentTarget.style.boxShadow = '';
+              }
+            }}
             disabled={!message.trim() || disabled}
             aria-label="Send message"
           >
@@ -128,6 +187,22 @@ const MessageInput = ({
               className={`text-white ${message.trim() && !disabled ? 'animate-pulse' : ''}`}
             />
           </button>
+        </div>
+
+        {/* Input hint */}
+        <div 
+          className="mt-2 text-xs flex items-center justify-between"
+          style={{ color: '#71717A' }}
+        >
+          <span>Press Enter to send, Shift+Enter for new line</span>
+          {message.trim() && (
+            <span 
+              className="animate-fade-in"
+              style={{ color: '#8B5CF6' }}
+            >
+              Ready to send
+            </span>
+          )}
         </div>
       </div>
     </div>

@@ -2,6 +2,20 @@ import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import api from "../api/api";
 import logo from "../assets/zaptalklogo.png";
+import { 
+  User, 
+  Mail, 
+  Lock, 
+  Eye, 
+  EyeOff, 
+  ArrowRight, 
+  CheckCircle, 
+  AlertTriangle,
+  ArrowLeft,
+  Check,
+  Zap,
+  HelpCircle
+} from "lucide-react";
 
 export default function SignUp() {
   const [name, setName] = useState("");
@@ -37,7 +51,7 @@ export default function SignUp() {
   };
 
   const passwordStrength = getPasswordStrength(password);
-  const strengthColors = ['#EF4444', '#F97316', '#EAB308', '#22C55E', '#10B981'];
+  const strengthColors = ['#EF4444', '#F97316', '#EAB308', '#10B981', '#22D3EE'];
   const strengthLabels = ['Very Weak', 'Weak', 'Fair', 'Good', 'Strong'];
 
   // Cooldown timer effect
@@ -86,35 +100,30 @@ export default function SignUp() {
       return;
     }
 
- setIsLoading(true);
-try {
-  const response = await api.post("/auth/register", { name, email, password });
-  
-  // Log the backend response
-  console.log("Registration response:", response.data);
-  
-  // Set success message
-  setSuccess("Your account has been created! Routing to login...");
-  
-  // Clear form fields
-  setName("");
-  setEmail("");
-  setPassword("");
-  setConfirmPassword("");
-  
-  // Route to login after a short delay (so user can see the success message)
-  setTimeout(() => {
-    navigate("/login");
-  }, 2000); // 2 second delay
-  
-} catch (err) {
-  // Log the error response
-  console.error("Registration error:", err.response?.data);
-  
-  setError(err.response?.data?.message || "Error creating account. Please try again.");
-} finally {
-  setIsLoading(false);
-}
+    setIsLoading(true);
+    try {
+      const response = await api.post("/auth/register", { name, email, password });
+      
+      console.log("Registration response:", response.data);
+      
+      setSuccess("Your account has been created! Routing to login...");
+      
+      setName("");
+      setEmail("");
+      setPassword("");
+      setConfirmPassword("");
+      
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000);
+      
+    } catch (err) {
+      console.error("Registration error:", err.response?.data);
+      
+      setError(err.response?.data?.message || "Error creating account. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // const handleResend = async () => {
@@ -152,64 +161,133 @@ try {
   // };
 
   return (
-    <div className="h-auto bg-gray-900 flex items-center justify-center pt-9">
-      <div className="w-full max-w-lg">
+    <div 
+      className="min-h-screen flex items-center justify-center p-4"
+      style={{ backgroundColor: '#0F0F1A' }}
+    >
+      <div className="w-full max-w-lg animate-fade-in">
         {/* Main Card */}
-        <div className="bg-gray-900/80 backdrop-blur-sm  border-slate-700/50 overflow-hidden">
+        <div 
+          className="rounded-2xl overflow-hidden"
+          style={{ 
+            backgroundColor: '#1A1625',
+            border: '1px solid #2D2640'
+          }}
+        >
           {/* Header Section */}
-          <div className="p-6 text-center border-slate-700/50">
+          <div className="p-8 text-center" style={{ borderBottom: '1px solid #2D2640' }}>
             <div className="mb-6">
-              <img src={logo} alt="ZapTalk" className="mx-auto h-14 w-auto mb-4" />
-              <h1 className="text-2xl font-bold text-white mb-2">Join ZapTalk</h1>
-              <p className="text-sm lg:text-base text-slate-400">Create your account and start connecting</p>
+              {/* Logo with Zap Icon */}
+              <div className="flex items-center justify-center gap-3 mb-4">
+                <div 
+                  className="p-3 rounded-xl"
+                  style={{ backgroundColor: '#8B5CF6' }}
+                >
+                  <Zap size={32} className="text-white" strokeWidth={2.5} />
+                </div>
+                <h1 className="text-3xl font-bold text-white">
+                  Zap<span style={{ color: '#22D3EE' }}>Talk</span>
+                </h1>
+              </div>
+              <h2 className="text-2xl font-bold text-white mb-2">Join ZapTalk</h2>
+              <p className="text-sm lg:text-base" style={{ color: '#A1A1AA' }}>
+                Create your account and start connecting
+              </p>
             </div>
             
-            {/* Enhanced Step indicator */}
+            {/* Step indicator */}
             <div className="flex items-center justify-center space-x-4">
-              <div className={`flex items-center space-x-2 ${step === 1 ? 'text-orange-400' : 'text-slate-500'}`}>
-                <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center text-sm font-semibold transition-all duration-300 ${
-                  step === 1 ? 'border-orange-400 bg-orange-400/20' : 'border-slate-600'
-                }`}>
+              <div className={`flex items-center space-x-2 transition-all duration-300`}>
+                <div 
+                  className="w-8 h-8 rounded-full border-2 flex items-center justify-center text-sm font-semibold transition-all duration-300"
+                  style={{
+                    borderColor: step === 1 ? '#8B5CF6' : '#2D2640',
+                    backgroundColor: step === 1 ? 'rgba(139, 92, 246, 0.2)' : 'transparent',
+                    color: step === 1 ? '#8B5CF6' : '#71717A'
+                  }}
+                >
                   1
                 </div>
-                <span className="text-sm font-medium">Details</span>
+                <span 
+                  className="text-sm font-medium"
+                  style={{ color: step === 1 ? '#8B5CF6' : '#71717A' }}
+                >
+                  Details
+                </span>
               </div>
-              <div className={`w-8 h-0.5 transition-colors duration-300 ${step === 2 ? 'bg-orange-400' : 'bg-slate-600'}`}></div>
-              <div className={`flex items-center space-x-2 ${step === 2 ? 'text-orange-400' : 'text-slate-500'}`}>
-                <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center text-sm font-semibold transition-all duration-300 ${
-                  step === 2 ? 'border-orange-400 bg-orange-400/20' : 'border-slate-600'
-                }`}>
+              <div 
+                className="w-8 h-0.5 transition-colors duration-300"
+                style={{ backgroundColor: step === 2 ? '#8B5CF6' : '#2D2640' }}
+              />
+              <div className={`flex items-center space-x-2 transition-all duration-300`}>
+                <div 
+                  className="w-8 h-8 rounded-full border-2 flex items-center justify-center text-sm font-semibold transition-all duration-300"
+                  style={{
+                    borderColor: step === 2 ? '#8B5CF6' : '#2D2640',
+                    backgroundColor: step === 2 ? 'rgba(139, 92, 246, 0.2)' : 'transparent',
+                    color: step === 2 ? '#8B5CF6' : '#71717A'
+                  }}
+                >
                   2
                 </div>
-                <span className="text-sm font-medium">Security</span>
+                <span 
+                  className="text-sm font-medium"
+                  style={{ color: step === 2 ? '#8B5CF6' : '#71717A' }}
+                >
+                  Security
+                </span>
               </div>
             </div>
           </div>
 
           {/* Form Content */}
           <div className="p-8 space-y-6">
-            {/* Enhanced Alert System */}
+            {/* Alert System */}
             {(error || success) && (
-              <div className={`p-4 rounded-xl border backdrop-blur-sm transition-all duration-500 ${
-                error 
-                  ? 'bg-red-900/30 border-red-700/50 text-red-200' 
-                  : 'bg-green-900/30 border-green-700/50 text-green-200'
-              }`}>
+              <div 
+                className="p-4 rounded-xl backdrop-blur-sm transition-all duration-500 animate-fade-in"
+                style={{
+                  backgroundColor: error 
+                    ? 'rgba(239, 68, 68, 0.1)' 
+                    : 'rgba(16, 185, 129, 0.1)',
+                  border: error 
+                    ? '1px solid rgba(239, 68, 68, 0.5)' 
+                    : '1px solid rgba(16, 185, 129, 0.5)'
+                }}
+              >
                 <div className="flex items-start space-x-3">
-                  <div className={`p-1 rounded-full ${error ? 'bg-red-400/20' : 'bg-green-400/20'}`}>
-                    <svg className={`w-4 h-4 ${error ? 'text-red-400' : 'text-green-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                            d={error ? "M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16c-.77.833.192 2.5 1.732 2.5z"
-                                     : "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"} />
-                    </svg>
+                  <div 
+                    className="p-1 rounded-full"
+                    style={{
+                      backgroundColor: error 
+                        ? 'rgba(239, 68, 68, 0.2)' 
+                        : 'rgba(16, 185, 129, 0.2)'
+                    }}
+                  >
+                    {error ? (
+                      <AlertTriangle size={16} style={{ color: '#EF4444' }} />
+                    ) : (
+                      <CheckCircle size={16} style={{ color: '#10B981' }} />
+                    )}
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-medium">{error || success}</p>
+                    <p 
+                      className="text-sm font-medium"
+                      style={{ color: error ? '#FCA5A5' : '#86EFAC' }}
+                    >
+                      {error || success}
+                    </p>
                     {success && hasTriedSignup && (
-                      <div className="mt-2 pt-2 border-t border-green-700/30 text-xs space-y-1">
-                        <p className="text-green-300">Email: <span className="font-mono">{email}</span></p>
+                      <div 
+                        className="mt-2 pt-2 text-xs space-y-1"
+                        style={{ 
+                          borderTop: '1px solid rgba(16, 185, 129, 0.3)',
+                          color: '#86EFAC'
+                        }}
+                      >
+                        <p>Email: <span className="font-mono">{email}</span></p>
                         {lastResendTime && (
-                          <p className="text-green-400/80">
+                          <p style={{ color: 'rgba(134, 239, 172, 0.8)' }}>
                             Sent: {new Date(lastResendTime).toLocaleTimeString()}
                           </p>
                         )}
@@ -222,16 +300,27 @@ try {
 
             {/* Multiple Resend Warning */}
             {resendAttempts >= 3 && (
-              <div className="p-4 rounded-xl border bg-amber-900/20 border-amber-700/40 text-amber-200">
+              <div 
+                className="p-4 rounded-xl animate-fade-in"
+                style={{
+                  backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                  border: '1px solid rgba(245, 158, 11, 0.4)'
+                }}
+              >
                 <div className="flex items-start space-x-3">
-                  <div className="p-1 rounded-full bg-amber-400/20">
-                    <svg className="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16c-.77.833.192 2.5 1.732 2.5z" />
-                    </svg>
+                  <div 
+                    className="p-1 rounded-full"
+                    style={{ backgroundColor: 'rgba(245, 158, 11, 0.2)' }}
+                  >
+                    <AlertTriangle size={16} style={{ color: '#F59E0B' }} />
                   </div>
                   <div>
-                    <p className="text-sm font-medium">Multiple attempts detected</p>
-                    <p className="text-xs text-amber-300/80 mt-1">Check your spam folder or contact support.</p>
+                    <p className="text-sm font-medium" style={{ color: '#FCD34D' }}>
+                      Multiple attempts detected
+                    </p>
+                    <p className="text-xs mt-1" style={{ color: 'rgba(252, 211, 77, 0.8)' }}>
+                      Check your spam folder or contact support.
+                    </p>
                   </div>
                 </div>
               </div>
@@ -243,19 +332,34 @@ try {
                 <div className="space-y-5">
                   {/* Username Field */}
                   <div className="group">
-                    <label className="block text-sm font-semibold text-slate-300 mb-3">Choose a Username</label>
+                    <label 
+                      className="block text-sm font-semibold mb-3"
+                      style={{ color: '#FFFFFF' }}
+                    >
+                      Choose a Username
+                    </label>
                     <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none group-focus-within:text-orange-400 transition-colors">
-                        <svg className="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                        </svg>
+                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <User size={20} style={{ color: '#71717A' }} />
                       </div>
                       <input
                         type="text"
                         placeholder="Enter your username"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
-                        className="w-full pl-12 pr-4 py-4 bg-gray-800/60 border border-slate-600/50 rounded-xl text-white placeholder-slate-400 focus:ring-2 focus:ring-orange-400/50 focus:border-orange-400/50 focus:bg-gray-800/80 transition-all duration-200"
+                        className="w-full pl-12 pr-4 py-4 rounded-xl text-white placeholder-gray-500 focus:outline-none transition-all duration-200"
+                        style={{ 
+                          backgroundColor: '#252032',
+                          border: '1px solid #2D2640'
+                        }}
+                        onFocus={(e) => {
+                          e.target.style.borderColor = '#8B5CF6';
+                          e.target.style.boxShadow = '0 0 0 2px rgba(139, 92, 246, 0.1)';
+                        }}
+                        onBlur={(e) => {
+                          e.target.style.borderColor = '#2D2640';
+                          e.target.style.boxShadow = 'none';
+                        }}
                         required
                       />
                     </div>
@@ -263,19 +367,34 @@ try {
 
                   {/* Email Field */}
                   <div className="group">
-                    <label className="block text-sm font-semibold text-slate-300 mb-3">Email Address</label>
+                    <label 
+                      className="block text-sm font-semibold mb-3"
+                      style={{ color: '#FFFFFF' }}
+                    >
+                      Email Address
+                    </label>
                     <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none group-focus-within:text-orange-400 transition-colors">
-                        <svg className="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
-                        </svg>
+                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <Mail size={20} style={{ color: '#71717A' }} />
                       </div>
                       <input
                         type="email"
                         placeholder="your.email@example.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="w-full pl-12 pr-4 py-4 bg-gray-800/60 border border-slate-600/50 rounded-xl text-white placeholder-slate-400 focus:ring-2 focus:ring-orange-400/50 focus:border-orange-400/50 focus:bg-gray-800/80 transition-all duration-200"
+                        className="w-full pl-12 pr-4 py-4 rounded-xl text-white placeholder-gray-500 focus:outline-none transition-all duration-200"
+                        style={{ 
+                          backgroundColor: '#252032',
+                          border: '1px solid #2D2640'
+                        }}
+                        onFocus={(e) => {
+                          e.target.style.borderColor = '#8B5CF6';
+                          e.target.style.boxShadow = '0 0 0 2px rgba(139, 92, 246, 0.1)';
+                        }}
+                        onBlur={(e) => {
+                          e.target.style.borderColor = '#2D2640';
+                          e.target.style.boxShadow = 'none';
+                        }}
                         required
                       />
                     </div>
@@ -284,13 +403,14 @@ try {
 
                 <button
                   type="submit"
-                  className="w-full py-4 px-6 bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-500 hover:to-orange-400 text-white font-semibold rounded-xl shadow-lg shadow-orange-500/25 hover:shadow-orange-400/30 focus:ring-4 focus:ring-orange-400/30 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]"
+                  className="w-full py-4 px-6 font-semibold rounded-xl shadow-lg transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] text-white"
+                  style={{ backgroundColor: '#8B5CF6' }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#7C3AED'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#8B5CF6'}
                 >
                   <div className="flex items-center justify-center space-x-2">
                     <span>Continue</span>
-                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                    </svg>
+                    <ArrowRight size={20} />
                   </div>
                 </button>
               </form>
@@ -303,56 +423,77 @@ try {
                 <button
                   type="button"
                   onClick={handleBack}
-                  className="flex items-center space-x-2 text-slate-400 hover:text-white transition-colors duration-200 p-2 -m-2"
+                  className="flex items-center space-x-2 p-2 -m-2 transition-all duration-200 hover:scale-105"
+                  style={{ color: '#A1A1AA' }}
+                  onMouseEnter={(e) => e.currentTarget.style.color = '#FFFFFF'}
+                  onMouseLeave={(e) => e.currentTarget.style.color = '#A1A1AA'}
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                  </svg>
+                  <ArrowLeft size={20} />
                   <span className="font-medium">Back to details</span>
                 </button>
 
                 <div className="space-y-5">
                   {/* Password Field */}
                   <div className="group">
-                    <label className="block text-sm font-semibold text-slate-300 mb-3">Create Password</label>
+                    <label 
+                      className="block text-sm font-semibold mb-3"
+                      style={{ color: '#FFFFFF' }}
+                    >
+                      Create Password
+                    </label>
                     <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none group-focus-within:text-orange-400 transition-colors">
-                        <svg className="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                        </svg>
+                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <Lock size={20} style={{ color: '#71717A' }} />
                       </div>
                       <input
                         type={showPassword ? "text" : "password"}
                         placeholder="Create a strong password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className="w-full pl-12 pr-12 py-4 bg-gray-800/60 border border-slate-600/50 rounded-xl text-white placeholder-slate-400 focus:ring-2 focus:ring-orange-400/50 focus:border-orange-400/50 focus:bg-gray-800/80 transition-all duration-200"
+                        className="w-full pl-12 pr-12 py-4 rounded-xl text-white placeholder-gray-500 focus:outline-none transition-all duration-200"
+                        style={{ 
+                          backgroundColor: '#252032',
+                          border: '1px solid #2D2640'
+                        }}
+                        onFocus={(e) => {
+                          e.target.style.borderColor = '#8B5CF6';
+                          e.target.style.boxShadow = '0 0 0 2px rgba(139, 92, 246, 0.1)';
+                        }}
+                        onBlur={(e) => {
+                          e.target.style.borderColor = '#2D2640';
+                          e.target.style.boxShadow = 'none';
+                        }}
                         required
                       />
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-300 transition duration-200 p-1"
+                        className="absolute right-4 top-1/2 transform -translate-y-1/2 transition duration-200 p-1 hover:scale-110"
+                        style={{ color: '#A1A1AA' }}
+                        onMouseEnter={(e) => e.currentTarget.style.color = '#FFFFFF'}
+                        onMouseLeave={(e) => e.currentTarget.style.color = '#A1A1AA'}
                       >
-                        {showPassword ? (
-                          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L8.464 8.464M9.878 9.878L8.464 8.464m5.656 5.656l1.415 1.415M14.534 14.534l1.415 1.415M14.534 14.534L8.464 8.464" />
-                          </svg>
-                        ) : (
-                          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                          </svg>
-                        )}
+                        {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                       </button>
                     </div>
                     
-                    {/* Enhanced Password Strength Indicator */}
+                    {/* Password Strength Indicator */}
                     {password && (
-                      <div className="mt-3 p-3 bg-gray-800/40 rounded-lg border border-slate-700/50">
+                      <div 
+                        className="mt-3 p-3 rounded-lg"
+                        style={{ 
+                          backgroundColor: 'rgba(37, 32, 50, 0.4)',
+                          border: '1px solid rgba(45, 38, 64, 0.5)'
+                        }}
+                      >
                         <div className="flex items-center justify-between mb-2">
-                          <span className="text-xs font-medium text-slate-400">Password Strength</span>
-                          <span className="text-xs font-semibold" style={{ color: strengthColors[passwordStrength - 1] || '#EF4444' }}>
+                          <span className="text-xs font-medium" style={{ color: '#A1A1AA' }}>
+                            Password Strength
+                          </span>
+                          <span 
+                            className="text-xs font-semibold"
+                            style={{ color: strengthColors[passwordStrength - 1] || '#EF4444' }}
+                          >
                             {strengthLabels[passwordStrength - 1] || 'Very Weak'}
                           </span>
                         </div>
@@ -366,7 +507,7 @@ try {
                                   ? strengthColors[passwordStrength - 1]
                                   : 'rgba(255, 255, 255, 0.1)'
                               }}
-                            ></div>
+                            />
                           ))}
                         </div>
                       </div>
@@ -375,69 +516,98 @@ try {
 
                   {/* Confirm Password Field */}
                   <div className="group">
-                    <label className="block text-sm font-semibold text-slate-300 mb-3">Confirm Password</label>
+                    <label 
+                      className="block text-sm font-semibold mb-3"
+                      style={{ color: '#FFFFFF' }}
+                    >
+                      Confirm Password
+                    </label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <svg className="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.414-4.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                        </svg>
+                        <Check size={20} style={{ color: '#71717A' }} />
                       </div>
                       <input
                         type={showConfirmPassword ? "text" : "password"}
                         placeholder="Confirm your password"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
-                        className={`w-full pl-12 pr-12 py-4 bg-gray-800/60 border rounded-xl text-white placeholder-slate-400 focus:ring-2 focus:ring-orange-400/50 focus:border-orange-400/50 focus:bg-gray-800/80 transition-all duration-200 ${
-                          confirmPassword && password !== confirmPassword ? 'border-red-400/70' : 'border-slate-600/50'
-                        }`}
+                        className="w-full pl-12 pr-12 py-4 rounded-xl text-white placeholder-gray-500 focus:outline-none transition-all duration-200"
+                        style={{ 
+                          backgroundColor: '#252032',
+                          border: `1px solid ${confirmPassword && password !== confirmPassword ? '#EF4444' : '#2D2640'}`
+                        }}
+                        onFocus={(e) => {
+                          e.target.style.borderColor = confirmPassword && password !== confirmPassword ? '#EF4444' : '#8B5CF6';
+                          e.target.style.boxShadow = confirmPassword && password !== confirmPassword 
+                            ? '0 0 0 2px rgba(239, 68, 68, 0.1)' 
+                            : '0 0 0 2px rgba(139, 92, 246, 0.1)';
+                        }}
+                        onBlur={(e) => {
+                          e.target.style.borderColor = confirmPassword && password !== confirmPassword ? '#EF4444' : '#2D2640';
+                          e.target.style.boxShadow = 'none';
+                        }}
                         required
                       />
                       <button
                         type="button"
                         onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                        className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-300 transition duration-200 p-1"
+                        className="absolute right-4 top-1/2 transform -translate-y-1/2 transition duration-200 p-1 hover:scale-110"
+                        style={{ color: '#A1A1AA' }}
+                        onMouseEnter={(e) => e.currentTarget.style.color = '#FFFFFF'}
+                        onMouseLeave={(e) => e.currentTarget.style.color = '#A1A1AA'}
                       >
-                        {showConfirmPassword ? (
-                          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L8.464 8.464M9.878 9.878L8.464 8.464m5.656 5.656l1.415 1.415M14.534 14.534l1.415 1.415M14.534 14.534L8.464 8.464" />
-                          </svg>
-                        ) : (
-                          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                          </svg>
-                        )}
+                        {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                       </button>
                     </div>
                     {confirmPassword && password !== confirmPassword && (
-                      <p className="mt-2 text-xs text-red-400 font-medium flex items-center space-x-1">
-                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
+                      <p className="mt-2 text-xs font-medium flex items-center space-x-1" style={{ color: '#EF4444' }}>
+                        <AlertTriangle size={12} />
                         <span>Passwords don't match</span>
                       </p>
                     )}
                   </div>
                 </div>
 
-                {/* Enhanced Terms and Conditions */}
-                <div className="p-4 bg-gray-800/40 rounded-xl border border-slate-700/50">
+                {/* Terms and Conditions */}
+                <div 
+                  className="p-4 rounded-xl"
+                  style={{ 
+                    backgroundColor: 'rgba(37, 32, 50, 0.4)',
+                    border: '1px solid rgba(45, 38, 64, 0.5)'
+                  }}
+                >
                   <div className="flex items-start space-x-3">
                     <input
                       type="checkbox"
                       id="terms"
                       checked={acceptTerms}
                       onChange={(e) => setAcceptTerms(e.target.checked)}
-                      className="w-5 h-5 mt-0.5 rounded border-slate-600 text-orange-500 focus:ring-orange-500/50 focus:ring-offset-gray-800 bg-gray-700/50"
+                      className="w-5 h-5 mt-0.5 rounded focus:ring-offset-gray-800"
+                      style={{ 
+                        backgroundColor: '#252032',
+                        borderColor: '#2D2640'
+                      }}
                       required
                     />
-                    <label htmlFor="terms" className="text-sm text-slate-300 leading-relaxed">
+                    <label htmlFor="terms" className="text-sm leading-relaxed" style={{ color: '#FFFFFF' }}>
                       I agree to ZapTalk's{' '}
-                      <Link to="/terms" className="font-semibold text-orange-400 hover:text-orange-300 transition-colors duration-200 underline underline-offset-2">
+                      <Link 
+                        to="/terms" 
+                        className="font-semibold transition-colors duration-200 underline underline-offset-2"
+                        style={{ color: '#22D3EE' }}
+                        onMouseEnter={(e) => e.currentTarget.style.color = '#06B6D4'}
+                        onMouseLeave={(e) => e.currentTarget.style.color = '#22D3EE'}
+                      >
                         Terms of Service
                       </Link>
                       {' '}and{' '}
-                      <Link to="/privacy" className="font-semibold text-orange-400 hover:text-orange-300 transition-colors duration-200 underline underline-offset-2">
+                      <Link 
+                        to="/privacy" 
+                        className="font-semibold transition-colors duration-200 underline underline-offset-2"
+                        style={{ color: '#22D3EE' }}
+                        onMouseEnter={(e) => e.currentTarget.style.color = '#06B6D4'}
+                        onMouseLeave={(e) => e.currentTarget.style.color = '#22D3EE'}
+                      >
                         Privacy Policy
                       </Link>
                     </label>
@@ -448,23 +618,33 @@ try {
                 <button
                   type="submit"
                   disabled={isLoading || !acceptTerms}
-                  className={`w-full py-4 px-6 font-semibold rounded-xl shadow-lg transition-all duration-200 transform ${
+                  className={`w-full py-4 px-6 font-semibold rounded-xl shadow-lg transition-all duration-200 transform text-white ${
                     isLoading || !acceptTerms
-                      ? "bg-slate-600 text-slate-400 cursor-not-allowed shadow-none"
-                      : "bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-500 hover:to-orange-400 text-white shadow-orange-500/25 hover:shadow-orange-400/30 focus:ring-4 focus:ring-orange-400/30 hover:scale-[1.02] active:scale-[0.98]"
+                      ? "cursor-not-allowed"
+                      : "hover:scale-[1.02] active:scale-[0.98]"
                   }`}
+                  style={{ 
+                    backgroundColor: isLoading || !acceptTerms ? '#6D28D9' : '#8B5CF6',
+                    opacity: isLoading || !acceptTerms ? 0.7 : 1
+                  }}
+                  onMouseEnter={(e) => !isLoading && !(!acceptTerms) && (e.currentTarget.style.backgroundColor = '#7C3AED')}
+                  onMouseLeave={(e) => !isLoading && !(!acceptTerms) && (e.currentTarget.style.backgroundColor = '#8B5CF6')}
                 >
                   {isLoading ? (
                     <div className="flex items-center justify-center space-x-3">
-                      <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                      <div 
+                        className="w-5 h-5 rounded-full animate-spin"
+                        style={{ 
+                          border: '2px solid #FFFFFF',
+                          borderTopColor: 'transparent'
+                        }}
+                      />
                       <span>Creating your account...</span>
                     </div>
                   ) : (
                     <div className="flex items-center justify-center space-x-2">
                       <span>Create Account</span>
-                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
+                      <CheckCircle size={20} />
                     </div>
                   )}
                 </button>
@@ -494,8 +674,8 @@ try {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                           </svg>
                         </div>
-                        {/* <span>{getResendButtonText()}</span> */}
-                      {/* </>
+                        <span>{getResendButtonText()}</span>
+                      </>
                     ) : !hasTriedSignup ? (
                       <>
                         <div className="p-1 rounded-full bg-slate-600/30">
@@ -516,7 +696,7 @@ try {
                       </>
                     )}
                   </div>
-                // </button> */} 
+                </button> */}
 
                 {/* Resend Status Info */}
                 {/* {hasTriedSignup && (
@@ -542,12 +722,21 @@ try {
 
           {/* Footer - Login Link */}
           {step === 1 && (
-            <div className="bg-gray-900 py-2 text-center border-slate-700/50">
-              <p className="text-slate-400 text-sm">
+            <div 
+              className="py-6 text-center"
+              style={{ 
+                backgroundColor: '#252032',
+                borderTop: '1px solid #2D2640'
+              }}
+            >
+              <p className="text-sm" style={{ color: '#A1A1AA' }}>
                 Already have an account?{' '}
                 <Link 
                   to="/login" 
-                  className="font-semibold text-orange-400 hover:text-orange-300 transition-colors duration-200 hover:underline underline-offset-2"
+                  className="font-semibold transition-colors duration-200 hover:underline underline-offset-2"
+                  style={{ color: '#22D3EE' }}
+                  onMouseEnter={(e) => e.currentTarget.style.color = '#06B6D4'}
+                  onMouseLeave={(e) => e.currentTarget.style.color = '#22D3EE'}
                 >
                   Sign in here
                 </Link>
@@ -558,15 +747,21 @@ try {
 
         {/* Additional Help Section */}
         {step === 2 && hasTriedSignup && (
-          <div className="mt-6 text-center">
-            <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-700/30">
+          <div className="mt-6 text-center animate-fade-in">
+            <div 
+              className="backdrop-blur-sm rounded-2xl p-6"
+              style={{ 
+                backgroundColor: 'rgba(37, 32, 50, 0.5)',
+                border: '1px solid rgba(45, 38, 64, 0.3)'
+              }}
+            >
               <div className="flex items-center justify-center space-x-2 mb-3">
-                <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <h3 className="text-sm font-semibold text-slate-300">Need Help?</h3>
+                <HelpCircle size={20} style={{ color: '#A1A1AA' }} />
+                <h3 className="text-sm font-semibold" style={{ color: '#FFFFFF' }}>
+                  Need Help?
+                </h3>
               </div>
-              <p className="text-xs text-slate-400 leading-relaxed mb-4">
+              <p className="text-xs leading-relaxed mb-4" style={{ color: '#A1A1AA' }}>
                 Having trouble receiving the verification email? Check your spam folder or try a different email address.
               </p>
               {/* <div className="flex flex-col sm:flex-row gap-2 text-xs">
@@ -586,6 +781,10 @@ try {
             </div>
           </div>
         )}
+
+        {/* Decorative Elements */}
+        <div className="absolute top-10 left-10 w-32 h-32 rounded-full opacity-20 blur-3xl pointer-events-none" style={{ backgroundColor: '#8B5CF6' }} />
+        <div className="absolute bottom-10 right-10 w-40 h-40 rounded-full opacity-20 blur-3xl pointer-events-none" style={{ backgroundColor: '#22D3EE' }} />
       </div>
     </div>
   );
