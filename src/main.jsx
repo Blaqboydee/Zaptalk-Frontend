@@ -10,6 +10,8 @@ import { ToastProvider } from "./context/ToastContainer.jsx";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 // import { MessageProvider } from "./context/MessageContext.jsx";
 
+const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID?.trim();
+
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <ToastProvider>
@@ -18,9 +20,13 @@ createRoot(document.getElementById("root")).render(
           <SocketProvider>
             {/* <MessageProvider> */}
             <FriendsProvider>
-              <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
-              <App />
-              </GoogleOAuthProvider >
+              {googleClientId ? (
+                <GoogleOAuthProvider clientId={googleClientId}>
+                  <App />
+                </GoogleOAuthProvider>
+              ) : (
+                <App />
+              )}
             </FriendsProvider>
             {/* </MessageProvider> */}
           </SocketProvider>

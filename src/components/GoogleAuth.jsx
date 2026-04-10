@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useGoogleLogin } from "@react-oauth/google";
 import api from "../api/api";
 
+const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID?.trim();
+
 // Google "G" logo SVG
 const GoogleIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -12,7 +14,7 @@ const GoogleIcon = () => (
   </svg>
 );
 
-export default function GoogleSignIn() {
+function GoogleSignInButton() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -105,4 +107,53 @@ export default function GoogleSignIn() {
       </button>
     </div>
   );
+}
+
+export default function GoogleSignIn() {
+  if (!googleClientId) {
+    return (
+      <div style={{ width: "100%" }}>
+        <div
+          style={{
+            marginBottom: 12,
+            padding: "10px 14px",
+            borderRadius: "var(--radius-lg)",
+            background: "rgba(245,158,11,0.08)",
+            border: "1px solid rgba(245,158,11,0.22)",
+            color: "var(--warning, #b45309)",
+            fontSize: 13,
+          }}
+        >
+          Google Sign-In is unavailable because the Google client ID is not configured.
+        </div>
+
+        <button
+          type="button"
+          disabled
+          style={{
+            width: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 10,
+            padding: "11px 18px",
+            borderRadius: "var(--radius-xl)",
+            background: "var(--bg-secondary)",
+            border: "1px solid var(--border-color)",
+            color: "var(--text-muted)",
+            fontSize: 14,
+            fontWeight: 600,
+            cursor: "not-allowed",
+            opacity: 0.65,
+            letterSpacing: "-0.01em",
+          }}
+        >
+          <GoogleIcon />
+          <span>Continue with Google</span>
+        </button>
+      </div>
+    );
+  }
+
+  return <GoogleSignInButton />;
 }
