@@ -13,7 +13,7 @@ export default defineConfig({
       registerType: 'autoUpdate',
 
       // Tell Workbox to also precache these public-folder assets
-      includeAssets: ['favicon.svg', 'icon-maskable.svg'],
+      includeAssets: ['favicon.ico', 'favicon.svg', 'apple-touch-icon-180x180.png', 'pwa-*.png', 'maskable-icon-512x512.png'],
 
       // ── Web App Manifest ──────────────────────────────────────────────
       // This is the JSON file that tells the OS/browser how to present
@@ -30,18 +30,27 @@ export default defineConfig({
         scope: '/',
         icons: [
           {
-            // "any" = used everywhere: install dialog, tab, taskbar
-            src: '/favicon.svg',
-            sizes: 'any',             // SVG is resolution-independent
-            type: 'image/svg+xml',
-            purpose: 'any',
+            src: 'pwa-64x64.png',
+            sizes: '64x64',
+            type: 'image/png',
           },
           {
-            // "maskable" = used on Android when the OS clips to a shape.
-            // Must have a colored background with 10% padding around content.
-            src: '/icon-maskable.svg',
-            sizes: 'any',
-            type: 'image/svg+xml',
+            src: 'pwa-192x192.png',
+            sizes: '192x192',
+            type: 'image/png',
+          },
+          {
+            // 512px is required for Chrome's install dialog and splash screen
+            src: 'pwa-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+          },
+          {
+            // maskable = Android clips this to a circle/squircle shape
+            // The generator added background + safe-zone padding automatically
+            src: 'maskable-icon-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
             purpose: 'maskable',
           },
         ],

@@ -1,4 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <!-- Dark ember background -->
+  <rect width="32" height="32" rx="7" fill="#0F0D18"/>
   <!-- Outer flame -->
   <path
     d="M16 2
