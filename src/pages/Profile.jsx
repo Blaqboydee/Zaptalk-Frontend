@@ -114,7 +114,7 @@ export default function Profile() {
       </div>
 
       {/* ── Content ── */}
-      <div style={{ paddingTop: 88, paddingBottom: 48 }}>
+      <div style={{ paddingTop: 'calc(88px + env(safe-area-inset-top))', paddingBottom: 48 }}>
         <div
           className="animate-fade-in"
           style={{ maxWidth: 860, margin: '0 auto', padding: '0 16px', display: 'grid', gridTemplateColumns: '1fr', gap: 16 }}

@@ -135,7 +135,7 @@ export default function UsersList() {
       </div>
 
       {/* ── Content ── */}
-      <div style={{ paddingTop: 128, paddingBottom: 40 }}>
+      <div style={{ paddingTop: 'calc(128px + env(safe-area-inset-top))', paddingBottom: 40 }}>
         <div style={{ maxWidth: 860, margin: '0 auto', padding: '0 16px' }}>
 
           {filteredUsers.length === 0 ? (

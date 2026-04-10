@@ -147,7 +147,7 @@ export default function Friends() {
       </div>
 
       {/* ── Content ── */}
-      <div style={{ paddingTop: 136, paddingBottom: 40, minHeight: '100dvh' }}>
+      <div style={{ paddingTop: 'calc(136px + env(safe-area-inset-top))', paddingBottom: 40, minHeight: '100dvh' }}>
         <div style={{ maxWidth: 720, margin: '0 auto', padding: '0 16px' }}>
 
           {/* Friends */}

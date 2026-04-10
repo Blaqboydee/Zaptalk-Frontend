@@ -1,18 +1,46 @@
-# ZapTalk Frontend
+# Ember
+
+A real-time chat PWA built with React, Socket.io, and Node.js.
+
+## Features
+
+- Real-time direct messages and group chats
+- Typing indicators and online presence tracking
+- Google OAuth sign-in
+- Progressive Web App — installable on iOS and Android, works offline
+- Animated splash screen, ember flame design system
+
+## Stack
+
+**Frontend:** React, Vite, Tailwind CSS, Socket.io-client, `@react-oauth/google`  
+**Backend:** Node.js, Express, Socket.io, MongoDB  
+**PWA:** `vite-plugin-pwa`, Workbox, Web App Manifest
 
 ## Setup
 
-1. Install dependencies with `npm ci`.
-2. Create a `.env` file from `.env.example`.
-3. Set `VITE_GOOGLE_CLIENT_ID` to your Google OAuth web client ID.
-4. Run the app with `npm run dev`.
+1. `npm ci`
+2. Copy `.env.example` → `.env`
+3. Set `VITE_GOOGLE_CLIENT_ID` to your Google OAuth web client ID
+4. `npm run dev`
 
-## Google Sign-In
+## Environment Variables
 
-Google Sign-In requires a configured Vite environment variable:
+| Variable | Description |
+|---|---|
+| `VITE_GOOGLE_CLIENT_ID` | Google OAuth 2.0 client ID (from Google Cloud Console) |
+| `VITE_API_URL` | Backend API base URL |
 
-```env
-VITE_GOOGLE_CLIENT_ID=your-google-oauth-client-id.apps.googleusercontent.com
+## PWA Icons
+
+Icons are generated from `public/favicon.svg` using:
+
+```bash
+npx @vite-pwa/assets-generator@latest --preset minimal-2023 public/favicon.svg
 ```
 
-If `VITE_GOOGLE_CLIENT_ID` is missing, the app now disables the Google sign-in button and shows a configuration message instead of throwing a runtime error.
+Re-run this any time you update the favicon SVG.
+
+## Deployment
+
+Hosted on Vercel. Push to `main` to trigger a redeploy.  
+Add all `VITE_*` environment variables in **Vercel → Settings → Environment Variables**.

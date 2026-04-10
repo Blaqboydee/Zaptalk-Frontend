@@ -213,6 +213,9 @@ button:active, [role="button"]:active {
     left: 0;
     right: 0;
     z-index: 40;
+    /* Shift content below notch/Dynamic Island in standalone PWA.
+       Fixed elements are viewport-relative so body padding-top has no effect on them. */
+    padding-top: env(safe-area-inset-top);
   }
   @media (min-width: 768px) {
     .page-header-fixed {
