@@ -1,0 +1,8 @@
+node_modules
+dist
+dist-ssr
+.vite
+tmp
+.env
+.env.*
+!.env.example
