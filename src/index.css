@@ -592,6 +592,22 @@ button:active, [role="button"]:active {
 }
 
 /* ─────────────────────────────────────────
+   PWA SAFE AREA UTILITIES
+───────────────────────────────────────── */
+
+/* Offsets the main content wrapper on mobile so it clears the bottom nav
+   (60px) PLUS the iPhone home indicator safe area. On desktop (md+) the
+   sidebar is on the left so no bottom offset is needed. */
+.content-safe-bottom {
+  padding-bottom: calc(60px + env(safe-area-inset-bottom));
+}
+@media (min-width: 768px) {
+  .content-safe-bottom {
+    padding-bottom: 0;
+  }
+}
+
+/* ─────────────────────────────────────────
    ANIMATIONS
 ───────────────────────────────────────── */
 

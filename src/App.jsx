@@ -91,7 +91,7 @@ function AppContent() {
       <Toaster position="top-right" />
      
       {!hideNavbar && <Navbar />}
-      <div className={!hideNavbar ? "md:pl-[240px] pb-[60px] md:pb-0" : ""}>
+      <div className={!hideNavbar ? "md:pl-[240px] content-safe-bottom" : ""}>
       <Routes>
         <Route path="/" element={<Navigate to="/login" />} />
         <Route path="/signup" element={<SignUp />} />

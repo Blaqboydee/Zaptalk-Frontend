@@ -52,6 +52,9 @@ const ChatLayout = ({ user }) => {
           borderBottom: '1px solid var(--border-color)',
           backdropFilter: 'blur(16px)',
           WebkitBackdropFilter: 'blur(16px)',
+          // Push header content below the notch/Dynamic Island in standalone PWA.
+          // body padding-top handles normal-flow pages; fixed elements need this themselves.
+          paddingTop: 'env(safe-area-inset-top)',
         }}
       >
         <div
@@ -186,7 +189,7 @@ const ChatLayout = ({ user }) => {
       </header>
 
       {/* ── Main content area ── */}
-      <main className="pt-[56px] animate-fade-in">
+      <main className="animate-fade-in" style={{ paddingTop: 'calc(56px + env(safe-area-inset-top))' }}>
         {isLoading ? (
           <LoadingState />
         ) : (

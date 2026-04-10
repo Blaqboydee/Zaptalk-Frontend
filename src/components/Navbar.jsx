@@ -193,14 +193,18 @@ export default function Navbar() {
           style={{
             position: 'fixed', bottom: 0, left: 0, right: 0,
             zIndex: 30,
-            height: 60,
+            // height grows by the home-indicator safe area so the 60px icon zone
+            // is always fully visible above it — not crushed into it.
+            height: 'calc(60px + env(safe-area-inset-bottom))',
             backgroundColor: 'var(--bg-secondary)',
             borderTop: '1px solid var(--border-color)',
             backdropFilter: 'blur(16px)',
             WebkitBackdropFilter: 'blur(16px)',
-            alignItems: 'center',
+            alignItems: 'flex-start',
             justifyContent: 'space-around',
+            paddingTop: 0,
             paddingBottom: 'env(safe-area-inset-bottom)',
+            boxSizing: 'border-box',
           }}
         >
           {NAV_LINKS.map(({ to, label, Icon }) => {
