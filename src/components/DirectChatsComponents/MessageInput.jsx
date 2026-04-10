@@ -122,7 +122,7 @@ const MessageInput = ({
               lineHeight: 1.5,
               paddingTop: 10,
               paddingBottom: 10,
-              fontSize: 14,
+              fontSize: 16,
             }}
           />
         </div>

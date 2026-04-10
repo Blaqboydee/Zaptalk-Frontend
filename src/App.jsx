@@ -1,10 +1,11 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { AuthContext } from "./context/AuthContext";
 import { initSocket } from "./lib/socket";
 import { Toaster } from "sonner";
 
 import Navbar from "./components/Navbar";
+import SplashScreen from "./components/SplashScreen";
 import SignUp from "./pages/SignUp";
 import Login from "./pages/Login";
 import Profile from "./pages/Profile";
@@ -60,6 +61,14 @@ function AppContent() {
   const [socket, setSocket] = useState(null);
   const location = useLocation();
 
+  const [showSplash, setShowSplash] = useState(
+    () => !sessionStorage.getItem("ember-splash-shown")
+  );
+  const handleSplashComplete = useCallback(() => {
+    sessionStorage.setItem("ember-splash-shown", "1");
+    setShowSplash(false);
+  }, []);
+
   useEffect(() => {
     if (user && !socket) {
       const s = initSocket(user.token); // pass JWT token
@@ -70,26 +79,15 @@ function AppContent() {
     }
   }, [user, socket]);
 
-  useEffect(() => {
-    // Mobile optimization: Remove HTML loading screen when React loads
-    const loadingScreen = document.getElementById('loading-screen');
-    if (loadingScreen) {
-      setTimeout(() => {
-        loadingScreen.classList.add('fade-out');
-        setTimeout(() => {
-          loadingScreen.remove();
-        }, 300);
-      }, 500);
-    }
-  }, []);
-
   if (loading) {
     return <LoadingScreen />;
   }
 
   const hideNavbar = location.pathname === "/login" || location.pathname === "/signup";
   return (
-    <div className="zap-app-container">
+    <>
+      {showSplash && <SplashScreen onComplete={handleSplashComplete} />}
+      <div className="zap-app-container">
       <Toaster position="top-right" />
      
       {!hideNavbar && <Navbar />}
@@ -125,6 +123,7 @@ function AppContent() {
       </Routes>
       </div>
     </div>
+    </>
   );
 }
 

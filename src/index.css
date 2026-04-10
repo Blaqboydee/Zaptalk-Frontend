@@ -595,6 +595,24 @@ button:active, [role="button"]:active {
    ANIMATIONS
 ───────────────────────────────────────── */
 
+/* ── Splash screen ── */
+@keyframes splash-logo-in {
+  0%   { opacity: 0; transform: scale(0.3) rotate(-12deg); }
+  65%  { opacity: 1; transform: scale(1.12) rotate(3deg); }
+  82%  { transform: scale(0.96) rotate(-1deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+@keyframes splash-glow {
+  0%, 100% { box-shadow: 0 0 24px rgba(255,87,34,0.45), 0 0 64px rgba(233,30,99,0.2); }
+  50%       { box-shadow: 0 0 56px rgba(255,87,34,0.75), 0 0 110px rgba(233,30,99,0.4); }
+}
+
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
 @keyframes emberFadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: translateY(0); }

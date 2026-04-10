@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Outlet, NavLink, Link } from 'react-router-dom';
-import { MessageSquare, Users, Flame, Menu } from 'lucide-react';
+import { MessageSquare, Users, Flame } from 'lucide-react';
 import { useGlobalSocket } from '../context/SocketContext';
 import { useAuth } from '../context/AuthContext';
 
@@ -64,16 +64,8 @@ const ChatLayout = ({ user }) => {
             gap: 8,
           }}
         >
-          {/* Left — mobile toggle + flame logo */}
+          {/* Left — flame logo */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-            {/* Mobile-only hamburger */}
-            <button
-              className="btn-icon md:hidden"
-              onClick={() => window.dispatchEvent(new CustomEvent('toggle-nav-sidebar'))}
-              aria-label="Menu"
-            >
-              <Menu size={16} />
-            </button>
             <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
               <div
                 style={{
