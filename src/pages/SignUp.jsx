@@ -220,9 +220,10 @@ export default function SignUp() {
                 </div>
 
                 {/* Terms */}
-                <label
+                <div
                   className="flex items-start gap-3 cursor-pointer p-4 rounded-2xl"
                   style={{ background: "var(--glass-surface)", border: "1px solid var(--glass-border)" }}
+                  onClick={() => setAcceptTerms((v) => !v)}
                 >
                   <div
                     style={{
@@ -232,18 +233,16 @@ export default function SignUp() {
                       display: "flex", alignItems: "center", justifyContent: "center",
                       transition: "all 0.15s ease",
                     }}
-                    onClick={() => setAcceptTerms((v) => !v)}
                   >
                     {acceptTerms && <Check size={11} color="#fff" strokeWidth={3} />}
                   </div>
-                  <input type="checkbox" checked={acceptTerms} onChange={(e) => setAcceptTerms(e.target.checked)} style={{ display: "none" }} required />
                   <span style={{ fontSize: "13px", color: "var(--text-secondary)", lineHeight: 1.6 }}>
                     I agree to Ember's{" "}
-                    <Link to="/terms" style={{ color: "var(--ember-fire)", fontWeight: 700 }}>Terms of Service</Link>
+                    <Link to="/terms" style={{ color: "var(--ember-fire)", fontWeight: 700 }} onClick={(e) => e.stopPropagation()}>Terms of Service</Link>
                     {" "}and{" "}
-                    <Link to="/privacy" style={{ color: "var(--ember-fire)", fontWeight: 700 }}>Privacy Policy</Link>
+                    <Link to="/privacy" style={{ color: "var(--ember-fire)", fontWeight: 700 }} onClick={(e) => e.stopPropagation()}>Privacy Policy</Link>
                   </span>
-                </label>
+                </div>
 
                 {/* Submit */}
                 <button

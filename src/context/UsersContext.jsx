@@ -1,5 +1,6 @@
 import { createContext, useState, useEffect, useContext } from "react";
 import { AuthContext } from "./AuthContext"; // assuming you have this
+import api from "../api/api";
 
 const UsersContext = createContext();
 
@@ -7,15 +8,14 @@ export const UsersProvider = ({ children }) => {
   const { user } = useContext(AuthContext); // logged-in user
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-const apiUrl = import.meta.env.VITE_API_URL;
  
   useEffect(() => {
     if (!user) return;
 
     const fetchUsers = async () => {
       try {
-        const res = await fetch(`${apiUrl}/users`);
-        const data = await res.json();
+        const res = await api.get("/users");
+        const data = res.data;
 
         // Exclude the current logged-in user
         const otherUsers = data.filter((u) => u._id !== user.id);
