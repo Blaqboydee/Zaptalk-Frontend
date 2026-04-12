@@ -3,6 +3,7 @@ import { X } from "lucide-react";
 import ChatMessages from "./ChatMessages";
 import MessageInput from "./MessageInput";
 import { useFriends } from "../../hooks/useFriends.js";
+import MoodAura from "../MoodAura/MoodAura";
 
 const MobileChatModal = ({
   isOpen,
@@ -16,7 +17,10 @@ const MobileChatModal = ({
   onSendMessage,
   onEditMessage,
   onDeleteMessage,
-  isMobile = true
+  isMobile = true,
+  replyingTo,
+  onReply,
+  onCancelReply,
 }) => {
   const { friends } = useFriends();
   const liveFriend = friends.find((f) => f._id === otherUser?._id);
@@ -109,19 +113,22 @@ const MobileChatModal = ({
         </div>
 
         {/* Messages Area */}
-        <div className="flex-1 overflow-hidden">
-          <ChatMessages
-            messages={messages}
-            user={user}
-            otherUser={otherUser}
-            isLoadingMessages={isLoadingMessages}
-            messagesEndRef={messagesEndRef}
-            onEditMessage={onEditMessage}
-            onDeleteMessage={onDeleteMessage}
-            isMobile={isMobile}
-            selectedChatId={selectedChatId}
-          />
-        </div>
+        <MoodAura messages={messages}>
+          <div className="flex-1 overflow-hidden">
+            <ChatMessages
+              messages={messages}
+              user={user}
+              otherUser={otherUser}
+              isLoadingMessages={isLoadingMessages}
+              messagesEndRef={messagesEndRef}
+              onEditMessage={onEditMessage}
+              onDeleteMessage={onDeleteMessage}
+              onReply={onReply}
+              isMobile={isMobile}
+              selectedChatId={selectedChatId}
+            />
+          </div>
+        </MoodAura>
 
         {/* Message Input */}
         <div style={{ borderTop: '1px solid #2D2640' }}>
@@ -130,6 +137,8 @@ const MobileChatModal = ({
             selectedChatId={selectedChatId}
             user={user}
             otherUser={otherUser}
+            replyingTo={replyingTo}
+            onCancelReply={onCancelReply}
           />
         </div>
       </div>

@@ -187,7 +187,7 @@ const ChatLayout = ({ user }) => {
       </header>
 
       {/* ── Main content area ── */}
-      <main className="animate-fade-in" style={{ paddingTop: 'calc(56px + env(safe-area-inset-top))' }}>
+      <main style={{ paddingTop: 'calc(56px + env(safe-area-inset-top))' }}>
         {isLoading ? (
           <LoadingState />
         ) : (

@@ -78,13 +78,16 @@ export const useGroupMessages = (selectedGroup, user, socket) => {
     return () => socket.off('receive_message', handleMessage);
   }, [socket, selectedGroup?._id]);
 
-  const sendMessage = (messageContent) => {
+  const sendMessage = (messageContent, isAnonymous = false, replyTo = null, mentions = []) => {
     if (!messageContent.trim() || !selectedGroup || !socket) return;
 
     socket.emit('send_message', {
       content: messageContent,
       senderId: user.id,
       chatId: selectedGroup._id,
+      isAnonymous,
+      replyTo,
+      mentions,
     });
     setError(null);
   };

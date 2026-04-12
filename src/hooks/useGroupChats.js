@@ -74,13 +74,20 @@ export const useGroupChats = (userId) => {
     }
   };
     const updateChatWithMessage = (message) => {
-    setGroupChats((prevChats) =>
-      prevChats.map((chat) =>
+    setGroupChats((prevChats) => {
+      const updated = prevChats.map((chat) =>
         chat._id === message.chatId
           ? { ...chat, lastMessage: message, updatedAt: message.createdAt }
           : chat
-      )
-    );
+      );
+      // Sort so the group with the newest message rises to top
+      updated.sort((a, b) => {
+        const aTime = a.lastMessage?.createdAt || a.updatedAt || a.createdAt;
+        const bTime = b.lastMessage?.createdAt || b.updatedAt || b.createdAt;
+        return new Date(bTime) - new Date(aTime);
+      });
+      return updated;
+    });
   };
 
   useEffect(() => {

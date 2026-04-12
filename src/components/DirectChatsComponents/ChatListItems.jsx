@@ -12,51 +12,13 @@ const ChatListItem = ({ chats, chat, user, allMessages, openChat, messageData, c
 
   const { newMessage } = useGlobalSocket();
 
-  const filteredMessages = allMessages?.filter((m) => m.chatId === chat._id) || [];
-  const lastMessage = filteredMessages[filteredMessages.length - 1] || chat.lastMessage;
+  // Use chat.lastMessage (set by backend + kept fresh by useChats.updateChatOnMessage)
+  const lastMessage = chat.lastMessage;
+  const displayMessage = lastMessage?.content || null;
 
-  const messageToChange = allMessages?.filter((m) => m.chatId === chat._id) || [];
-  const messageToPrint =
-    newMessage && newMessage.chatId === chat._id
-      ? [...messageToChange, newMessage]
-      : messageToChange;
-
-  const latestMessage = messageToPrint[messageToPrint.length - 1]?.content;
-
-  const getDisplayMessage = () => {
-    if (messageData && messageData.chatId === chat._id) {
-      if (messageData.senderId._id === user.id || messageData.sender === user.id) {
-        return messageData.content;
-      }
-      return latestMessage;
-    }
-    return latestMessage || lastMessage?.content;
-  };
-
-  const displayMessage = getDisplayMessage();
-
-  const findLatestMessageChat = () => {
-    let latestChatId = null;
-    let latestTimestamp = 0;
-    chats?.forEach((chatItem) => {
-      const chatMessages = allMessages?.filter((msg) => msg.chatId === chatItem._id) || [];
-      const messagesWithNew =
-        newMessage && newMessage.chatId === chatItem._id
-          ? [...chatMessages, newMessage]
-          : chatMessages;
-      if (messagesWithNew.length > 0) {
-        const lastMsg = messagesWithNew[messagesWithNew.length - 1];
-        const timestamp = new Date(lastMsg.createdAt).getTime();
-        if (timestamp > latestTimestamp) {
-          latestTimestamp = timestamp;
-          latestChatId = chatItem._id;
-        }
-      }
-    });
-    return latestChatId;
-  };
-
-  const hasLatestMessage = findLatestMessageChat() === chat._id;
+  const hasLatestMessage =
+    newMessage && newMessage.chatId === chat._id &&
+    (newMessage.senderId?._id || newMessage.senderId) !== user.id;
 
   useEffect(() => {
     if (hasLatestMessage && newMessage && newMessage.chatId === chat._id) {
@@ -162,7 +124,7 @@ const ChatListItem = ({ chats, chat, user, allMessages, openChat, messageData, c
             {chatName}
           </span>
           <span style={{ color: 'var(--text-muted)', fontSize: 11, fontWeight: 500, flexShrink: 0 }}>
-            {lastMessage ? formatTime(lastMessage.createdAt) : ''}
+            {lastMessage?.createdAt ? formatTime(lastMessage.createdAt) : ''}
           </span>
         </div>
 

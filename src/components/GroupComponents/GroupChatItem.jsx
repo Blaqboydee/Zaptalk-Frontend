@@ -2,11 +2,15 @@ import React from 'react';
 import { Users } from 'lucide-react';
 import { formatTime } from '../../utils/formatTime';
 
-const GroupChatItem = ({ group, isSelected, onSelect }) => {
+const GroupChatItem = ({ group, isSelected, onSelect, hasUnread }) => {
   const getLastMessage = () => {
-    if (group.lastMessage?.content) return group.lastMessage.content;
-    const msgs = group.messages;
-    if (msgs?.length) return msgs[msgs.length - 1]?.content || 'No messages yet';
+    const msg = group.lastMessage;
+    if (msg?.content) {
+      const senderName = msg.isAnonymous
+        ? (msg.anonymousAlias || 'Anonymous')
+        : (msg.senderId?.name || '');
+      return senderName ? `${senderName}: ${msg.content}` : msg.content;
+    }
     return 'No messages yet';
   };
 
@@ -80,7 +84,7 @@ const GroupChatItem = ({ group, isSelected, onSelect }) => {
         {getLastMessage()}
       </p>
 
-      {/* Footer with timestamp */}
+      {/* Footer with timestamp + unread */}
       <div className="flex justify-between items-center ml-[52px]">
         <span 
           className="text-[11px]"
@@ -89,6 +93,23 @@ const GroupChatItem = ({ group, isSelected, onSelect }) => {
           {formatTime(getLastTime())}
         </span>
         
+        {/* Unread badge */}
+        {hasUnread && !isSelected && (
+          <span
+            className="flex items-center justify-center rounded-full text-[10px] font-bold animate-pulse"
+            style={{
+              minWidth: 20,
+              height: 20,
+              padding: '0 6px',
+              background: 'var(--gradient-primary)',
+              color: '#fff',
+              boxShadow: '0 0 8px rgba(255,87,34,0.4)',
+            }}
+          >
+            new
+          </span>
+        )}
+
         {/* Active indicator */}
         {isSelected && (
           <div 

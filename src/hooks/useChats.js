@@ -75,29 +75,18 @@ useEffect(() => {
   }, [chats, searchTerm, userId, friends]);
 
   const updateChatOnMessage = (chatId, newMessage) => {
-    // console.log("Sorting chat to top:", chatId);
-
     setChats((prevChats) => {
       const chatIndex = prevChats.findIndex(
         (chat) => String(chat._id) === String(chatId)
       );
 
-      if (chatIndex === -1) {
-        // console.log("Chat not found:", chatId);
-        return prevChats;
-      }
+      if (chatIndex === -1) return prevChats;
 
-      if (chatIndex === 0) {
-        // Chat is already at the top
-        return prevChats;
-      }
-
-      // Create new array with the chat moved to the top
       const updatedChats = [...prevChats];
       const [chatToMove] = updatedChats.splice(chatIndex, 1);
-      updatedChats.unshift(chatToMove);
+      // Update lastMessage on the chat object
+      updatedChats.unshift({ ...chatToMove, lastMessage: newMessage });
 
-      // console.log("Chat moved to top successfully");
       return updatedChats;
     });
   };

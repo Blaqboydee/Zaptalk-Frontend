@@ -1,6 +1,6 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import { Users, LogOut, X, AlertTriangle, ChevronLeft, Sparkles } from 'lucide-react';
+import { Users, LogOut, X, AlertTriangle, ChevronLeft, Sparkles, EyeOff, Eye } from 'lucide-react';
 import { useFriends } from '../hooks/useFriends';
 import { useGroupChats } from '../hooks/useGroupChats';
 import { useGroupMessages } from '../hooks/useGroupMessages';
@@ -12,17 +12,21 @@ import GroupChatsList from '../components/GroupComponents/GroupChatsList';
 import ChatMessagesArea from '../components/DirectChatsComponents/ChatMessagesArea';
 import GroupMessageInput from '../components/GroupComponents/GroupMessageInput';
 import CreateGroupModal from '../components/GroupComponents/CreateGroupModal';
+import MoodAura from '../components/MoodAura/MoodAura';
 
 const GroupChats = () => {
   const { user } = useOutletContext();
   const { profile } = useAuth();
   const { friends } = useFriends();
-  const { socket } = useGlobalSocket();
+  const { socket, newMessage } = useGlobalSocket();
 
   const [selectedGroup, setSelectedGroup]       = useState(null);
   const [showCreateModal, setShowCreateModal]   = useState(false);
   const [showParticipants, setShowParticipants] = useState(false);
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
+  const [confessionMode, setConfessionMode]     = useState(false);
+  const [replyingTo, setReplyingTo]             = useState(null);
+  const [unreadGroups, setUnreadGroups]          = useState(new Set());
 
   const { isMobile, isOffcanvasOpen, openMobileChat, closeMobileChat } = useResponsiveLayout();
 
@@ -49,6 +53,15 @@ const GroupChats = () => {
       updateChatWithMessage(messages[messages.length - 1]);
   }, [messages]);
 
+  // Update lastMessage for any group when newMessage fires (covers non-selected groups too)
+  useEffect(() => {
+    if (!newMessage) return;
+    const isOurGroup = groupChats.some((g) => g._id === newMessage.chatId);
+    if (isOurGroup) {
+      updateChatWithMessage(newMessage);
+    }
+  }, [newMessage]);
+
   useEffect(() => {
     if (!socket) return;
     const handleUserLeft = ({ groupId, userId: leftId }) => {
@@ -63,6 +76,33 @@ const GroupChats = () => {
     socket.on('user_left_group', handleUserLeft);
     return () => socket.off('user_left_group', handleUserLeft);
   }, [socket, selectedGroup, user.id]);
+
+  // Listen for confession mode changes from other users
+  useEffect(() => {
+    if (!socket) return;
+    const handleConfessionChange = ({ chatId, enabled }) => {
+      if (selectedGroup?._id === chatId) {
+        setConfessionMode(enabled);
+      }
+    };
+    socket.on('confession_mode_changed', handleConfessionChange);
+    return () => socket.off('confession_mode_changed', handleConfessionChange);
+  }, [socket, selectedGroup?._id]);
+
+  // Sync confession mode when selecting a group
+  useEffect(() => {
+    if (selectedGroup) {
+      setConfessionMode(!!selectedGroup.confessionMode);
+    }
+  }, [selectedGroup?._id]);
+
+  // Toggle confession mode
+  const toggleConfessionMode = () => {
+    if (!socket || !selectedGroup) return;
+    const newVal = !confessionMode;
+    setConfessionMode(newVal);
+    socket.emit('toggle_confession_mode', { chatId: selectedGroup._id, enabled: newVal });
+  };
 
   // Fetch live online status for group members when a group is selected
   useEffect(() => {
@@ -108,9 +148,29 @@ const GroupChats = () => {
     return () => socket.off('user-status-updated', handleStatusUpdate);
   }, [socket]);
 
+  // Track unread groups when new messages arrive for non-selected groups
+  useEffect(() => {
+    if (!newMessage) return;
+    const msgChatId = newMessage.chatId;
+    // Only mark unread if this message belongs to one of our groups AND it's not the currently open one
+    const isOurGroup = groupChats.some((g) => g._id === msgChatId);
+    if (!isOurGroup) return;
+    const senderId = newMessage.senderId?._id || newMessage.senderId;
+    if (senderId === user.id) return; // don't mark own messages as unread
+    if (selectedGroup?._id === msgChatId) return;
+    setUnreadGroups((prev) => new Set(prev).add(msgChatId));
+  }, [newMessage]);
+
   const handleSelectGroup = (group) => {
     setSelectedGroup(group);
     setShowParticipants(false);
+    setReplyingTo(null);
+    // Clear unread for this group
+    setUnreadGroups((prev) => {
+      const next = new Set(prev);
+      next.delete(group._id);
+      return next;
+    });
     if (isMobile) openMobileChat();
   };
 
@@ -152,6 +212,7 @@ const GroupChats = () => {
         onCreateGroup={() => setShowCreateModal(true)}
         isMobile={isMobile}
         isOffcanvasOpen={isOffcanvasOpen}
+        unreadGroups={unreadGroups}
       />
 
       {/* ── Desktop chat area ── */}
@@ -165,21 +226,26 @@ const GroupChats = () => {
                 showParticipants={showParticipants}
                 onToggleParticipants={() => setShowParticipants((p) => !p)}
                 onLeave={() => setShowLeaveConfirm(true)}
+                confessionMode={confessionMode}
+                onToggleConfession={toggleConfessionMode}
               />
 
               {error && <ErrorBanner message={error} />}
 
               {/* Messages */}
-              <div className="flex-1 overflow-y-auto scrollbar-hidden p-4 space-y-3">
-                <ChatMessagesArea
-                  messages={messages}
-                  isLoadingMessages={isLoadingMessages}
-                  messagesEndRef={messagesEndRef}
-                  user={user}
-                  formatTime={formatTime}
-                  ownAvatar={profile?.avatar}
-                />
-              </div>
+              <MoodAura messages={messages}>
+                <div className="flex-1 overflow-y-auto scrollbar-hidden p-4 space-y-3">
+                  <ChatMessagesArea
+                    messages={messages}
+                    isLoadingMessages={isLoadingMessages}
+                    messagesEndRef={messagesEndRef}
+                    user={user}
+                    formatTime={formatTime}
+                    ownAvatar={profile?.avatar}
+                    onReply={setReplyingTo}
+                  />
+                </div>
+              </MoodAura>
 
               {/* Input bar */}
               <div
@@ -189,8 +255,34 @@ const GroupChats = () => {
                   borderTop: '1px solid var(--border-color)',
                 }}
               >
-                <GroupMessageInput onSendMessage={sendMessage} />
+                <GroupMessageInput
+                  onSendMessage={sendMessage}
+                  confessionMode={confessionMode}
+                  replyingTo={replyingTo}
+                  onCancelReply={() => setReplyingTo(null)}
+                  members={selectedGroup?.users || []}
+                />
               </div>
+
+              {/* Confession mode active banner */}
+              {confessionMode && (
+                <div
+                  className="absolute bottom-16 left-1/2 -translate-x-1/2 z-10 animate-fade-in"
+                  style={{
+                    padding: '6px 16px',
+                    borderRadius: 'var(--radius-pill)',
+                    background: 'rgba(139, 92, 246, 0.15)',
+                    border: '1px solid rgba(139, 92, 246, 0.25)',
+                    fontSize: 11,
+                    fontWeight: 700,
+                    color: '#A78BFA',
+                    pointerEvents: 'none',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  🎭 Confession Mode Active — all messages are anonymous
+                </div>
+              )}
 
               {/* Slide-in participants panel */}
               {showParticipants && (
@@ -238,6 +330,11 @@ const GroupChats = () => {
           onClose={handleCloseMobile}
           onSendMessage={sendMessage}
           error={error}
+          confessionMode={confessionMode}
+          onToggleConfession={toggleConfessionMode}
+          replyingTo={replyingTo}
+          onReply={setReplyingTo}
+          onCancelReply={() => setReplyingTo(null)}
         />
       )}
     </div>
@@ -249,21 +346,27 @@ const GroupChats = () => {
 ───────────────────────────────────────────────────────────── */
 
 /* ── Chat header (desktop) ── */
-const ChatHeader = ({ group, showParticipants, onToggleParticipants, onLeave }) => (
+const ChatHeader = ({ group, showParticipants, onToggleParticipants, onLeave, confessionMode, onToggleConfession }) => (
   <div
     className="flex-shrink-0 px-5 py-3 flex items-center justify-between"
     style={{
-      background: 'var(--bg-primary)',
+      background: confessionMode
+        ? 'linear-gradient(90deg, var(--bg-primary), rgba(139,92,246,0.06))'
+        : 'var(--bg-primary)',
       borderBottom: '1px solid var(--border-color)',
+      transition: 'background 0.5s ease',
     }}
   >
     <div className="flex items-center gap-3">
       {/* Group avatar */}
       <div
         className="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0"
-        style={{ background: 'var(--gradient-primary)' }}
+        style={{ background: confessionMode ? 'linear-gradient(135deg, #8B5CF6, #6D28D9)' : 'var(--gradient-primary)' }}
       >
-        <Users size={18} color="#fff" strokeWidth={2} />
+        {confessionMode
+          ? <EyeOff size={18} color="#fff" strokeWidth={2} />
+          : <Users size={18} color="#fff" strokeWidth={2} />
+        }
       </div>
       <div>
         <h2
@@ -277,13 +380,30 @@ const ChatHeader = ({ group, showParticipants, onToggleParticipants, onLeave }) 
         >
           {group.name}
         </h2>
-        <p style={{ fontSize: '12px', color: 'var(--text-tertiary)', fontWeight: 500 }}>
-          {group.users?.length || 0} members
+        <p style={{ fontSize: '12px', color: confessionMode ? '#A78BFA' : 'var(--text-tertiary)', fontWeight: 500 }}>
+          {confessionMode ? '🎭 Confession Mode' : `${group.users?.length || 0} members`}
         </p>
       </div>
     </div>
 
     <div className="flex items-center gap-2">
+      {/* Confession mode toggle */}
+      <button
+        onClick={onToggleConfession}
+        className="btn-icon"
+        style={
+          confessionMode
+            ? { background: 'linear-gradient(135deg, #8B5CF6, #6D28D9)', borderColor: 'transparent' }
+            : {}
+        }
+        title={confessionMode ? 'Disable Confession Mode' : 'Enable Confession Mode'}
+      >
+        {confessionMode
+          ? <EyeOff size={16} color="#fff" strokeWidth={2} />
+          : <EyeOff size={16} color="var(--text-secondary)" strokeWidth={2} />
+        }
+      </button>
+
       {/* Members toggle */}
       <button
         onClick={onToggleParticipants}
@@ -585,6 +705,8 @@ const MobileGroupModal = ({
   selectedGroup, messages, isLoadingMessages, messagesEndRef,
   user, formatTime, showParticipants, onToggleParticipants,
   onLeaveGroup, onClose, onSendMessage, error,
+  confessionMode, onToggleConfession,
+  replyingTo, onReply, onCancelReply,
 }) => (
   <div
     className="fixed inset-0 z-50 flex flex-col animate-slide-up"
@@ -594,7 +716,9 @@ const MobileGroupModal = ({
     <div
       className="flex-shrink-0 flex items-center gap-3 px-4 py-3"
       style={{
-        background: 'var(--bg-primary)',
+        background: confessionMode
+          ? 'linear-gradient(90deg, var(--bg-primary), rgba(139,92,246,0.06))'
+          : 'var(--bg-primary)',
         borderBottom: '1px solid var(--border-color)',
         paddingTop: 'calc(env(safe-area-inset-top) + 12px)',
       }}
@@ -605,9 +729,12 @@ const MobileGroupModal = ({
 
       <div
         className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-        style={{ background: 'var(--gradient-primary)' }}
+        style={{ background: confessionMode ? 'linear-gradient(135deg, #8B5CF6, #6D28D9)' : 'var(--gradient-primary)' }}
       >
-        <Users size={15} color="#fff" strokeWidth={2} />
+        {confessionMode
+          ? <EyeOff size={15} color="#fff" strokeWidth={2} />
+          : <Users size={15} color="#fff" strokeWidth={2} />
+        }
       </div>
 
       <div className="flex-1 min-w-0">
@@ -622,12 +749,24 @@ const MobileGroupModal = ({
         >
           {selectedGroup.name}
         </h2>
-        <p style={{ fontSize: '11px', color: 'var(--text-tertiary)', fontWeight: 500 }}>
-          {selectedGroup.users?.length || 0} members
+        <p style={{ fontSize: '11px', color: confessionMode ? '#A78BFA' : 'var(--text-tertiary)', fontWeight: 500 }}>
+          {confessionMode ? '🎭 Confession Mode' : `${selectedGroup.users?.length || 0} members`}
         </p>
       </div>
 
       <div className="flex items-center gap-1.5">
+        {/* Confession toggle */}
+        <button
+          className="btn-icon"
+          style={
+            confessionMode
+              ? { background: 'linear-gradient(135deg, #8B5CF6, #6D28D9)', borderColor: 'transparent' }
+              : {}
+          }
+          onClick={onToggleConfession}
+        >
+          <EyeOff size={15} color={confessionMode ? '#fff' : 'var(--text-secondary)'} />
+        </button>
         <button
           className="btn-icon"
           style={
@@ -682,16 +821,18 @@ const MobileGroupModal = ({
     {error && <ErrorBanner message={error} />}
 
     {/* Messages */}
-    <div className="flex-1 overflow-y-auto scrollbar-hidden p-3 space-y-3">
-      <ChatMessagesArea
-        messages={messages}
-        isLoadingMessages={isLoadingMessages}
-        messagesEndRef={messagesEndRef}
-        user={user}
-        formatTime={formatTime}
-        ownAvatar={profile?.avatar}
-      />
-    </div>
+    <MoodAura messages={messages}>
+      <div className="flex-1 overflow-y-auto scrollbar-hidden p-3 space-y-3">
+        <ChatMessagesArea
+          messages={messages}
+          isLoadingMessages={isLoadingMessages}
+          messagesEndRef={messagesEndRef}
+          user={user}
+          formatTime={formatTime}
+          onReply={onReply}
+        />
+      </div>
+    </MoodAura>
 
     {/* Input */}
     <div
@@ -702,7 +843,13 @@ const MobileGroupModal = ({
         paddingBottom: 'calc(env(safe-area-inset-bottom) + 12px)',
       }}
     >
-      <GroupMessageInput onSendMessage={onSendMessage} />
+      <GroupMessageInput
+        onSendMessage={onSendMessage}
+        confessionMode={confessionMode}
+        replyingTo={replyingTo}
+        onCancelReply={onCancelReply}
+        members={selectedGroup?.users || []}
+      />
     </div>
   </div>
 );

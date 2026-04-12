@@ -9,6 +9,7 @@ const GroupChatsList = ({
   onCreateGroup,
   isMobile,
   isOffcanvasOpen,
+  unreadGroups,
 }) => {
   if (isMobile && isOffcanvasOpen) return null;
 
@@ -68,6 +69,7 @@ const GroupChatsList = ({
               group={group}
               isSelected={selectedGroup?._id === group._id}
               onSelect={onSelectGroup}
+              hasUnread={unreadGroups?.has(group._id)}
             />
           ))
         )}

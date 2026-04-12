@@ -30,6 +30,7 @@ import ChatMessages from "../components/DirectChatsComponents/ChatMessages";
 import FriendsList from "../components/FriendsList";
 import MessageInput from "../components/DirectChatsComponents/MessageInput";
 import MobileChatModal from "../components/DirectChatsComponents/MobileChatModal";
+import MoodAura from "../components/MoodAura/MoodAura";
 
 export default function ChatsPage() {
   const { user, allMessages } = useOutletContext();
@@ -41,6 +42,7 @@ export default function ChatsPage() {
   const [selectedChatId, setSelectedChatId] = useState(null);
   const [otherUser, setOtherUser] = useState(null);
   const [isOffcanvasOpen, setIsOffcanvasOpen] = useState(false);
+  const [replyingTo, setReplyingTo] = useState(null);
 
   const { isMobile } = useResponsive();
   const {
@@ -74,7 +76,7 @@ export default function ChatsPage() {
     setMessages, isMobile, setIsOffcanvasOpen
   );
 
-  const sendMessage = useCallback((messageContent) => {
+  const sendMessage = useCallback((messageContent, replyToId = null) => {
     if (!messageContent.trim() || !selectedChatId || !user?.id) return;
     const tempMessage = {
       _id: `temp-${Date.now()}-${Math.random()}`,
@@ -83,10 +85,13 @@ export default function ChatsPage() {
       chatId: selectedChatId,
       createdAt: new Date().toISOString(),
       pending: true,
+      replyTo: replyToId ? replyingTo : null,
     };
     addMessage(tempMessage);
-    socketSendMessage({ content: messageContent, senderId: user.id, chatId: selectedChatId });
-  }, [socketSendMessage, selectedChatId, user?.id, addMessage]);
+    socketSendMessage({ content: messageContent, senderId: user.id, chatId: selectedChatId, replyTo: replyToId });
+    updateChatOnMessage(selectedChatId, tempMessage);
+    setReplyingTo(null);
+  }, [socketSendMessage, selectedChatId, user?.id, addMessage, replyingTo, updateChatOnMessage]);
 
   const openChat = useCallback((chat) => {
     setIsChatOpen(true);
@@ -95,6 +100,7 @@ export default function ChatsPage() {
     if (socket) socket.emit("join_chat", chat._id);
     setOtherUser(secondUser);
     setSelectedChatId(chat._id);
+    setReplyingTo(null);
     if (isMobile) setIsOffcanvasOpen(true);
   }, [user.id, isMobile, setIsChatOpen, socket]);
 
@@ -163,6 +169,9 @@ export default function ChatsPage() {
           onEditMessage={editMessage}
           onDeleteMessage={deleteMessage}
           isMobile={isMobile}
+          replyingTo={replyingTo}
+          onReply={setReplyingTo}
+          onCancelReply={() => setReplyingTo(null)}
         />
       </div>
     );
@@ -263,25 +272,30 @@ export default function ChatsPage() {
         {selectedChatId && otherUser ? (
           <>
             <ChatHeader otherUser={otherUser} />
-            <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-              <ChatMessages
-                messages={messages}
-                selectedChatId={selectedChatId}
-                user={user}
-                otherUser={otherUser}
-                profile={profile}
-                isLoadingMessages={isLoadingMessages}
-                messagesEndRef={messagesEndRef}
-                onEditMessage={editMessage}
-                onDeleteMessage={deleteMessage}
-              />
-            </div>
+            <MoodAura messages={messages}>
+              <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                <ChatMessages
+                  messages={messages}
+                  selectedChatId={selectedChatId}
+                  user={user}
+                  otherUser={otherUser}
+                  profile={profile}
+                  isLoadingMessages={isLoadingMessages}
+                  messagesEndRef={messagesEndRef}
+                  onEditMessage={editMessage}
+                  onDeleteMessage={deleteMessage}
+                  onReply={setReplyingTo}
+                />
+              </div>
+            </MoodAura>
             <div style={{ borderTop: '1px solid var(--border-color)', backgroundColor: 'var(--bg-secondary)' }}>
               <MessageInput
                 onSendMessage={sendMessage}
                 selectedChatId={selectedChatId}
                 user={user}
                 otherUser={otherUser}
+                replyingTo={replyingTo}
+                onCancelReply={() => setReplyingTo(null)}
               />
             </div>
           </>

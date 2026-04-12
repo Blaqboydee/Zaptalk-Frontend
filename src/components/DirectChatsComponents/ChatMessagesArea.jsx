@@ -10,6 +10,7 @@ const ChatMessagesArea = ({
   user,
   formatTime,
   ownAvatar,
+  onReply,
 }) => {
   const [drawerUser, setDrawerUser] = useState(null);
 
@@ -105,6 +106,7 @@ const ChatMessagesArea = ({
           formatTime={formatTime}
           ownAvatar={ownAvatar}
           onAvatarClick={setDrawerUser}
+          onReply={onReply}
         />
       ))}
       <div ref={messagesEndRef} />

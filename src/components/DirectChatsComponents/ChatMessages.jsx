@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { formatTime } from "../../utils/formatTime";
-import { Edit2, Trash2, Check, X, Flame } from "lucide-react";
+import { Edit2, Trash2, Check, X, Flame, Reply, CornerUpRight } from "lucide-react";
 import UserProfileDrawer from "../UserProfileDrawer";
 
 const ChatMessages = ({
@@ -13,6 +13,7 @@ const ChatMessages = ({
   messagesEndRef,
   onEditMessage,
   onDeleteMessage,
+  onReply,
   isMobile,
 }) => {
   // State for message options modal
@@ -63,9 +64,8 @@ const ChatMessages = ({
   }, [longPressTimer]);
 
   const handleLongPressStart = useCallback((message, event) => {
-    // Only allow actions on own messages
     const isOwnMessage = message.senderId?._id === user?.id || message.senderId === user?.id;
-    if (!isOwnMessage || !user) return;
+    if (!user) return;
 
     clearLongPressTimer();
 
@@ -73,7 +73,6 @@ const ChatMessages = ({
     if (!rect) return;
 
     const timer = setTimeout(() => {
-      // Position modal to avoid going off-screen
       const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
       const viewportWidth = window.innerWidth;
       const modalWidth = 150;
@@ -88,9 +87,9 @@ const ChatMessages = ({
         y: rect.top + scrollTop,
       });
 
-      setSelectedMessage(message);
+      setSelectedMessage({ ...message, _isOwn: isOwnMessage });
       setEditText(message.content || "");
-    }, 500); // 500ms long press duration
+    }, 500);
 
     setLongPressTimer(timer);
   }, [user, clearLongPressTimer]);
@@ -139,6 +138,12 @@ const ChatMessages = ({
       handleCancelEdit();
     }
   }, [handleSaveEdit, handleCancelEdit]);
+
+  const handleReply = useCallback(() => {
+    if (!selectedMessage || !onReply) return;
+    onReply(selectedMessage);
+    setSelectedMessage(null);
+  }, [selectedMessage, onReply]);
 
   if (!user) return null;
 
@@ -236,20 +241,35 @@ const ChatMessages = ({
                 </div>
 
                 {/* Bubble — long press to open actions */}
-                <div
-                  className={isOwnMessage ? 'bubble-sent' : 'bubble-received'}
-                  style={{ opacity: message.pending ? 0.6 : 1, cursor: 'default', userSelect: 'text' }}
-                  onMouseDown={(e) => handleLongPressStart(message, e)}
-                  onMouseUp={handleLongPressEnd}
-                  onMouseLeave={handleLongPressEnd}
-                  onTouchStart={(e) => handleLongPressStart(message, e)}
-                  onTouchEnd={handleLongPressEnd}
-                  onTouchCancel={handleLongPressEnd}
-                >
-                  {message.content || ''}
-                  {message.edited && (
-                    <span style={{ fontSize: 10, opacity: 0.6, marginLeft: 6 }}>(edited)</span>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 3, alignItems: isOwnMessage ? 'flex-end' : 'flex-start' }}>
+                  {/* Reply banner */}
+                  {message.replyTo && (
+                    <div className="reply-banner" style={{ alignSelf: isOwnMessage ? 'flex-end' : 'flex-start' }}>
+                      <CornerUpRight size={11} style={{ flexShrink: 0, color: 'var(--ember-violet)', marginTop: 1 }} />
+                      <div style={{ minWidth: 0 }}>
+                        <span className="reply-banner-name">
+                          {message.replyTo.senderId?.name || 'Unknown'}
+                        </span>
+                        <span className="reply-banner-text">{message.replyTo.content}</span>
+                      </div>
+                    </div>
                   )}
+
+                  <div
+                    className={isOwnMessage ? 'bubble-sent' : 'bubble-received'}
+                    style={{ opacity: message.pending ? 0.6 : 1, cursor: 'default', userSelect: 'text' }}
+                    onMouseDown={(e) => handleLongPressStart(message, e)}
+                    onMouseUp={handleLongPressEnd}
+                    onMouseLeave={handleLongPressEnd}
+                    onTouchStart={(e) => handleLongPressStart(message, e)}
+                    onTouchEnd={handleLongPressEnd}
+                    onTouchCancel={handleLongPressEnd}
+                  >
+                    {message.content || ''}
+                    {message.edited && (
+                      <span style={{ fontSize: 10, opacity: 0.6, marginLeft: 6 }}>(edited)</span>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -290,7 +310,12 @@ const ChatMessages = ({
               editInputRef={editInputRef}
             />
           ) : (
-            <MessageOptions onEdit={handleEdit} onDelete={handleDelete} />
+            <MessageOptions
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              onReply={handleReply}
+              isOwn={selectedMessage?._isOwn}
+            />
           )}
         </div>
       )}
@@ -345,25 +370,39 @@ const EditMessageForm = ({ editText, setEditText, onSave, onCancel, onKeyDown, e
   </div>
 );
 
-const MessageOptions = ({ onEdit, onDelete }) => (
+const MessageOptions = ({ onEdit, onDelete, onReply, isOwn }) => (
   <div style={{ padding: '4px 0' }}>
+    {/* Reply — always available */}
     <button
-      onClick={onEdit}
+      onClick={onReply}
       style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-primary)', fontSize: 13, fontWeight: 600, textAlign: 'left' }}
       onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-hover)'}
       onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
     >
-      <Edit2 size={14} style={{ color: 'var(--text-fire)', flexShrink: 0 }} /> Edit
+      <Reply size={14} style={{ color: 'var(--ember-violet)', flexShrink: 0 }} /> Reply
     </button>
-    <div style={{ borderTop: '1px solid var(--border-color)', margin: '2px 0' }} />
-    <button
-      onClick={onDelete}
-      style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--error)', fontSize: 13, fontWeight: 600, textAlign: 'left' }}
-      onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(239,68,68,0.08)'}
-      onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-    >
-      <Trash2 size={14} style={{ flexShrink: 0 }} /> Delete
-    </button>
+    {isOwn && (
+      <>
+        <div style={{ borderTop: '1px solid var(--border-color)', margin: '2px 0' }} />
+        <button
+          onClick={onEdit}
+          style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-primary)', fontSize: 13, fontWeight: 600, textAlign: 'left' }}
+          onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-hover)'}
+          onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+        >
+          <Edit2 size={14} style={{ color: 'var(--text-fire)', flexShrink: 0 }} /> Edit
+        </button>
+        <div style={{ borderTop: '1px solid var(--border-color)', margin: '2px 0' }} />
+        <button
+          onClick={onDelete}
+          style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--error)', fontSize: 13, fontWeight: 600, textAlign: 'left' }}
+          onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(239,68,68,0.08)'}
+          onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+        >
+          <Trash2 size={14} style={{ flexShrink: 0 }} /> Delete
+        </button>
+      </>
+    )}
   </div>
 );
 
