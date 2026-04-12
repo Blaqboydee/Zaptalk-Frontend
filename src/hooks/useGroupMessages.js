@@ -28,7 +28,7 @@ export const useGroupMessages = (selectedGroup, user, socket) => {
     const fetchMessages = async () => {
       setIsLoadingMessages(true);
       try {
-        const res = await fetch(`${apiUrl}/messages?chatId=${selectedGroup._id}`);
+        const res = await fetch(`${apiUrl}/messages?chatId=${selectedGroup._id}&userId=${user?.id || ''}`);
         if (res.ok) {
           const data = await res.json();
           setMessages(data || []);

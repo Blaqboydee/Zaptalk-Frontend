@@ -34,7 +34,7 @@ export const useChatInitialization = (
         setOtherUser({ _id: friend._id, name: friend.name });
 
         const messagesRes = await fetch(
-          `${apiUrl}/messages?chatId=${existingChat._id}`
+          `${apiUrl}/messages?chatId=${existingChat._id}&userId=${user?.id || ''}`
         );
         if (messagesRes.ok) {
           const messagesData = await messagesRes.json();

@@ -113,7 +113,7 @@ useEffect(() => {
 
       setIsLoadingMessages(true);
       try {
-        const res = await fetch(`${apiUrl}/messages?chatId=${selectedChatId}`);
+        const res = await fetch(`${apiUrl}/messages?chatId=${selectedChatId}&userId=${userId || ''}`);
         const data = res.ok ? await res.json() : [];
         setMessages(data);
       } catch (err) {

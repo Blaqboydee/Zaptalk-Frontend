@@ -105,7 +105,7 @@ function AppContent() {
           path="/allchats"
           element={user ? <ChatLayout user={user} /> : <Navigate to="/login" />}
         >
-          <Route index element={<Chats />} />
+          <Route index element={<Navigate to="/allchats/directmessages" replace />} />
           <Route path="/allchats/directmessages" element={<Chats />} />
           <Route path="/allchats/groups" element={<GroupChats />} />
         </Route>

@@ -47,10 +47,13 @@ const MobileChatModal = ({
       >
         {/* Header */}
         <div 
-          className="h-[70px] flex items-center justify-between px-4"
+          className="flex items-center justify-between px-4"
           style={{ 
             borderBottom: '1px solid #2D2640',
-            backgroundColor: '#1A1625'
+            backgroundColor: '#1A1625',
+            minHeight: 70,
+            paddingTop: 'calc(env(safe-area-inset-top, 0px) + 8px)',
+            paddingBottom: 8,
           }}
         >
           <div className="flex items-center gap-3">
