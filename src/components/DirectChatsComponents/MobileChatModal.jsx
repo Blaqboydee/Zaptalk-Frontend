@@ -27,29 +27,22 @@ const MobileChatModal = ({
   const isOnline = liveFriend?.status?.state === "online";
   const containerRef = useRef(null);
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
-  const [viewportOffset, setViewportOffset] = useState(0);
 
-  // Lock body scroll + track visual viewport (keyboard open/close)
+  // Lock body scroll + track visual viewport height (keyboard open/close)
   useEffect(() => {
     if (!isOpen) return;
 
     // Lock body to prevent browser from scrolling page behind modal
-    const scrollY = window.scrollY;
     document.body.style.position = 'fixed';
-    document.body.style.top = `-${scrollY}px`;
+    document.body.style.top = '0';
     document.body.style.left = '0';
     document.body.style.right = '0';
+    document.body.style.bottom = '0';
     document.body.style.overflow = 'hidden';
 
     const vv = window.visualViewport;
     const handleViewport = () => {
-      if (vv) {
-        setViewportHeight(vv.height);
-        setViewportOffset(vv.offsetTop);
-      } else {
-        setViewportHeight(window.innerHeight);
-        setViewportOffset(0);
-      }
+      setViewportHeight(vv ? vv.height : window.innerHeight);
     };
 
     handleViewport();
@@ -67,8 +60,8 @@ const MobileChatModal = ({
       document.body.style.top = '';
       document.body.style.left = '';
       document.body.style.right = '';
+      document.body.style.bottom = '';
       document.body.style.overflow = '';
-      window.scrollTo(0, scrollY);
     };
   }, [isOpen]);
 
@@ -92,7 +85,7 @@ const MobileChatModal = ({
         className="flex flex-col"
         style={{ 
           position: 'fixed',
-          top: `${viewportOffset}px`,
+          top: 0,
           left: 0,
           right: 0,
           height: `${viewportHeight}px`,
