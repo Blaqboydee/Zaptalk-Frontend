@@ -179,20 +179,18 @@ const MobileChatModal = ({
 
         {/* Messages Area */}
         <MoodAura messages={messages}>
-          <div className="flex-1 overflow-hidden min-h-0">
-            <ChatMessages
-              messages={messages}
-              user={user}
-              otherUser={otherUser}
-              isLoadingMessages={isLoadingMessages}
-              messagesEndRef={messagesEndRef}
-              onEditMessage={onEditMessage}
-              onDeleteMessage={onDeleteMessage}
-              onReply={onReply}
-              isMobile={isMobile}
-              selectedChatId={selectedChatId}
-            />
-          </div>
+          <ChatMessages
+            messages={messages}
+            user={user}
+            otherUser={otherUser}
+            isLoadingMessages={isLoadingMessages}
+            messagesEndRef={messagesEndRef}
+            onEditMessage={onEditMessage}
+            onDeleteMessage={onDeleteMessage}
+            onReply={onReply}
+            isMobile={isMobile}
+            selectedChatId={selectedChatId}
+          />
         </MoodAura>
 
         {/* Message Input */}

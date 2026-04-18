@@ -51,7 +51,7 @@ const MoodAura = ({ messages, children }) => {
   const isActive = mood !== 'neutral';
 
   return (
-    <div className="mood-aura-wrapper" style={{ position: 'relative', flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+    <div className="mood-aura-wrapper" style={{ position: 'relative', flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', minHeight: 0 }}>
       {/* Ambient background layer */}
       <div
         className="mood-aura-bg"
@@ -124,7 +124,7 @@ const MoodAura = ({ messages, children }) => {
       )}
 
       {/* Actual content */}
-      <div style={{ position: 'relative', zIndex: 1, flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <div style={{ position: 'relative', zIndex: 1, flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', minHeight: 0 }}>
         {children}
       </div>
     </div>

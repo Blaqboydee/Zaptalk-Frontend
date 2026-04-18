@@ -154,13 +154,15 @@ const ChatMessages = ({
         className="scrollbar-hidden"
         style={{
           flex: 1,
+          minHeight: 0,
           overflowY: 'auto',
+          overscrollBehavior: 'contain',
+          WebkitOverflowScrolling: 'touch',
           padding: '16px 12px',
           display: 'flex',
           flexDirection: 'column',
           gap: 4,
           backgroundColor: 'var(--bg-base)',
-          height: '100%',
         }}
       >
         {/* Loading skeletons */}

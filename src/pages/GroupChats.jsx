@@ -882,7 +882,7 @@ const MobileGroupModal = ({
 
     {/* Messages */}
     <MoodAura messages={messages}>
-      <div className="flex-1 overflow-y-auto scrollbar-hidden p-3 space-y-3 min-h-0">
+      <div className="flex-1 overflow-y-auto scrollbar-hidden p-3 space-y-3 min-h-0" style={{ overscrollBehavior: 'contain', WebkitOverflowScrolling: 'touch' }}>
         <ChatMessagesArea
           messages={messages}
           isLoadingMessages={isLoadingMessages}
