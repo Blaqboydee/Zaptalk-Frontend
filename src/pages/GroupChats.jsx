@@ -707,10 +707,28 @@ const MobileGroupModal = ({
   onLeaveGroup, onClose, onSendMessage, error,
   confessionMode, onToggleConfession,
   replyingTo, onReply, onCancelReply,
-}) => (
+}) => {
+  const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
+
+  useEffect(() => {
+    const vv = window.visualViewport;
+    if (!vv) return;
+
+    const handleResize = () => setViewportHeight(vv.height);
+    handleResize();
+    vv.addEventListener("resize", handleResize);
+    vv.addEventListener("scroll", handleResize);
+
+    return () => {
+      vv.removeEventListener("resize", handleResize);
+      vv.removeEventListener("scroll", handleResize);
+    };
+  }, []);
+
+  return (
   <div
-    className="fixed inset-0 z-50 flex flex-col animate-slide-up"
-    style={{ background: 'var(--bg-base)' }}
+    className="fixed left-0 right-0 top-0 z-50 flex flex-col animate-slide-up"
+    style={{ background: 'var(--bg-base)', height: `${viewportHeight}px`, overflow: 'hidden' }}
   >
     {/* Mobile header */}
     <div
@@ -852,6 +870,7 @@ const MobileGroupModal = ({
       />
     </div>
   </div>
-);
+  );
+};
 
 export default GroupChats;

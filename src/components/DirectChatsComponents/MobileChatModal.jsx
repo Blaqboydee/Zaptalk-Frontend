@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { X } from "lucide-react";
 import ChatMessages from "./ChatMessages";
 import MessageInput from "./MessageInput";
@@ -25,6 +25,29 @@ const MobileChatModal = ({
   const { friends } = useFriends();
   const liveFriend = friends.find((f) => f._id === otherUser?._id);
   const isOnline = liveFriend?.status?.state === "online";
+  const containerRef = useRef(null);
+  const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
+
+  // Track visual viewport changes (keyboard open/close)
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const vv = window.visualViewport;
+    if (!vv) return;
+
+    const handleResize = () => {
+      setViewportHeight(vv.height);
+    };
+
+    handleResize();
+    vv.addEventListener("resize", handleResize);
+    vv.addEventListener("scroll", handleResize);
+
+    return () => {
+      vv.removeEventListener("resize", handleResize);
+      vv.removeEventListener("scroll", handleResize);
+    };
+  }, [isOpen]);
 
   // Early return if modal should not be displayed
   if (!isOpen || !selectedChatId || !otherUser) {
@@ -40,20 +63,26 @@ const MobileChatModal = ({
         onClick={onClose}
       />
       
-      {/* Modal Content */}
+      {/* Modal Content - uses visualViewport height to avoid keyboard push */}
       <div 
-        className="absolute inset-0 flex flex-col"
-        style={{ backgroundColor: '#0F0F1A' }}
+        ref={containerRef}
+        className="absolute left-0 right-0 top-0 flex flex-col"
+        style={{ 
+          backgroundColor: '#0F0F1A',
+          height: `${viewportHeight}px`,
+          overflow: 'hidden',
+        }}
       >
-        {/* Header */}
+        {/* Header - always stays at top */}
         <div 
-          className="flex items-center justify-between px-4"
+          className="flex items-center justify-between px-4 shrink-0"
           style={{ 
             borderBottom: '1px solid #2D2640',
             backgroundColor: '#1A1625',
             minHeight: 70,
             paddingTop: 'calc(env(safe-area-inset-top, 0px) + 8px)',
             paddingBottom: 8,
+            zIndex: 10,
           }}
         >
           <div className="flex items-center gap-3">
@@ -117,7 +146,7 @@ const MobileChatModal = ({
 
         {/* Messages Area */}
         <MoodAura messages={messages}>
-          <div className="flex-1 overflow-hidden">
+          <div className="flex-1 overflow-hidden min-h-0">
             <ChatMessages
               messages={messages}
               user={user}
@@ -134,7 +163,7 @@ const MobileChatModal = ({
         </MoodAura>
 
         {/* Message Input */}
-        <div style={{ borderTop: '1px solid #2D2640' }}>
+        <div className="shrink-0" style={{ borderTop: '1px solid #2D2640' }}>
           <MessageInput 
             onSendMessage={onSendMessage}
             selectedChatId={selectedChatId}
