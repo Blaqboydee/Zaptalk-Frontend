@@ -27,25 +27,48 @@ const MobileChatModal = ({
   const isOnline = liveFriend?.status?.state === "online";
   const containerRef = useRef(null);
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
+  const [viewportOffset, setViewportOffset] = useState(0);
 
-  // Track visual viewport changes (keyboard open/close)
+  // Lock body scroll + track visual viewport (keyboard open/close)
   useEffect(() => {
     if (!isOpen) return;
 
-    const vv = window.visualViewport;
-    if (!vv) return;
+    // Lock body to prevent browser from scrolling page behind modal
+    const scrollY = window.scrollY;
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.left = '0';
+    document.body.style.right = '0';
+    document.body.style.overflow = 'hidden';
 
-    const handleResize = () => {
-      setViewportHeight(vv.height);
+    const vv = window.visualViewport;
+    const handleViewport = () => {
+      if (vv) {
+        setViewportHeight(vv.height);
+        setViewportOffset(vv.offsetTop);
+      } else {
+        setViewportHeight(window.innerHeight);
+        setViewportOffset(0);
+      }
     };
 
-    handleResize();
-    vv.addEventListener("resize", handleResize);
-    vv.addEventListener("scroll", handleResize);
+    handleViewport();
+    if (vv) {
+      vv.addEventListener("resize", handleViewport);
+      vv.addEventListener("scroll", handleViewport);
+    }
 
     return () => {
-      vv.removeEventListener("resize", handleResize);
-      vv.removeEventListener("scroll", handleResize);
+      if (vv) {
+        vv.removeEventListener("resize", handleViewport);
+        vv.removeEventListener("scroll", handleViewport);
+      }
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
+      document.body.style.overflow = '';
+      window.scrollTo(0, scrollY);
     };
   }, [isOpen]);
 
@@ -55,21 +78,26 @@ const MobileChatModal = ({
   }
 
   return (
-    <div className="fixed inset-0 z-50 animate-fade-in">
+    <>
       {/* Backdrop */}
       <div
-        className="absolute inset-0"
+        className="fixed inset-0 z-50 animate-fade-in"
         style={{ backgroundColor: 'rgba(0, 0, 0, 0.7)' }}
         onClick={onClose}
       />
       
-      {/* Modal Content - uses visualViewport height to avoid keyboard push */}
+      {/* Modal Content - fixed to visual viewport, immune to keyboard push */}
       <div 
         ref={containerRef}
-        className="absolute left-0 right-0 top-0 flex flex-col"
+        className="flex flex-col"
         style={{ 
-          backgroundColor: '#0F0F1A',
+          position: 'fixed',
+          top: `${viewportOffset}px`,
+          left: 0,
+          right: 0,
           height: `${viewportHeight}px`,
+          zIndex: 51,
+          backgroundColor: '#0F0F1A',
           overflow: 'hidden',
         }}
       >
@@ -174,7 +202,7 @@ const MobileChatModal = ({
           />
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

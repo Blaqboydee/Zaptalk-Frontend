@@ -709,26 +709,61 @@ const MobileGroupModal = ({
   replyingTo, onReply, onCancelReply,
 }) => {
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
+  const [viewportOffset, setViewportOffset] = useState(0);
 
   useEffect(() => {
-    const vv = window.visualViewport;
-    if (!vv) return;
+    // Lock body to prevent browser from scrolling page behind modal
+    const scrollY = window.scrollY;
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.left = '0';
+    document.body.style.right = '0';
+    document.body.style.overflow = 'hidden';
 
-    const handleResize = () => setViewportHeight(vv.height);
-    handleResize();
-    vv.addEventListener("resize", handleResize);
-    vv.addEventListener("scroll", handleResize);
+    const vv = window.visualViewport;
+    const handleViewport = () => {
+      if (vv) {
+        setViewportHeight(vv.height);
+        setViewportOffset(vv.offsetTop);
+      } else {
+        setViewportHeight(window.innerHeight);
+        setViewportOffset(0);
+      }
+    };
+
+    handleViewport();
+    if (vv) {
+      vv.addEventListener("resize", handleViewport);
+      vv.addEventListener("scroll", handleViewport);
+    }
 
     return () => {
-      vv.removeEventListener("resize", handleResize);
-      vv.removeEventListener("scroll", handleResize);
+      if (vv) {
+        vv.removeEventListener("resize", handleViewport);
+        vv.removeEventListener("scroll", handleViewport);
+      }
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
+      document.body.style.overflow = '';
+      window.scrollTo(0, scrollY);
     };
   }, []);
 
   return (
   <div
-    className="fixed left-0 right-0 top-0 z-50 flex flex-col animate-slide-up"
-    style={{ background: 'var(--bg-base)', height: `${viewportHeight}px`, overflow: 'hidden' }}
+    className="flex flex-col animate-slide-up"
+    style={{
+      position: 'fixed',
+      top: `${viewportOffset}px`,
+      left: 0,
+      right: 0,
+      height: `${viewportHeight}px`,
+      zIndex: 50,
+      background: 'var(--bg-base)',
+      overflow: 'hidden',
+    }}
   >
     {/* Mobile header */}
     <div
