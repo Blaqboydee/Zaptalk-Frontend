@@ -26,42 +26,53 @@ const MobileChatModal = ({
   const liveFriend = friends.find((f) => f._id === otherUser?._id);
   const isOnline = liveFriend?.status?.state === "online";
   const containerRef = useRef(null);
-  const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
 
-  // Lock body scroll + track visual viewport height (keyboard open/close)
+  // Direct DOM manipulation — no React state, no re-render lag.
+  // Syncs container position + size to the visual viewport.
   useEffect(() => {
     if (!isOpen) return;
+    const container = containerRef.current;
+    if (!container) return;
 
-    // Lock body to prevent browser from scrolling page behind modal
-    document.body.style.position = 'fixed';
-    document.body.style.top = '0';
-    document.body.style.left = '0';
-    document.body.style.right = '0';
-    document.body.style.bottom = '0';
-    document.body.style.overflow = 'hidden';
+    const html = document.documentElement;
+    const body = document.body;
+
+    // Lock page scroll
+    html.style.overflow = 'hidden';
+    html.style.height = '100%';
+    body.style.overflow = 'hidden';
+    body.style.height = '100%';
 
     const vv = window.visualViewport;
-    const handleViewport = () => {
-      setViewportHeight(vv ? vv.height : window.innerHeight);
+
+    const sync = () => {
+      if (vv) {
+        container.style.top = vv.offsetTop + 'px';
+        container.style.height = vv.height + 'px';
+      } else {
+        container.style.top = '0px';
+        container.style.height = window.innerHeight + 'px';
+      }
     };
 
-    handleViewport();
+    sync();
+
     if (vv) {
-      vv.addEventListener("resize", handleViewport);
-      vv.addEventListener("scroll", handleViewport);
+      vv.addEventListener('resize', sync);
+      vv.addEventListener('scroll', sync);
     }
+    window.addEventListener('resize', sync);
 
     return () => {
       if (vv) {
-        vv.removeEventListener("resize", handleViewport);
-        vv.removeEventListener("scroll", handleViewport);
+        vv.removeEventListener('resize', sync);
+        vv.removeEventListener('scroll', sync);
       }
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.left = '';
-      document.body.style.right = '';
-      document.body.style.bottom = '';
-      document.body.style.overflow = '';
+      window.removeEventListener('resize', sync);
+      html.style.overflow = '';
+      html.style.height = '';
+      body.style.overflow = '';
+      body.style.height = '';
     };
   }, [isOpen]);
 
@@ -79,7 +90,7 @@ const MobileChatModal = ({
         onClick={onClose}
       />
       
-      {/* Modal Content - fixed to visual viewport, immune to keyboard push */}
+      {/* Modal Content — top + height set by direct DOM mutation to match visualViewport */}
       <div 
         ref={containerRef}
         className="flex flex-col"
@@ -88,10 +99,11 @@ const MobileChatModal = ({
           top: 0,
           left: 0,
           right: 0,
-          height: `${viewportHeight}px`,
+          height: '100dvh',
           zIndex: 51,
           backgroundColor: '#0F0F1A',
           overflow: 'hidden',
+          overscrollBehavior: 'none',
         }}
       >
         {/* Header - always stays at top */}

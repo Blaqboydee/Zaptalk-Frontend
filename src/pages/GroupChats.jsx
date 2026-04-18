@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { Users, LogOut, X, AlertTriangle, ChevronLeft, Sparkles, EyeOff, Eye } from 'lucide-react';
 import { useFriends } from '../hooks/useFriends';
@@ -708,54 +708,68 @@ const MobileGroupModal = ({
   confessionMode, onToggleConfession,
   replyingTo, onReply, onCancelReply,
 }) => {
-  const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
+  const containerRef = useRef(null);
 
+  // Direct DOM manipulation — no React state, no re-render lag.
   useEffect(() => {
-    // Lock body to prevent browser from scrolling page behind modal
-    document.body.style.position = 'fixed';
-    document.body.style.top = '0';
-    document.body.style.left = '0';
-    document.body.style.right = '0';
-    document.body.style.bottom = '0';
-    document.body.style.overflow = 'hidden';
+    const container = containerRef.current;
+    if (!container) return;
+
+    const html = document.documentElement;
+    const body = document.body;
+
+    html.style.overflow = 'hidden';
+    html.style.height = '100%';
+    body.style.overflow = 'hidden';
+    body.style.height = '100%';
 
     const vv = window.visualViewport;
-    const handleViewport = () => {
-      setViewportHeight(vv ? vv.height : window.innerHeight);
+
+    const sync = () => {
+      if (vv) {
+        container.style.top = vv.offsetTop + 'px';
+        container.style.height = vv.height + 'px';
+      } else {
+        container.style.top = '0px';
+        container.style.height = window.innerHeight + 'px';
+      }
     };
 
-    handleViewport();
+    sync();
+
     if (vv) {
-      vv.addEventListener("resize", handleViewport);
-      vv.addEventListener("scroll", handleViewport);
+      vv.addEventListener('resize', sync);
+      vv.addEventListener('scroll', sync);
     }
+    window.addEventListener('resize', sync);
 
     return () => {
       if (vv) {
-        vv.removeEventListener("resize", handleViewport);
-        vv.removeEventListener("scroll", handleViewport);
+        vv.removeEventListener('resize', sync);
+        vv.removeEventListener('scroll', sync);
       }
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.left = '';
-      document.body.style.right = '';
-      document.body.style.bottom = '';
-      document.body.style.overflow = '';
+      window.removeEventListener('resize', sync);
+      html.style.overflow = '';
+      html.style.height = '';
+      body.style.overflow = '';
+      body.style.height = '';
     };
   }, []);
 
   return (
   <div
+    ref={containerRef}
     className="flex flex-col animate-slide-up"
     style={{
       position: 'fixed',
       top: 0,
       left: 0,
       right: 0,
-      height: `${viewportHeight}px`,
+      height: '100dvh',
       zIndex: 50,
       background: 'var(--bg-base)',
       overflow: 'hidden',
+      overscrollBehavior: 'none',
     }}
   >
     {/* Mobile header */}
@@ -868,7 +882,7 @@ const MobileGroupModal = ({
 
     {/* Messages */}
     <MoodAura messages={messages}>
-      <div className="flex-1 overflow-y-auto scrollbar-hidden p-3 space-y-3">
+      <div className="flex-1 overflow-y-auto scrollbar-hidden p-3 space-y-3 min-h-0">
         <ChatMessagesArea
           messages={messages}
           isLoadingMessages={isLoadingMessages}
